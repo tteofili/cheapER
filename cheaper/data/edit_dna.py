@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Feb  8 12:27:43 2020
-
-@author: Giulia
-"""
-
 import random
 import string
-dna=set(string.printable)
-#dna = set(["A", "C", "G", "T"])
+
+dna = set(string.printable)
 
 class Sequence(str):
 

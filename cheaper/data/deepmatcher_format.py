@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import os
 
-datadir = '../datasets' + os.sep + 'temporary' + os.sep
+datadir = 'datasets' + os.sep + 'temporary' + os.sep
 
 
 def tofiles(pt_train, pt_valid, name):
@@ -44,7 +44,7 @@ def tofiles(pt_train, pt_valid, name):
                        subset=None, )
         df.columns = names
         print(df.head())
-    validName = datadir + name + '/validSim'+str(len(pt_train))+'.csv'
+    validName = datadir + name + '_validSim'+str(len(pt_train))+'.csv'
     vd = df.to_csv(validName, index=False)
 
     return trainName, validName

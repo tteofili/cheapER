@@ -1,4 +1,3 @@
-
 import textdistance
 import textdistance as txd
 from strsimpy.metric_lcs import MetricLCS
@@ -40,8 +39,6 @@ def text_to_vector(text):
 
 def norm(x,minim,maxi):
     z=(x-minim)/(maxi-minim)
-#    print("z")
-#    print(z)
     return z
 
 def sim4attrScho(stringa1,stringa2):
@@ -55,41 +52,25 @@ def sim4attrScho(stringa1,stringa2):
     s3=textdistance.levenshtein.normalized_similarity(stringa1[3],stringa2[3])
     
     vect=[s0,s1,s2,s3]
-    #print(vect)
-    #rm_min=min(vect)
-    #vect.remove(rm_min)
-    #print(vect)
-    #aver=sum(vect) / len(vect)
     aver=round(sum(vect) / len(vect),2)
-    #print(aver)
     return [aver]
 
 
 def sim4attrFZ_norm2(stringa1,stringa2,minim,maxi):
     s0=txd.jaro_winkler.normalized_similarity(stringa1[0],stringa2[0])
     
-#    print("minim[0]: "+str(minim[0])+" maxi[0]: "+str(maxi[0]))
-    
-#    if s0==1.0:
-#        print("++++++++++++++++++++++++++++++++")
-#        print("s0 "+str(s0)+" s00 "+str(s00))
-#    return [s00]
     t11_split=stringa1[1].split()
     t12_split=stringa2[1].split()
     s1= textdistance.jaccard.normalized_similarity(t11_split,t12_split)
     
     s2=get_cosine(text_to_vector(stringa1[2]),text_to_vector(stringa2[2]))
     
-    #s3=textdistance.levenshtein.normalized_similarity(stringa1[3],stringa2[3])
     t1_split4=stringa1[3].split()
     t2_split4=stringa2[3].split()
     s3= textdistance.jaccard.normalized_similarity(t1_split4,t2_split4)
     t41_split4=stringa1[4].split()
     t42_split4=stringa2[4].split()
     s4= textdistance.jaccard.normalized_similarity(t41_split4,t42_split4)
-    
-    #s5=textdistance.levenshtein.normalized_similarity(stringa1[3],stringa2[3])
-    #vect0=[s0,s1,s2,s3,s4]
     
     s00=norm(s0,minim[0],maxi[0])
     s11=norm(s1,minim[1],maxi[1])
@@ -333,7 +314,7 @@ tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased', do_lower_case=Fal
 model = AutoModel.from_pretrained('bert-base-uncased')
 embedder = SentenceTransformer('bert-base-nli-mean-tokens')
 
-PATH = ".." + os.sep + "models" + os.sep + "sim_bert"
+PATH = "models" + os.sep + "sim_bert"
 model.save_pretrained(PATH)
 tokenizer.save_pretrained(PATH)
 embedding = models.BERT(PATH, max_seq_length=128,do_lower_case=True)

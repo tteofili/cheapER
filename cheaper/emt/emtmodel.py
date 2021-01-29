@@ -1,14 +1,5 @@
-import collections
-
-import deepmatcher as dm
-from deepmatcher import runner
-import torch
-
 from keras.models import Model, load_model
-from keras.layers import Input, Embedding, LSTM, concatenate, subtract, Dense, Bidirectional, Lambda
-
 from cheaper.data import deepmatcher_format
-from cheaper.data.deepmatcher_format import tofiles
 from cheaper.emt.config import Config
 from cheaper.emt.data_loader import load_data, DataType
 from cheaper.emt.data_representation import DeepMatcherProcessor
@@ -33,74 +24,35 @@ class EMTERModel:
 
         self.model = self.model.to(device)
 
-        if len(label_train) > 0:
-            processor = DeepMatcherProcessor()
-            trainF, validF = deepmatcher_format.tofiles(label_train, label_test, dataset_name)
-            train_examples = processor.get_train_examples_file(trainF)
-            label_list = processor.get_labels()
-            training_data_loader = load_data(train_examples,
-                                                             label_list,
-                                                             self.tokenizer,
-                                                             128,
-                                                             32,
-                                                             DataType.TRAINING, self.model_type)
+        processor = DeepMatcherProcessor()
+        trainF, testF = deepmatcher_format.tofiles(label_train, label_test, dataset_name)
+        train_examples = processor.get_train_examples_file(trainF)
+        label_list = processor.get_labels()
+        training_data_loader = load_data(train_examples, label_list, self.tokenizer, 128, 32, DataType.TRAINING,
+                                         self.model_type)
 
-            num_epochs = 3
-            num_train_steps = len(training_data_loader) * num_epochs
+        num_epochs = 3
+        num_train_steps = len(training_data_loader) * num_epochs
 
-            learning_rate = 2e-5
-            adam_eps = 1e-8
-            warmup_steps = 0
-            weight_decay = 0
-            optimizer, scheduler = build_optimizer(self.model,
-                                                                 num_train_steps,
-                                                                 learning_rate,
-                                                                 adam_eps,
-                                                                 warmup_steps,
-                                                                 weight_decay)
+        learning_rate = 2e-5
+        adam_eps = 1e-8
+        warmup_steps = 0
+        weight_decay = 0
+        optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
+                                               weight_decay)
 
-            eval_examples = processor.get_test_examples_file(validF)
-            evaluation_data_loader = load_data(eval_examples,
-                                                               label_list,
-                                                               self.tokenizer,
-                                                               128,
-                                                               32,
-                                                               DataType.EVALUATION, self.model_type)
+        eval_examples = processor.get_test_examples_file(testF)
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, 128, 32, DataType.EVALUATION,
+                                           self.model_type)
 
-            exp_name = '../../datasets/temporary/' + dataset_name
-            evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list),
-                                                   self.model_type)
+        exp_name = 'datasets/temporary/' + dataset_name
+        evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
 
-            result = train(device,
-                               training_data_loader,
-                               self.model,
-                               optimizer,
-                               scheduler,
-                               evaluation,
-                               num_epochs,
-                               1.0,
-                               True,
-                               experiment_name=exp_name,
-                               output_dir=exp_name,
-                               model_type=self.model_type)
-        else:
-            processor = DeepMatcherProcessor()
-            trainF, validF = tofiles(label_train, label_valid, dataset_name)
-            label_list = processor.get_labels()
-            eval_examples = processor.get_test_examples_file(validF)
-            evaluation_data_loader = load_data(eval_examples,
-                                                               label_list,
-                                                               self.tokenizer,
-                                                               128,
-                                                               32,
-                                                               DataType.EVALUATION, self.model_type)
-            exp_name = './datasets/temporary/' + dataset_name
-            evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list),
-                                                   self.model_type)
-            result = evaluation.evaluate(self.model, device, -1)
+        result = train(device, training_data_loader, self.model, optimizer, scheduler, evaluation, num_epochs, 1.0,
+                       True, experiment_name=exp_name, output_dir=exp_name, model_type=self.model_type)
 
         save_model(self.model, exp_name, exp_name, tokenizer=self.tokenizer)
-        report = result['report']
+
         l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
         l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
         p = l1[0]

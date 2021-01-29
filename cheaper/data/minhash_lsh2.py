@@ -1,12 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jan 26 12:52:38 2020
-
-@author: Giulia
-"""
 import csv
 from datasketch import MinHash, MinHashLSH
-
 
 def concatenate_list_data(list):
     result= ''

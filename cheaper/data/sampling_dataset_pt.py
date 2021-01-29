@@ -1,20 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Mar 22 14:12:38 2020
-
-@author: Giulia
-"""
 import csv
 from datasketch import MinHash, MinHashLSH
 
 import random
 from sklearn.metrics.pairwise import cosine_similarity
-# Scikit Learn
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 
-#from sim_function import sim4attrFZ_norm,sim4attrFZ_norm2
-#### WARNING
 import re, math
 from collections import Counter
 
@@ -213,7 +204,7 @@ def minHash_lsh(tableL, tableR, indici,min_sim,max_sim,dictL_match,dictR_match,d
     res=minHash_LSH(data4hash)
     #print("lsh fatto")
     dataset_pt=create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
-    print("data lshs fatto")
+    print("data lsh fatto")
     plot_dataPT(dataset_pt)
     #print(dataset_pt[:10])
     

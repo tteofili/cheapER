@@ -1,16 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 18 15:14:16 2020
-
-@author: Giulia
-
-#metodo per la creazione dei dataset
-"""
 from __future__ import print_function
 import random
-import re
 from collections import Counter
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_dataOnlyMatch, check_anhai_dataset
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_dataOnlyMatch
 from cheaper.data.plot import plotting_occorrenze, plot_pretrain, plot_dataPT, plot_graph
 from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc
 from cheaper.data.test_occ_attr import init_dict_lista
@@ -21,50 +12,25 @@ from random import shuffle
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
                     soglia, tot_copy,
                     num_run, cut, valid_file, test_file):
-    WORD = re.compile(r'\w+')
 
-    # Imposta manualmente a True per caricare da disco tutti i modelli salvati. 
-    # Imposta manualmente a False per ri-eseguire tutti gli addestramenti.
-    LOAD_Dataset_FROM_DISK = False
-    LOAD_FROM_DISK = False
-
-    # Caricamento dati e split iniziale.
-    if LOAD_Dataset_FROM_DISK:
-
-        # Carica dataset salvato su disco.
-        print("non salva i dataset")
-        # data = uls.load_list('dataset_{}'.format(DATASET_NAME))
-
+    if flag_Anhai == False:
+        data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
     else:
-        # Crea il dataset.    
-        # il flag_Anhai==True fa il sampling dei dataset provenienti dal repo di Anhai
-        # quelli etichettati 0/1.
-        # In check_anhai_dataset i nonMatch(0) sarranno presi dal csv controllando che abbiano
-        # una cos_sim>min_cos_sim_dei_match
-        # Altrimenti, per generarli in modo casuale richiamare il metodo sotto
-        # parsing_anhai_dataOnlyMatch
-        if flag_Anhai == False:
-            data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-            valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-            test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        else:
-            # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-            data = parsing_anhai_dataOnlyMatch(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-            valid_data = parsing_anhai_dataOnlyMatch(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-            test_data = parsing_anhai_dataOnlyMatch(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        data = parsing_anhai_dataOnlyMatch(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        valid_data = parsing_anhai_dataOnlyMatch(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        test_data = parsing_anhai_dataOnlyMatch(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
-        min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
-        print("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
-        max_sim = soglia + max(min_sim_Match, max_sim_noMatch)
-        if max_sim > 0.9:
-            max_sim = 0.9
-        print("!max_sim " + str(max_sim))
-        min_sim = min(min_sim_Match, max_sim_noMatch)  # -soglia
-        print("!min_sim " + str(min_sim))
-        # min_sim = 0.5
-        # max_sim = 0.5
-        # Salva dataset su disco.
-        # uls.save_list(data, 'dataset_{}'.format(DATASET_NAME))
+    min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
+    print("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
+    max_sim = soglia + max(min_sim_Match, max_sim_noMatch)
+    if max_sim > 0.9:
+        max_sim = 0.9
+    print("!max_sim " + str(max_sim))
+    min_sim = min(min_sim_Match, max_sim_noMatch)  # -soglia
+    print("!min_sim " + str(min_sim))
 
     # Dataset per DeepER classico: [(tupla1, tupla2, label), ...].
     deeper_data = list(map(lambda q: (q[0], q[1], q[3]), data))
@@ -94,28 +60,17 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     deeper_valid_data = shrink_data(deeper_valid_data)
     deeper_test_data = shrink_data(deeper_test_data)
 
-    # Split in training set e test set.
-    # def split_training_test(data, SPLIT_FACTOR = 0.8):
-    #     bound = int(len(data) * SPLIT_FACTOR)
-    #     train = data[:bound]
-    #     test = data[bound:]
-    #
-    #     return train, test
-
     # Tutti i successivi addestramenti partiranno dal 100% di deeper_train (80% di tutti i dati).
     # Le tuple in deeper_test non verranno mai usate per addestrare ma solo per testare i modelli.
     deeper_train = deeper_data
     deeper_valid = deeper_valid_data
     deeper_test = deeper_test_data
 
-    print("--------------- vinsim creating dataset --------------")
-    # Costruzione Dataset per VinSim.
+    print("--------------- Generating datasets --------------")
+    # Costruzione Dataset
     k_slice = int(tot_pt // 2)  # quanti match e non match andranno a formare il dataset di PT
 
     vinsim_data = []
-
-    # Porzione di tuple in match da includere nell'addestramento di VinSim.
-    TP_FACTOR = 0.05
 
     # Preleva solo quelle in match con il relativo sim vector.
     for i in range(len(data)):
@@ -124,8 +79,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             vinsim_data.append((r[0], r[1], r[2]))
 
     # Taglio della porzione desiderata.
-    # bound = int(len(vinsim_data) * TP_FACTOR)
-    bound = 5
+    bound = int(len(vinsim_data) * cut)
     vinsim_data = vinsim_data[:bound]
 
     min_cos_sim = min_cos(vinsim_data)
@@ -135,14 +89,6 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, tot_pt*2, min_sim,
                                                                              max_sim, ATT_INDEXES,
                                                                              min_cos_sim, tot_copy, simf)
-
-    # TEST SCIOCCO (solo edit e no_match casuali senza l'uso delle soglie)
-    # result_list_noMatch,result_list_match = csvTable2datasetRANDOM_sciocco(TABLE1_FILE,TABLE2_FILE,7000,min_sim,max_sim,ATT_INDEXES,
-    #                                                                        min_cos_sim,tot_copy,simf)
-
-    # random_tuples0 =csvTable2datasetRANDOM_likeGold(TABLE1_FILE,TABLE2_FILE,7000,min_sim,max_sim,ATT_INDEXES,datapt_hash,min_cos_sim, tot_copy, simf )
-    # random_tuples0 =csvTable2datasetRANDOM_bilancedWITHlsh(TABLE1_FILE, TABLE2_FILE, 2000, min_sim, max_sim, ATT_INDEXES,datapt_hash, simf )
-    # tot_pt=86#len(datapt_hash)*2
 
     # test per il count dei valori degli attributi
     lista_attrMATCH, lista_attrNO_MATCH = init_dict_lista(result_list_match, result_list_noMatch, len(ATT_INDEXES))
@@ -172,12 +118,6 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     print("len(random_tuples0) " + str(len(random_tuples0)))
     print("len(result_list_noMatch) " + str(len(result_list_noMatch)))
     print("len(result_list_match) " + str(len(result_list_match)))
-    # random_tuples=csvTable2datasetRANDOM_nomatch(TABLE1_FILE, TABLE2_FILE, tot_pt, min_sim, ATT_INDEXES, simf )
-    # for i in range(len(datapt_hash)):
-    # if datapt_hash[i] not in random_tuples0:
-    # random_tuples0.append(datapt_hash[i])
-    # random_tuples0.extend(datapt_hash)
-    # print("match: "+str(match)+"; no_match: "+str(no_match)+"; nlog1: "+str(nlog1)+"; nlog2: "+str(nlog2))
 
     random.shuffle(random_tuples0)
     random_tuples0sort = sorted(random_tuples0, key=lambda tup: (tup[2][0]))
@@ -243,7 +183,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     plot_dataPT(vinsim_data_app)
 
     # Salva dataset su disco.
-    with open('../datasets/temporary/datasetPT_{a}_{b}.txt'.format(a=DATASET_NAME, b=num_run), 'w') as output:
+    with open('datasets/temporary/datasetPT_{a}_{b}.txt'.format(a=DATASET_NAME, b=num_run), 'w') as output:
         output.write(str(vinsim_data_app))
 
     # Dataset per il test di data_augmentation: [(tupla1, tupla2, label), ...]

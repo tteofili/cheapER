@@ -2,7 +2,6 @@ import csv
 import random
 from itertools import islice 
 from sklearn.metrics.pairwise import cosine_similarity
-# Scikit Learn
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 
@@ -1005,8 +1004,6 @@ def parsing_anhai_dataOnlyMatch(ground_truth, tableA, tableB, indici, sim_functi
                 sim_vector=sim_function(tableA_el,tableB_el) # Modificato
                 cos_sim_list.append(cos_sim)
                 result_list_match.append((tableA_el,tableB_el,sim_vector, 1))
-                if (len(result_list_match)%10)==0:
-                    print(len(result_list_match))
         except:
             pass
         

@@ -16,6 +16,8 @@ setuptools.setup(
     install_requires=[
           'pandas',
           'numpy',
+          'scipy',
+          'scikit-learn',
           'tqdm',
           'transformers',
           'torch',

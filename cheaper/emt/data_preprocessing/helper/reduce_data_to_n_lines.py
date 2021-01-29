@@ -1,7 +1,7 @@
 import csv
 import logging
 
-from logging_customized import setup_logging
+from cheaper.emt.logging_customized import setup_logging
 
 setup_logging()
 

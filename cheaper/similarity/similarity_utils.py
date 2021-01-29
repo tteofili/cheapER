@@ -1,21 +1,17 @@
-# -*- coding: utf-8 -*-
-"""
-"""
-
 from __future__ import print_function
-
 from inspect import getsource
-
+from random import shuffle
 
 import numpy as np
 from sklearn import linear_model
 import operator
+import matplotlib.pyplot as plt
 
+from cheaper.data.create_datasets import create_datasets
 from cheaper.data.csv2dataset import csv_2_datasetALTERNATE
+from cheaper.data.plot import plot_dataPT
 
 get_lambda_name = lambda l: getsource(l).split('=')[0].strip()
-
-runs = 3
 
 def unflat(data):
     u_data = np.zeros_like(data)
@@ -68,10 +64,8 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     best = []
     for k in attr_indexes:
         print('getting attribute values')
-        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], max_len=100, cut=cut)
-        #perc = len(data) * 0.05
-        split = 50 #int(min(perc/2, 50))
-        npdata = np.array(data[:split] + data[-split:])
+        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], cut=cut)
+        npdata = np.array(data, dtype=object)
         X = np.zeros([len(npdata), len(sim_functions)])
         Y = np.zeros(len(npdata))
         tc = 0
@@ -135,3 +129,38 @@ def agg_sim(best_sims, t1, t2):
         vect.append(att_sim)
     aver = round(sum(vect) / len(vect), 2)
     return [aver]
+
+def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunctions, soglia, tot_pt, tot_copy):
+    best = []
+    for r in range(1):
+        bestFun = lambda t1, t2: t1 == t2
+        lowestMSE = 1e10
+        # for each sim function
+        for simf in simfunctions:
+            print(f'using sim {get_lambda_name(simf)}')
+            data, train, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file, t2_file, indexes, simf,
+                                                                              "sanity_check", tot_pt, flagAnhai, soglia,
+                                                                              tot_copy, 1)
+            if len(vinsim_data) > 0:
+                shuffle(vinsim_data)
+
+                plt.xlabel(get_lambda_name(simf))
+
+                t, sim_list = plot_dataPT(vinsim_data)
+                plt.xlabel('')
+                gradino = []
+                for g in range(len(t)):
+                    if g >= len(t) / 2:
+                        gradino.append(1)
+                    else:
+                        gradino.append(0)
+                mse = (np.square(np.array(gradino) - sim_list)).mean(axis=None)
+                print(f'{get_lambda_name(simf)} -> mse({mse})')
+                if (mse < lowestMSE):
+                    lowestMSE = mse
+                    bestFun = simf
+                    print("update: function="+get_lambda_name(bestFun)+"', MSE="+str(lowestMSE))
+
+        print("best function is '"+get_lambda_name(bestFun)+"' with MSE="+str(lowestMSE))
+        best.append(bestFun)
+    return best
