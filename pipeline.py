@@ -55,7 +55,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
             classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
                 .train(train_cut, valid, test, dataset_name)
-            new_row = {'type': type, 'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
+            new_row = {'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
                        'f1M': classic_f1,
                        'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
             results = results.append(new_row, ignore_index=True)
@@ -65,7 +65,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
             dataDa = vinsim_data_app + train_cut
             da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
                 dataDa, valid, test, dataset_name)
-            new_row = {'type': type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
+            new_row = {'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
                        'pNM': da_precisionNOMATCH,
                        'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
             results = results.append(new_row, ignore_index=True)
@@ -133,8 +133,8 @@ for d in datasets:
     flag_Anhai = d[6]
     print(f'---{dataset_name}---')
     sigma = 3000  # generated dataset size
-    kappa = 1500  # no. of samples for consistency training
+    kappa = 300  # no. of samples for consistency training
     epsilon = 0.015  # deviation from calculated min/max thresholds
     slicing = [0.01, 0.05, 0.1, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
-    num_runs = 5
+    num_runs = 1
     train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing)

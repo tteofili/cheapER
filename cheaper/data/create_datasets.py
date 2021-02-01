@@ -1,7 +1,7 @@
 from __future__ import print_function
 import random
 from collections import Counter
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_dataOnlyMatch
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_dataOnlyMatch, parsing_anhai_nofilter
 from cheaper.data.plot import plotting_occorrenze, plot_pretrain, plot_dataPT, plot_graph
 from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc
 from cheaper.data.test_occ_attr import init_dict_lista
@@ -20,8 +20,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     else:
         # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         data = parsing_anhai_dataOnlyMatch(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        valid_data = parsing_anhai_dataOnlyMatch(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        test_data = parsing_anhai_dataOnlyMatch(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
     print("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
