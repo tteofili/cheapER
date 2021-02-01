@@ -1955,22 +1955,41 @@ def csvTable2datasetRANDOM_likeGold0(tableL,tableR,totale,min_sim,max_sim,indici
     print(result_list[:4])
     print(result_list[-15:])
     return result_list 
-#ground_truth='walmart_amazon/matches_walmart_amazon.csv'
-#tableL='walmart_amazon/walmart.csv'
-#tableR='walmart_amazon/amazonw.csv'
-#indici=[(5,9),(4,5),(3,3),(14,4),(6,11)]
 
-#ground_truth='beer_exp_data/train.csv'
-#tableL='beer_exp_data/tableA.csv'
-#tableR='beer_exp_data/tableB.csv'
-#indici=[(1,1),(2,2),(3,3),(4,4)]
-##tot=50
-###csv_2_dataset(ground_truth, tableL, tableR,indici)
-##csvTable2datasetRANDOM_minCos(tableL, tableR, tot, indici, 0.3)
-#rl_anhai=parsing_anhai_data(ground_truth, tableL, tableR,indici)
-#for i in range(10):
-#    print(rl_anhai[i])
-#rl=csv_2_datasetALTERNATE(ground_truth, tableL, tableR,indici)
-#print(rl_anhai[0])
+def parsing_anhai_nofilter(ground_truth, tableA, tableB, indici, sim_function=lambda x, y: [1, 1]):
+    tableA = csv.reader(open(tableA, encoding="utf8"), delimiter=',')
+    tableB = csv.reader(open(tableB, encoding="utf8"), delimiter=',')
+    trainFile = csv.reader(open(ground_truth, encoding="utf8"), delimiter=',')
+    # skip header
+    next(tableA, None)
+    next(tableB, None)
+    next(trainFile, None)
 
+    # convert to list for direct access
+    tableAlist = list(tableA)
+    tableBlist = list(tableB)
+    trainFilelist = list(trainFile)
+    result_list = []
+
+    for line_in_file in trainFilelist:
+        # line_in_file type: id_1, id_2
+        try:
+            row1 = [item for item in tableAlist if item[0] == line_in_file[0]]
+            row2 = [item for item in tableBlist if item[0] == line_in_file[1]]
+            tableA_el = []
+            tableB_el = []
+            for i1, i2 in indici:
+                tableA_el.append(row1[0][i1])
+                tableB_el.append(row2[0][i2])
+
+            # calcola la cos similarita della tupla i-esima
+            sim_vector = sim_function(tableA_el, tableB_el)  # Modificato
+            if int(line_in_file[2]) == 1:
+                result_list.append((tableA_el, tableB_el, sim_vector, 1))
+            else:
+                result_list.append((tableA_el, tableB_el, sim_vector, 0))
+        except:
+            pass
+
+    return result_list
 

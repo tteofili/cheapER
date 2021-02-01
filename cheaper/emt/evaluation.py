@@ -33,7 +33,7 @@ class Evaluation:
                           'attention_mask': batch[1],
                           'labels': batch[3]}
 
-                if self.model_type != 'distilbert':
+                if self.model_type != 'distilbert-base-uncased':
                     inputs['token_type_ids'] = batch[2] if self.model_type in ['bert', 'xlnet'] else None  # XLM, DistilBERT and RoBERTa don't use segment_ids
 
                 outputs = model(**inputs)

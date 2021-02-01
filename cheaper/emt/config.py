@@ -22,7 +22,7 @@ class Config():
         'xlnet': (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer),
         'xlm': (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
         'roberta': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
-        'distilbert': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
+        'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
     }
 
 

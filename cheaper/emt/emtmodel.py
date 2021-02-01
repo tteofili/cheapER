@@ -9,15 +9,19 @@ from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
 
+BATCH_SIZE = 16
+
+MAX_SEQ_LENGTH = 128
+
 
 class EMTERModel:
 
     def __init__(self):
-        self.model_type = 'distilbert'
+        self.model_type = 'distilbert-base-uncased'
         config_class, model_class, tokenizer_class = Config().MODEL_CLASSES[self.model_type]
-        config = config_class.from_pretrained('distilbert-base-uncased')
-        self.tokenizer = tokenizer_class.from_pretrained('distilbert-base-uncased', do_lower_case=True)
-        self.model = model_class.from_pretrained('distilbert-base-uncased', config=config)
+        config = config_class.from_pretrained(self.model_type)
+        self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
+        self.model = model_class.from_pretrained(self.model_type, config=config)
 
     def train(self, label_train, label_valid, label_test, dataset_name):
         device, n_gpu = initialize_gpu_seed(22)
@@ -28,10 +32,10 @@ class EMTERModel:
         trainF, testF = deepmatcher_format.tofiles(label_train, label_test, dataset_name)
         train_examples = processor.get_train_examples_file(trainF)
         label_list = processor.get_labels()
-        training_data_loader = load_data(train_examples, label_list, self.tokenizer, 128, 32, DataType.TRAINING,
+        training_data_loader = load_data(train_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE, DataType.TRAINING,
                                          self.model_type)
 
-        num_epochs = 3
+        num_epochs = 5
         num_train_steps = len(training_data_loader) * num_epochs
 
         learning_rate = 2e-5
@@ -42,7 +46,7 @@ class EMTERModel:
                                                weight_decay)
 
         eval_examples = processor.get_test_examples_file(testF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, 128, 32, DataType.EVALUATION,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE, DataType.EVALUATION,
                                            self.model_type)
 
         exp_name = 'datasets/temporary/' + dataset_name
