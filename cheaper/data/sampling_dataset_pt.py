@@ -202,12 +202,10 @@ def minHash_lsh(tableL, tableR, indici,min_sim,max_sim,dictL_match,dictR_match,d
     indiciL,indiciR=split_indici(indici)
     data4hash,dataL,dataR,tableLlist,tableRlist=create_data(tableL, tableR, indiciL,indiciR)
     res=minHash_LSH(data4hash)
-    #print("lsh fatto")
     dataset_pt=create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
-    print("data lsh fatto")
+    print("LSH blocking done")
     plot_dataPT(dataset_pt)
-    #print(dataset_pt[:10])
-    
+
     return dataset_pt
 
 def copy_EDIT_match(tupla):
@@ -256,7 +254,7 @@ def count_occurrence(dizion, tupla, limit='8'):
             return False
 
 
-def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,min_cos_sim,tot_copy_match, sim_function=lambda x, y: [1, 1] ):
+def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,min_cos_sim,tot_copy_match, max_occ, sim_function=lambda x, y: [1, 1] ):
     #senza doppioni nella lista
         
     loop_i=0
@@ -350,7 +348,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
             elif sim_vector[0]<min_sim and no_match<(3000+tot_copy_match):
                 if (tableL_el,tableR_el,sim_vector) not in result_list_noMatch:
                     #NO_match
-                    if count_occurrence(dictL_NOmatch, tableL_ELEM) and count_occurrence(dictR_NOmatch, tableR_ELEM):
+                    if count_occurrence(dictL_NOmatch, tableL_ELEM, limit=max_occ) and count_occurrence(dictR_NOmatch, tableR_ELEM, limit=max_occ):
                         #NO_match
                         #count_occurrence(dictL_NOmatch, tableL_ELEM)
                         #count_occurrence(dictR_NOmatch, tableR_ELEM)
@@ -382,7 +380,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
             sim_vector=sim_function(tableR_el,tableR_el2)
             if (tableR_el,tableR_el2,sim_vector) not in result_list_match and sim_vector[0]>max_sim:
                 #match
-                if count_occurrence(dictR_match, tableR_ELEM):
+                if count_occurrence(dictR_match, tableR_ELEM, limit=max_occ):
                     #count_occurrence(dictR_match, tableR_ELEM)
                     result_list_match.append((tableR_el,tableR_el2,sim_vector))
                     copy_match_list.append((tableR_el,tableR_el2,sim_vector))
@@ -396,7 +394,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
             sim_vector=sim_function(tableL_el,tableR_el)
             if sim_vector[0]<min_sim and (tableL_el,tableR_el,sim_vector) not in result_list_noMatch:
                 #NO_match
-                if count_occurrence(dictL_NOmatch, tableL_ELEM) and count_occurrence(dictR_NOmatch, tableR_ELEM):
+                if count_occurrence(dictL_NOmatch, tableL_ELEM, limit=max_occ) and count_occurrence(dictR_NOmatch, tableR_ELEM, limit=max_occ):
                     
                     #count_occurrence(dictL_NOmatch, tableL_ELEM)
                     #count_occurrence(dictR_NOmatch, tableR_ELEM)
@@ -459,7 +457,6 @@ def csvTable2datasetRANDOM_NOOcc(tableL,tableR,totale,min_sim,max_sim,indici,min
     copy_match_list=[]
     
     result_list_match=minHash_lsh(tableL, tableR, indici,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
-    print("ritornato insieme proveniente da minHash lsh")
 #    for el in data_lsh:
 #        #serve per calcolare la cos_sim tra i due elementi della tupla, è necessario concatenare tutta la riga
 #        stringa1=concatenate_list_data(el[0])

@@ -9,7 +9,7 @@ from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
 
-BATCH_SIZE = 16
+BATCH_SIZE = 4
 
 MAX_SEQ_LENGTH = 128
 
@@ -38,7 +38,7 @@ class EMTERModel:
         num_epochs = 5
         num_train_steps = len(training_data_loader) * num_epochs
 
-        learning_rate = 2e-5
+        learning_rate = 1e-5
         adam_eps = 1e-8
         warmup_steps = 0
         weight_decay = 0
@@ -46,8 +46,8 @@ class EMTERModel:
                                                weight_decay)
 
         eval_examples = processor.get_test_examples_file(testF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE, DataType.EVALUATION,
-                                           self.model_type)
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE,
+                                           DataType.EVALUATION, self.model_type)
 
         exp_name = 'datasets/temporary/' + dataset_name
         evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)

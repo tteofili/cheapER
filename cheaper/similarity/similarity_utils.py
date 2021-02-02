@@ -1,17 +1,19 @@
 from __future__ import print_function
+
+import operator
 from inspect import getsource
 from random import shuffle
 
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import linear_model
-import operator
-import matplotlib.pyplot as plt
 
 from cheaper.data.create_datasets import create_datasets
 from cheaper.data.csv2dataset import csv_2_datasetALTERNATE
 from cheaper.data.plot import plot_dataPT
 
 get_lambda_name = lambda l: getsource(l).split('=')[0].strip()
+
 
 def unflat(data):
     u_data = np.zeros_like(data)
@@ -56,11 +58,13 @@ def brute_force_per_attribute(gt_file, t1_file, t2_file, attr_indexes, sim_funct
     print(f'final aggregated function: {single_sim}')
     return single_sim
 
+
 def create_single_sim(bf_fun):
     per_att_sim = lambda t1, t2: [np.sum(np.array([bf_fun[i](t1[i], t2[i]) for i in range(len(bf_fun))])) / len(bf_fun)]
     return per_att_sim
 
-def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions, cut, num_funcs):
+
+def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions, cut, num_funcs, check=False):
     best = []
     for k in attr_indexes:
         print('getting attribute values')
@@ -83,11 +87,11 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         score = 0
         clf = linear_model.SGDClassifier(loss='perceptron')
         r = 0
-        while (score < 0.75 and r < 50):
+        while (score < 0.9 and r < 50):
             clf.fit(X, Y)
             score = clf.score(X, Y)
-            print(f'score: {score}')
             r += 1
+        print(f'score: {score}')
         weights = clf.coef_[0]
         comb = []
         combprint = []
@@ -96,8 +100,8 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             normalized_weights = normalized_weights + abs(min(weights))
         wsum = np.sum(normalized_weights)
         for c in range(len(weights)):
-            comb.append([sim_functions[c], normalized_weights[c]/wsum])
-            combprint.append([get_lambda_name(sim_functions[c]), normalized_weights[c]/wsum])
+            comb.append([sim_functions[c], normalized_weights[c] / wsum])
+            combprint.append([get_lambda_name(sim_functions[c]), normalized_weights[c] / wsum])
         comb.sort(key=operator.itemgetter(1), reverse=True)
         combprint.sort(key=operator.itemgetter(1), reverse=True)
 
@@ -118,7 +122,14 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         fsims.append(top_sims_k)
         ind += 1
     generated_sim = lambda t1, t2: agg_sim(fsims, t1, t2)
-    return generated_sim
+    if check:
+        final_sim = \
+        find_best_simfunction(gt_file, t1_file, t2_file, attr_indexes, True, sim_functions + [generated_sim], 0,
+                              100, 50, 1)[0]
+        return final_sim
+    else:
+        return generated_sim
+
 
 def agg_sim(best_sims, t1, t2):
     vect = []
@@ -130,9 +141,10 @@ def agg_sim(best_sims, t1, t2):
     aver = round(sum(vect) / len(vect), 2)
     return [aver]
 
-def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunctions, soglia, tot_pt, tot_copy):
+
+def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunctions, soglia, tot_pt, tot_copy, runs):
     best = []
-    for r in range(1):
+    for r in range(runs):
         bestFun = lambda t1, t2: t1 == t2
         lowestMSE = 1e10
         # for each sim function
@@ -140,7 +152,7 @@ def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunc
             print(f'using sim {get_lambda_name(simf)}')
             data, train, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file, t2_file, indexes, simf,
                                                                               "sanity_check", tot_pt, flagAnhai, soglia,
-                                                                              tot_copy, 1)
+                                                                              tot_copy, 1, 1, gt_file, gt_file)
             if len(vinsim_data) > 0:
                 shuffle(vinsim_data)
 
@@ -159,8 +171,8 @@ def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunc
                 if (mse < lowestMSE):
                     lowestMSE = mse
                     bestFun = simf
-                    print("update: function="+get_lambda_name(bestFun)+"', MSE="+str(lowestMSE))
+                    print("update: function=" + get_lambda_name(bestFun) + "', MSE=" + str(lowestMSE))
 
-        print("best function is '"+get_lambda_name(bestFun)+"' with MSE="+str(lowestMSE))
+        print("best function is '" + get_lambda_name(bestFun) + "' with MSE=" + str(lowestMSE))
         best.append(bestFun)
     return best

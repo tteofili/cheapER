@@ -21,9 +21,6 @@ simfunctions = [
     lambda t1, t2: sim_function.sim_cos(t1.split(), t2.split()),
     lambda t1, t2: sim_function.sim_hamming(t1.split(), t2.split()),
     lambda t1, t2: sim_function.sim_ngram(t1.split(), t2.split()),
-    lambda t1, t2: sim_function.sim_bert(t1, t2),
-    lambda t1, t2: sim_function.sim_sbert(t1, t2),
-    lambda t1, t2: sim_function.sim_sbert2(t1, t2),
 ]
 
 get_lambda_name = lambda l: getsource(l).strip()
@@ -48,9 +45,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                                                                                      test_file)
 
             train_cut = splitting_dataSet(cut, train)
-            print(f'Training with {len(train_cut)} record pairs ({100 * cut}%)')
 
             print("------------- Vanilla EMT Training ------------------")
+            print(f'Training with {len(train_cut)} record pairs ({100 * cut}% GT)')
             model = EMTERModel()
 
             classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
@@ -61,8 +58,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
             results = results.append(new_row, ignore_index=True)
 
             print("------------- Data augmented EMT Training -----------------")
-            model = EMTERModel()
             dataDa = vinsim_data_app + train_cut
+            print(f'Training with {len(dataDa)} record pairs (generated dataset + {100 * cut}% GT)')
+            model = EMTERModel()
             da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
                 dataDa, valid, test, dataset_name)
             new_row = {'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,

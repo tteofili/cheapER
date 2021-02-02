@@ -10,8 +10,7 @@ from random import shuffle
 
 
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
-                    soglia, tot_copy,
-                    num_run, cut, valid_file, test_file):
+                    soglia, tot_copy, num_run, cut, valid_file, test_file):
 
     if flag_Anhai == False:
         data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
@@ -20,8 +19,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     else:
         # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         data = parsing_anhai_dataOnlyMatch(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        valid_data = parsing_anhai_dataOnlyMatch(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        test_data = parsing_anhai_dataOnlyMatch(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
     print("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
@@ -85,10 +84,12 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     min_cos_sim = min_cos(vinsim_data)
     print("min_cos_sim " + str(min_cos_sim))
 
+    max_occ = 4
+
     # costruisce i dataset di pt con un max di occurrenza di una tuple di 4 volte   csvTable2datasetRANDOM_NOOcc
     result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, tot_pt*2, min_sim,
                                                                              max_sim, ATT_INDEXES,
-                                                                             min_cos_sim, tot_copy, simf)
+                                                                             min_cos_sim, tot_copy, max_occ, simf)
 
     # test per il count dei valori degli attributi
     lista_attrMATCH, lista_attrNO_MATCH = init_dict_lista(result_list_match, result_list_noMatch, len(ATT_INDEXES))
