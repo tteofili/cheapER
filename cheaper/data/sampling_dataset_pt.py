@@ -108,18 +108,18 @@ def sampling_table(table_list,indici):
    
 
 
-def minHash_LSH(data):
+def minHash_LSH(data, threshold, num_perm=128):
     # Create an MinHashLSH index optimized for Jaccard threshold 0.5,
     # that accepts MinHash objects with 128 permutations functions
     # Create LSH index
-    lsh = MinHashLSH(threshold=0.65, num_perm=256)
+    lsh = MinHashLSH(threshold=threshold, num_perm=num_perm)
     
     # Create MinHash objects
     minhashes = {}
     for c, i in enumerate(data):
       #c è l'indice, i è la tupla
       #print(i)
-      minhash = MinHash(num_perm=256)
+      minhash = MinHash(num_perm=num_perm)
       for el in i:
           minhash.update(el.encode('utf8'))
 #      for d in ngrams(i, 3):
@@ -198,10 +198,10 @@ def split_indici(indici):
         indiciR.append(indici[i][1])
     return indiciL,indiciR
 
-def minHash_lsh(tableL, tableR, indici,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function):
+def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function):
     indiciL,indiciR=split_indici(indici)
     data4hash,dataL,dataR,tableLlist,tableRlist=create_data(tableL, tableR, indiciL,indiciR)
-    res=minHash_LSH(data4hash)
+    res=minHash_LSH(data4hash, min_sim)
     dataset_pt=create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
     print("LSH blocking done")
     plot_dataPT(dataset_pt)

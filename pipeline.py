@@ -132,7 +132,7 @@ for d in datasets:
     print(f'---{dataset_name}---')
     sigma = 3000  # generated dataset size
     kappa = 1500  # no. of samples for consistency training
-    epsilon = 0.1  # deviation from calculated min/max thresholds
+    epsilon = 0.015  # deviation from calculated min/max thresholds
     slicing = [0.01, 0.05, 0.1, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
     num_runs = 1
     train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing)
