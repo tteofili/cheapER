@@ -9,7 +9,7 @@ from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
 
-BATCH_SIZE = 4
+BATCH_SIZE = 16
 
 MAX_SEQ_LENGTH = 128
 
@@ -38,7 +38,7 @@ class EMTERModel:
         num_epochs = 5
         num_train_steps = len(training_data_loader) * num_epochs
 
-        learning_rate = 1e-5
+        learning_rate = 2e-5
         adam_eps = 1e-8
         warmup_steps = 0
         weight_decay = 0

@@ -225,7 +225,8 @@ def copy_EDIT_match(tupla):
         else:
             copy_tup.append(tupla[i])
         
-    #print(copy_tup)
+    if (copy_tup == tupla):
+        copy_tup = copy_EDIT_match(tupla)
     return copy_tup
     
 
@@ -296,7 +297,6 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
     copy_match_list=[]
     
     data_lsh=minHash_lsh(tableL, tableR, indici,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
-    print("ritornato insieme proveniente da minHash lsh")
     for el in data_lsh:
         if el[2][0]>max_sim and el not in result_list_match:
             result_list_match.append(el)
@@ -308,6 +308,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
 #                no_match=no_match+1
 #                print("lista lsh no match: " +str(no_match))
 
+    print(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
     count_i = 0
     while loop_i<120000 and (match<totale or no_match<totale):
         
