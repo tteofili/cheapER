@@ -23,7 +23,6 @@ class Config():
     MODEL_CLASSES = {
         'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
         'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
-        'google/reformer-crime-and-punishment' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer),
         'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer),
     }
 

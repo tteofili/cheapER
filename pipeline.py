@@ -32,7 +32,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
     results = pd.DataFrame()
     for n in range(num_run):
         for cut in slicing:
-            simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, 2,
+            simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, len(simfunctions),
                                         normalize=True)
 
             # create datasets
