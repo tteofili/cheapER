@@ -7,7 +7,9 @@ from pytorch_transformers import BertConfig, BertForSequenceClassification, Bert
     XLNetForSequenceClassification, XLNetConfig, XLMForSequenceClassification, XLMConfig, XLMTokenizer, \
     RobertaTokenizer, RobertaForSequenceClassification, RobertaConfig, DistilBertConfig, \
     DistilBertForSequenceClassification, DistilBertTokenizer
-from transformers import AlbertTokenizer, AlbertForSequenceClassification, AlbertConfig
+from transformers import AlbertTokenizer, AlbertForSequenceClassification, AlbertConfig, ReformerTokenizer, \
+    ReformerForSequenceClassification, ReformerConfig, T5Tokenizer, T5Config, SqueezeBertConfig, SqueezeBertTokenizer, \
+    SqueezeBertForSequenceClassification
 
 from cheaper.emt.logging_customized import setup_logging
 
@@ -25,6 +27,8 @@ class Config():
         'roberta': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
         'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
         'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
+        'reformer-enwik8' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer),
+        'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer),
     }
 
 
