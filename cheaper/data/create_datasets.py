@@ -84,7 +84,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     min_cos_sim = min_cos(vinsim_data)
     print("min_cos_sim " + str(min_cos_sim))
 
-    max_occ = 4
+    max_occ = 8
 
     # costruisce i dataset di pt con un max di occurrenza di una tuple di max_occ volte   csvTable2datasetRANDOM_NOOcc
     result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, tot_pt, min_sim,

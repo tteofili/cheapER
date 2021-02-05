@@ -45,7 +45,7 @@ def train(device,
                       'labels': batch[3]}
 
             if model_type != 'distilbert-base-uncased':
-                inputs['token_type_ids'] = batch[2] if model_type in ['bert', 'xlnet'] else None  # XLM, DistilBERT and RoBERTa don't use segment_ids
+                inputs['token_type_ids'] = batch[2] if model_type in ['bert-base-uncased', 'xlnet-base-cased'] else None  # XLM, DistilBERT and RoBERTa don't use segment_ids
 
             outputs = model(**inputs)
             loss = outputs[0]  # model outputs are always tuple in pytorch-transformers (see doc)

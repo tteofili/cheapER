@@ -34,7 +34,7 @@ class Evaluation:
                           'labels': batch[3]}
 
                 if self.model_type != 'distilbert-base-uncased':
-                    inputs['token_type_ids'] = batch[2] if self.model_type in ['bert', 'xlnet'] else None  # XLM, DistilBERT and RoBERTa don't use segment_ids
+                    inputs['token_type_ids'] = batch[2] if self.model_type in ['bert-base-uncased', 'xlnet-base-cased'] else None  # XLM, DistilBERT and RoBERTa don't use segment_ids
 
                 outputs = model(**inputs)
                 tmp_eval_loss, logits = outputs[:2]     # logits are always part of the output (see BertForSequenceClassification documentation),

@@ -21,10 +21,10 @@ class Config():
     EXPERIMENT_PREFIX = "experiments"
 
     MODEL_CLASSES = {
-        'bert': (BertConfig, BertForSequenceClassification, BertTokenizer),
-        'xlnet': (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer),
-        'xlm': (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
-        'roberta': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
+        'bert-base-uncased': (BertConfig, BertForSequenceClassification, BertTokenizer),
+        'xlnet-base-cased': (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer),
+        'xlm-mlm-ende-1024': (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
+        'roberta-base': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
         'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
         'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
         'reformer-enwik8' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer),

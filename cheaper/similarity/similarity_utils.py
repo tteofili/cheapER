@@ -64,7 +64,8 @@ def create_single_sim(bf_fun):
     return per_att_sim
 
 
-def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions, cut, num_funcs, check=False):
+def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions, cut, num_funcs, check=False,
+                         normalize=True):
     best = []
     for k in attr_indexes:
         print('getting attribute values')
@@ -96,6 +97,8 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         comb = []
         combprint = []
         normalized_weights = weights
+        if normalize and min(weights) < 0:
+            normalized_weights = normalized_weights + abs(min(weights))
         wsum = np.sum(normalized_weights)
         for c in range(len(weights)):
             comb.append([sim_functions[c], normalized_weights[c] / wsum])
