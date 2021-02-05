@@ -86,7 +86,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             tc += 1
         print('fitting classifier')
         score = 0
-        clf = linear_model.SGDClassifier(loss='perceptron')
+        clf = linear_model.RidgeClassifier()
         r = 0
         while (score < 0.9 and r < 50):
             clf.fit(X, Y)

@@ -28,7 +28,7 @@ get_lambda_name = lambda l: getsource(l).strip()
 
 
 def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
-                slicing):
+                slicing, compare=False):
     results = pd.DataFrame()
     for n in range(num_run):
         for cut in slicing:
@@ -51,16 +51,17 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
             for model_type in config.Config.MODEL_CLASSES:
 
-                print(f"------------- Vanilla EMT Training {model_type} ------------------")
-                print(f'Training with {len(train_cut)} record pairs ({100 * cut}% GT)')
-                model = EMTERModel(model_type)
+                if compare:
+                    print(f"------------- Vanilla EMT Training {model_type} ------------------")
+                    print(f'Training with {len(train_cut)} record pairs ({100 * cut}% GT)')
+                    model = EMTERModel(model_type)
 
-                classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                    .train(train_cut, valid, test, dataset_name)
-                new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
-                           'f1M': classic_f1,
-                           'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
-                results = results.append(new_row, ignore_index=True)
+                    classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
+                        .train(train_cut, valid, test, dataset_name)
+                    new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
+                               'f1M': classic_f1,
+                               'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
+                    results = results.append(new_row, ignore_index=True)
 
                 print(f"------------- Data augmented EMT Training {model_type} -----------------")
                 dataDa = vinsim_data_app + train_cut
