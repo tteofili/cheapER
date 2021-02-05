@@ -16,8 +16,8 @@ MAX_SEQ_LENGTH = 128
 
 class EMTERModel:
 
-    def __init__(self):
-        self.model_type = 'distilbert-base-uncased'
+    def __init__(self, model_type):
+        self.model_type = model_type
         config_class, model_class, tokenizer_class = Config().MODEL_CLASSES[self.model_type]
         config = config_class.from_pretrained(self.model_type)
         self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
@@ -38,7 +38,7 @@ class EMTERModel:
         num_epochs = 5
         num_train_steps = len(training_data_loader) * num_epochs
 
-        learning_rate = 2e-5
+        learning_rate = 1e-5
         adam_eps = 1e-8
         warmup_steps = 0
         weight_decay = 0

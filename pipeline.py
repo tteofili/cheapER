@@ -5,6 +5,7 @@ import pandas as pd
 from cheaper.data.create_datasets import create_datasets
 import os
 from cheaper.data.csv2dataset import splitting_dataSet
+from cheaper.emt import config
 
 from cheaper.emt.emtmodel import EMTERModel
 from cheaper.similarity import sim_function
@@ -47,29 +48,31 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
             train_cut = splitting_dataSet(cut, train)
 
-            print("------------- Vanilla EMT Training ------------------")
-            print(f'Training with {len(train_cut)} record pairs ({100 * cut}% GT)')
-            model = EMTERModel()
+            for model_type in config.Config.MODEL_CLASSES:
 
-            classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                .train(train_cut, valid, test, dataset_name)
-            new_row = {'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
-                       'f1M': classic_f1,
-                       'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
-            results = results.append(new_row, ignore_index=True)
+                print(f"------------- Vanilla EMT Training {model_type} ------------------")
+                print(f'Training with {len(train_cut)} record pairs ({100 * cut}% GT)')
+                model = EMTERModel(model_type)
 
-            print("------------- Data augmented EMT Training -----------------")
-            dataDa = vinsim_data_app + train_cut
-            print(f'Training with {len(dataDa)} record pairs (generated dataset + {100 * cut}% GT)')
-            model = EMTERModel()
-            da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
-                dataDa, valid, test, dataset_name)
-            new_row = {'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
-                       'pNM': da_precisionNOMATCH,
-                       'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
-            results = results.append(new_row, ignore_index=True)
+                classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
+                    .train(train_cut, valid, test, dataset_name)
+                new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
+                           'f1M': classic_f1,
+                           'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
+                results = results.append(new_row, ignore_index=True)
 
-            print(results.to_string)
+                print(f"------------- Data augmented EMT Training {model_type} -----------------")
+                dataDa = vinsim_data_app + train_cut
+                print(f'Training with {len(dataDa)} record pairs (generated dataset + {100 * cut}% GT)')
+                model = EMTERModel(model_type)
+                da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
+                    dataDa, valid, test, dataset_name)
+                new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
+                           'pNM': da_precisionNOMATCH,
+                           'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
+                results = results.append(new_row, ignore_index=True)
+
+                print(results.to_string)
 
         today = date.today()
         results.to_csv(
