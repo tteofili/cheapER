@@ -69,7 +69,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     best = []
     for k in attr_indexes:
         print('getting attribute values')
-        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], cut=cut)
+        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], cut=1)
         npdata = np.array(data, dtype=object)
         X = np.zeros([len(npdata), len(sim_functions)])
         Y = np.zeros(len(npdata))
