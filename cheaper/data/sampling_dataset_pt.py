@@ -108,7 +108,7 @@ def sampling_table(table_list,indici):
    
 
 
-def minHash_LSH(data, threshold, num_perm=128):
+def minHash_LSH(data, threshold, num_perm=16):
     # Create an MinHashLSH index optimized for Jaccard threshold 0.5,
     # that accepts MinHash objects with 128 permutations functions
     # Create LSH index
@@ -201,7 +201,7 @@ def split_indici(indici):
 def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function):
     indiciL,indiciR=split_indici(indici)
     data4hash,dataL,dataR,tableLlist,tableRlist=create_data(tableL, tableR, indiciL,indiciR)
-    res=minHash_LSH(data4hash, min_sim)
+    res=minHash_LSH(data4hash, 0.5, num_perm=256)
     dataset_pt=create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
     print("LSH blocking done")
     plot_dataPT(dataset_pt)
@@ -310,7 +310,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
 
     print(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
     count_i = 0
-    while loop_i<120000 and (match<totale or no_match<totale):
+    while loop_i<120 and (match<totale or no_match<totale):
         
         x = random.randint(1,len(tableLlist)-1)
         y =  random.randint(1,len(tableRlist)-1)

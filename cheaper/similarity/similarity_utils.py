@@ -96,8 +96,6 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         comb = []
         combprint = []
         normalized_weights = weights
-        if min(weights) < 0:
-            normalized_weights = normalized_weights + abs(min(weights))
         wsum = np.sum(normalized_weights)
         for c in range(len(weights)):
             comb.append([sim_functions[c], normalized_weights[c] / wsum])
@@ -123,9 +121,8 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         ind += 1
     generated_sim = lambda t1, t2: agg_sim(fsims, t1, t2)
     if check:
-        final_sim = \
-        find_best_simfunction(gt_file, t1_file, t2_file, attr_indexes, True, sim_functions + [generated_sim], 0,
-                              100, 50, 1)[0]
+        final_sim = find_best_simfunction(gt_file, t1_file, t2_file, attr_indexes, True, sim_functions + [generated_sim],
+                                          0, 100, 50, 1)[0]
         return final_sim
     else:
         return generated_sim
@@ -150,7 +147,7 @@ def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunc
         # for each sim function
         for simf in simfunctions:
             print(f'using sim {get_lambda_name(simf)}')
-            data, train, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file, t2_file, indexes, simf,
+            data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file, t2_file, indexes, simf,
                                                                               "sanity_check", tot_pt, flagAnhai, soglia,
                                                                               tot_copy, 1, 1, gt_file, gt_file)
             if len(vinsim_data) > 0:
