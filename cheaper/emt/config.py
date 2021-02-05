@@ -22,7 +22,6 @@ class Config():
 
     MODEL_CLASSES = {
         'bert-base-uncased': (BertConfig, BertForSequenceClassification, BertTokenizer),
-        'xlnet-base-cased': (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer),
         'xlm-mlm-ende-1024': (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
         'roberta-base': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
         'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
