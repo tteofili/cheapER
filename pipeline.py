@@ -141,4 +141,5 @@ for d in datasets:
     epsilon = 0.015  # deviation from calculated min/max thresholds
     slicing = [0.01, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
     num_runs = 1
-    train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing)
+    train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
+                compare=True)

@@ -22,8 +22,8 @@ class Config():
 
     MODEL_CLASSES = {
         'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
-        'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
-        'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer),
+        #'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
+        #'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer),
     }
 
 
