@@ -310,7 +310,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
 
     print(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
     count_i = 0
-    while loop_i<120 and (match<totale or no_match<totale):
+    while loop_i<1200 and (match<totale or no_match<totale):
         
         x = random.randint(1,len(tableLlist)-1)
         y =  random.randint(1,len(tableRlist)-1)
@@ -413,7 +413,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
     print("dizionari")   
     plotting_dizionari(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch)       
     print("create candidates set")
-    return result_list_noMatch,result_list_match
+    return result_list_noMatch, result_list_match
 
 
 #metodo senza il limite delle occorrenze

@@ -17,11 +17,17 @@ simfunctions = [
     lambda t1, t2: sim_function.jaro(t1, t2),
     lambda t1, t2: sim_function.sim_lev(t1, t2),
     lambda t1, t2: sim_function.sim_cos(t1, t2),
+    lambda t1, t2: sim_function.sim_sodi(t1, t2),
+    lambda t1, t2: sim_function.sim_hamming(t1, t2),
+    lambda t1, t2: sim_function.sim_jacc(t1, t2),
+    lambda t1, t2: sim_function.sim_ngram(t1, t2),
     lambda t1, t2: sim_function.sim_sodi(t1.split(), t2.split()),
     lambda t1, t2: sim_function.sim_jacc(t1.split(), t2.split()),
     lambda t1, t2: sim_function.sim_cos(t1.split(), t2.split()),
     lambda t1, t2: sim_function.sim_hamming(t1.split(), t2.split()),
     lambda t1, t2: sim_function.sim_ngram(t1.split(), t2.split()),
+    lambda t1, t2: sim_function.jaro(t1.split(), t2.split()),
+    lambda t1, t2: sim_function.sim_lev(t1.split(), t2.split()),
 ]
 
 get_lambda_name = lambda l: getsource(l).strip()
@@ -64,7 +70,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                     results = results.append(new_row, ignore_index=True)
 
                 print(f"------------- Data augmented EMT Training {model_type} -----------------")
-                dataDa = vinsim_data_app + train_cut
+                dataDa = vinsim_data_app
                 print(f'Training with {len(dataDa)} record pairs (generated dataset + {100 * cut}% GT)')
                 model = EMTERModel(model_type)
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
