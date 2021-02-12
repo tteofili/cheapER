@@ -791,7 +791,7 @@ def csv_2_datasetALTERNATE(ground_truth, tableL, tableR, indici, sim_function=la
     tableRlist = list(table2)
     matches_list = list(matches_file)
     if cut < 1:
-        sl = int(max(len(matches_list)*0.01, 5))
+        sl = int(max(len(matches_list)*cut, 5))
         matches_list = matches_list[:sl]
 
     result_list_match = []

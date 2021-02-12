@@ -41,6 +41,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
             simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, len(simfunctions),
                                         normalize=True)
 
+            print(f'Generating dataset')
             # create datasets
             test_file = base_dir + dataset_name + os.sep + 'test.csv'
             valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
@@ -64,17 +65,20 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
                         .train(train_cut, valid, test, dataset_name)
+                    classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
+                        .eval(test, dataset_name)
                     new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
                                'f1M': classic_f1,
                                'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
 
                 print(f"------------- Data augmented EMT Training {model_type} -----------------")
-                dataDa = vinsim_data_app
+                dataDa = vinsim_data_app +  train_cut
                 print(f'Training with {len(dataDa)} record pairs (generated dataset + {100 * cut}% GT)')
                 model = EMTERModel(model_type)
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
                     dataDa, valid, test, dataset_name)
+                da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test, dataset_name)
                 new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
                            'pNM': da_precisionNOMATCH,
                            'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}

@@ -12,14 +12,15 @@ from random import shuffle
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
                     soglia, tot_copy, num_run, cut, valid_file, test_file):
 
+    print('Parsing original dataset')
     if flag_Anhai == False:
         data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
     else:
         # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        data = parsing_anhai_dataOnlyMatch(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        valid_data = parsing_anhai_dataOnlyMatch(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
@@ -86,10 +87,11 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     max_occ = 8
 
+    vinsim_data = []
     # costruisce i dataset di pt con un max di occurrenza di una tuple di max_occ volte   csvTable2datasetRANDOM_NOOcc
-    tot_pt = max(1000, bound * 2)
-    tot_copy = tot_pt * 0.1
-    result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, tot_pt, min_sim,
+    #tot_pt = max(1000, bound * 2)
+    #tot_copy = tot_pt * 0.1
+    result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, 2 * tot_pt, min_sim,
                                                                              max_sim, ATT_INDEXES,
                                                                              min_cos_sim, tot_copy, max_occ, simf)
 
@@ -165,10 +167,10 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     print("--------------- data augmentation creating dataset --------------")
 
     # arrotonda il sim_value a 0/1 per il test di data_augmentation
-    def converti_approssima(tuples):
+    def converti_approssima(tuples, threshold=0.5):
         round_list = []
         for el in tuples:
-            if el[2][0] > 0.5:
+            if el[2][0] > threshold:
                 sim_value = 1
             else:
                 sim_value = 0
@@ -176,8 +178,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         return round_list
 
     # vinsim_data_app è il dataset di pt approssimato a 0/1
-    vinsim_data_app = []
-    vinsim_data_app = converti_approssima(vinsim_data)
+    print(f'using threshold={max_sim} to approximate label')
+    vinsim_data_app = converti_approssima(vinsim_data, threshold=max_sim)
     print(vinsim_data_app[:15])
 
     # Filtro.

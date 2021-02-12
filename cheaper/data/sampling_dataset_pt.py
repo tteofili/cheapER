@@ -310,7 +310,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
 
     print(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
     count_i = 0
-    while loop_i<1200 and (match<totale or no_match<totale):
+    while loop_i<120000 and (match<totale or no_match<totale):
         
         x = random.randint(1,len(tableLlist)-1)
         y =  random.randint(1,len(tableRlist)-1)
@@ -331,7 +331,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
         #controlla che la tupla che sto aggiungendo abbia una cos_similarity maggiore del min_cos_sim definito sopra
         if cos_sim>min_cos_sim:    
             sim_vector=sim_function(tableL_el,tableR_el)
-            if sim_vector[0]>max_sim and match<3000:
+            if sim_vector[0]>max_sim and match<totale:
                 if (tableL_el,tableR_el,sim_vector) not in result_list_match:
                     #match
                     if count_occurrence(dictL_match, tableL_ELEM) and count_occurrence(dictR_match, tableR_ELEM):
@@ -346,7 +346,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                         loop_i=0
                     else:
                         loop_i=loop_i+1
-            elif sim_vector[0]<min_sim and no_match<(3000+tot_copy_match):
+            elif sim_vector[0]<min_sim and no_match<(totale+tot_copy_match):
                 if (tableL_el,tableR_el,sim_vector) not in result_list_noMatch:
                     #NO_match
                     if count_occurrence(dictL_NOmatch, tableL_ELEM, limit=max_occ) and count_occurrence(dictR_NOmatch, tableR_ELEM, limit=max_occ):
@@ -391,7 +391,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                     #print(tableR_el,tableR_el2,sim_vector)
                     loop_i=0
 
-        elif no_match<(3000+tot_copy_match):
+        elif no_match<(totale+tot_copy_match):
             sim_vector=sim_function(tableL_el,tableR_el)
             if sim_vector[0]<min_sim and (tableL_el,tableR_el,sim_vector) not in result_list_noMatch:
                 #NO_match

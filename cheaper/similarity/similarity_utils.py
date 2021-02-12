@@ -9,7 +9,7 @@ import numpy as np
 from sklearn import linear_model
 
 from cheaper.data.create_datasets import create_datasets
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter
 from cheaper.data.plot import plot_dataPT
 
 get_lambda_name = lambda l: getsource(l).split('=')[0].strip()
@@ -69,8 +69,13 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     best = []
     for k in attr_indexes:
         print('getting attribute values')
-        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], cut=cut)
-        npdata = np.array(data, dtype=object)
+        data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, [k], sim_functions[2])
+        c_data = data
+        if cut < 1:
+            sl = int(max(len(data) * cut, 5))
+            c_data = data[:sl] + data[-sl:]
+
+        npdata = np.array(c_data, dtype=object)
         X = np.zeros([len(npdata), len(sim_functions)])
         Y = np.zeros(len(npdata))
         tc = 0
@@ -122,24 +127,74 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             print(f'{get_lambda_name(bsa[0])}, w:{bsa[1]}')
         fsims.append(top_sims_k)
         ind += 1
-    generated_sim = lambda t1, t2: agg_sim(fsims, t1, t2)
+
+    data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, attr_indexes, sim_functions[2])
+    c_data = data
+    if cut < 1:
+        sl = int(max(len(data) * cut, 5))
+        c_data = data[:sl] + data[-sl:]
+
+    npdata = np.array(c_data, dtype=object)
+    X = np.zeros([len(npdata), len(fsims)])
+    Y = np.zeros(len(npdata))
+    tc = 0
+    print('building agg-sim training set')
+    for t in npdata:
+        ar = np.zeros(len(fsims))
+        arc = 0
+        for a in attr_indexes:
+            ar[arc] = att_sim(fsims, arc, t[0][a[0] - 1], t[1][a[1] - 1])
+            arc += 1
+        X[tc] = ar
+        Y[tc] = t[3]
+        tc += 1
+    print('fitting agg-sim classifier')
+    score = 0
+    clf = linear_model.SGDClassifier(loss='perceptron')
+    r = 0
+    while (score < 0.9 and r < 50):
+        clf.fit(X, Y)
+        score = clf.score(X, Y)
+        r += 1
+    print(f'agg-sim score: {score}')
+    f_weights = clf.coef_[0]
+
+    f_weights = f_weights / np.sum(f_weights)
+    print(f_weights)
+
+    generated_sim = lambda t1, t2: agg_sim(fsims, t1, t2, weights=f_weights)
     if check:
-        final_sim = find_best_simfunction(gt_file, t1_file, t2_file, attr_indexes, True, sim_functions + [generated_sim],
-                                          0, 100, 50, 1)[0]
+        final_sim = \
+        find_best_simfunction(gt_file, t1_file, t2_file, attr_indexes, True, sim_functions + [generated_sim],
+                              0, 100, 50, 1)[0]
         return final_sim
     else:
         return generated_sim
 
 
-def agg_sim(best_sims, t1, t2):
+def att_sim(best_sims, a, t1, t2):
+    att_sim = 0
+    for j in range(len(best_sims[a])):
+        att_sim += best_sims[a][j][0](t1, t2)[0] * best_sims[a][j][1]
+    return att_sim
+
+
+def agg_sim(best_sims, t1, t2, weights=None):
     vect = []
     for i in range(len(t1)):
         att_sim = 0
         for j in range(len(best_sims[i])):
             att_sim += best_sims[i][j][0](t1[i], t2[i])[0] * best_sims[i][j][1]
         vect.append(att_sim)
-    aver = round(sum(vect) / len(vect), 2)
-    return [aver]
+    if weights is None:
+        res = round(sum(vect) / len(vect), 2)
+    else:
+        res = 0
+        v = 0
+        for w in weights:
+            res += vect[v] * w
+            v += 1
+    return [res]
 
 
 def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunctions, soglia, tot_pt, tot_copy, runs):
@@ -150,9 +205,11 @@ def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunc
         # for each sim function
         for simf in simfunctions:
             print(f'using sim {get_lambda_name(simf)}')
-            data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file, t2_file, indexes, simf,
-                                                                              "sanity_check", tot_pt, flagAnhai, soglia,
-                                                                              tot_copy, 1, 1, gt_file, gt_file)
+            data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file, t2_file, indexes,
+                                                                                     simf,
+                                                                                     "sanity_check", tot_pt, flagAnhai,
+                                                                                     soglia,
+                                                                                     tot_copy, 1, 1, gt_file, gt_file)
             if len(vinsim_data) > 0:
                 shuffle(vinsim_data)
 

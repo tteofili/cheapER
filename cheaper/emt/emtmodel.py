@@ -9,7 +9,7 @@ from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
 
-BATCH_SIZE = 8
+BATCH_SIZE = 16
 
 MAX_SEQ_LENGTH = 128
 
@@ -29,13 +29,13 @@ class EMTERModel:
         self.model = self.model.to(device)
 
         processor = DeepMatcherProcessor()
-        trainF, testF = deepmatcher_format.tofiles(label_train, label_test, dataset_name)
+        trainF, validF = deepmatcher_format.tofiles(label_train, label_valid, dataset_name)
         train_examples = processor.get_train_examples_file(trainF)
         label_list = processor.get_labels()
         training_data_loader = load_data(train_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE, DataType.TRAINING,
                                          self.model_type)
 
-        num_epochs = 3
+        num_epochs = 15
         num_train_steps = len(training_data_loader) * num_epochs
 
         learning_rate = 2e-5
@@ -45,7 +45,7 @@ class EMTERModel:
         optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
                                                weight_decay)
 
-        eval_examples = processor.get_test_examples_file(testF)
+        eval_examples = processor.get_test_examples_file(validF)
         evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
@@ -73,3 +73,30 @@ class EMTERModel:
 
     def save(self, path):
         save_model(self.model, path, path, tokenizer=self.tokenizer)
+
+    def eval(self, label_test, dataset_name):
+        device, n_gpu = initialize_gpu_seed(22)
+
+        self.model = self.model.to(device)
+
+        processor = DeepMatcherProcessor()
+        trainF, testF = deepmatcher_format.tofiles(label_test, label_test, dataset_name)
+        label_list = processor.get_labels()
+
+        eval_examples = processor.get_test_examples_file(testF)
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE,
+                                           DataType.EVALUATION, self.model_type)
+
+        exp_name = 'datasets/temporary/' + dataset_name
+        evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
+        result = evaluation.evaluate(self.model, device, -1)
+
+        l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
+        l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
+        p = l1[0]
+        r = l1[1]
+        f1 = l1[2]
+        pnm = l0[0]
+        rnm = l0[1]
+        f1nm = l0[2]
+        return p, r, f1, pnm, rnm, f1nm
