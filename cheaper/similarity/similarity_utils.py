@@ -159,6 +159,9 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     print(f'agg-sim score: {score}')
     f_weights = clf.coef_[0]
 
+    if normalize and min(f_weights) < 0:
+        f_weights = f_weights + abs(min(f_weights))
+
     f_weights = f_weights / np.sum(f_weights)
     print(f_weights)
 
