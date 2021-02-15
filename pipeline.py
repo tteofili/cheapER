@@ -137,19 +137,41 @@ datasets = [
      ('%stemporary/' % base_dir), True],
 ]
 
-for d in datasets:
-    gt_file = d[0]
-    t1_file = d[1]
-    t2_file = d[2]
-    indexes = d[3]
-    dataset_name = d[4]
-    datadir = d[5]
-    flag_Anhai = d[6]
-    print(f'---{dataset_name}---')
-    sigma = 3000  # generated dataset size
-    kappa = 1500  # no. of samples for consistency training
-    epsilon = 0.015  # deviation from calculated min/max thresholds
-    slicing = [0.01, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
-    num_runs = 1
-    train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                compare=True)
+ablation = True
+train = False
+
+if train:
+    for d in datasets:
+        gt_file = d[0]
+        t1_file = d[1]
+        t2_file = d[2]
+        indexes = d[3]
+        dataset_name = d[4]
+        datadir = d[5]
+        flag_Anhai = d[6]
+        print(f'---{dataset_name}---')
+        sigma = 3000  # generated dataset size
+        kappa = 1500  # no. of samples for consistency training
+        epsilon = 0.015  # deviation from calculated min/max thresholds
+        slicing = [0.01, 0.1, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
+        num_runs = 1
+        train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
+                    compare=True)
+if ablation:
+    for d in datasets[:2]:
+        gt_file = d[0]
+        t1_file = d[1]
+        t2_file = d[2]
+        indexes = d[3]
+        dataset_name = d[4]
+        datadir = d[5]
+        flag_Anhai = d[6]
+        print(f'ablation---{dataset_name}---')
+        for sigma in [100]:
+            for epsilon in [0, 0.015, 0.15]:
+                for kappa in [0, 10, 50, 100]:
+                    try:
+                        train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa,
+                                    dataset_name, flag_Anhai, 1, [0.15])
+                    except:
+                        pass
