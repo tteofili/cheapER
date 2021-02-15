@@ -137,8 +137,8 @@ datasets = [
      ('%stemporary/' % base_dir), True],
 ]
 
-ablation = True
-train = False
+ablation = False
+train = True
 
 if train:
     for d in datasets:
@@ -168,10 +168,10 @@ if ablation:
         flag_Anhai = d[6]
         print(f'ablation---{dataset_name}---')
         for sigma in [100]:
-            for epsilon in [0, 0.015, 0.15]:
-                for kappa in [0, 10, 50, 100]:
+            for epsilon in [0, 0.2]:
+                for kappa in [0, 50]:
                     try:
                         train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa,
-                                    dataset_name, flag_Anhai, 1, [0.15])
+                                    dataset_name, flag_Anhai, 1, [1], compare=False)
                     except:
                         pass

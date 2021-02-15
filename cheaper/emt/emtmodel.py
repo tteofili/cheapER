@@ -35,7 +35,7 @@ class EMTERModel:
         training_data_loader = load_data(train_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE, DataType.TRAINING,
                                          self.model_type)
 
-        num_epochs = 15
+        num_epochs = 5
         num_train_steps = len(training_data_loader) * num_epochs
 
         learning_rate = 2e-5
