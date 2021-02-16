@@ -19,7 +19,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
     else:
         # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        data = parsing_anhai_dataOnlyMatch(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         valid_data = parsing_anhai_dataOnlyMatch(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
