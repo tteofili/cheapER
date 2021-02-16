@@ -11,7 +11,7 @@ from cheaper.emt.training import train
 
 BATCH_SIZE = 16
 
-MAX_SEQ_LENGTH = 128
+MAX_SEQ_LENGTH = 150
 
 
 class EMTERModel:

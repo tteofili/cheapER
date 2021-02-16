@@ -195,7 +195,8 @@ def agg_sim(best_sims, t1, t2, weights=None):
         res = 0
         v = 0
         for w in weights:
-            res += vect[v] * w
+            if w > 0.001:
+                res += vect[v] * w
             v += 1
     return [res]
 
