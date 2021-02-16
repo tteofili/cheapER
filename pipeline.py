@@ -97,19 +97,6 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
 base_dir = 'datasets' + os.sep
 datasets = [
-    [('%sabt_buy/train.csv' % base_dir), ('%sabt_buy/tableA.csv' % base_dir),
-     ('%sabt_buy/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3)], 'abt_buy',
-     ('%stemporary/' % base_dir), True, 265],
-    [('%sdirty_walmart_amazon/train.csv' % base_dir), ('%sdirty_walmart_amazon/tableA.csv' % base_dir),
-     ('%sdirty_walmart_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)], 'dirty_walmart_amazon',
-     ('%stemporary/' % base_dir), True, 150],
-    [('%sdblp_acm/train.csv' % base_dir), ('%sdblp_acm/tableA.csv' % base_dir),
-     ('%sdblp_acm/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dblp_acm',
-     ('%stemporary/' % base_dir), True, 180],
-    [('%situnes_amazon/train.csv' % base_dir), ('%situnes_amazon/tableA.csv' % base_dir),
-     ('%situnes_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8)],
-     'itunes_amazon',
-     ('%stemporary/' % base_dir), True, 180],
     [('%sbeers/train.csv' % base_dir), ('%sbeers/tableA.csv' % base_dir),
      ('%sbeers/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'beers',
      ('%stemporary/' % base_dir), True, 150],
@@ -135,6 +122,19 @@ datasets = [
     [('%sfodo_zaga/train.csv' % base_dir), ('%sfodo_zaga/tableA.csv' % base_dir),
      ('%sfodo_zaga/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'fodo_zaga',
      ('%stemporary/' % base_dir), True, 150],
+    [('%sdirty_walmart_amazon/train.csv' % base_dir), ('%sdirty_walmart_amazon/tableA.csv' % base_dir),
+     ('%sdirty_walmart_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)], 'dirty_walmart_amazon',
+     ('%stemporary/' % base_dir), True, 150],
+    [('%sdblp_acm/train.csv' % base_dir), ('%sdblp_acm/tableA.csv' % base_dir),
+     ('%sdblp_acm/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dblp_acm',
+     ('%stemporary/' % base_dir), True, 180],
+    [('%situnes_amazon/train.csv' % base_dir), ('%situnes_amazon/tableA.csv' % base_dir),
+     ('%situnes_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8)],
+     'itunes_amazon',
+     ('%stemporary/' % base_dir), True, 180],
+    [('%sabt_buy/train.csv' % base_dir), ('%sabt_buy/tableA.csv' % base_dir),
+     ('%sabt_buy/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3)], 'abt_buy',
+     ('%stemporary/' % base_dir), True, 265],
 ]
 
 ablation = False
@@ -151,13 +151,13 @@ if train:
         flag_Anhai = d[6]
         seq_length = d[7]
         print(f'---{dataset_name}---')
-        sigma = 3000  # generated dataset size
-        kappa = 1200  # no. of samples for consistency training
+        sigma = 1000  # generated dataset size
+        kappa = 400  # no. of samples for consistency training
         epsilon = 0.015  # deviation from calculated min/max thresholds
-        slicing = [0.01, 0.1, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
-        num_runs = 3
+        slicing = [0.05, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
+        num_runs = 1
         train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                    compare=True, sim_length=5)
+                    compare=False, sim_length=2)
 if ablation:
     for d in datasets[:2]:
         gt_file = d[0]
