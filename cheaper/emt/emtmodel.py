@@ -23,7 +23,7 @@ class EMTERModel:
         self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
         self.model = model_class.from_pretrained(self.model_type, config=config)
 
-    def train(self, label_train, label_valid, label_test, dataset_name):
+    def train(self, label_train, label_valid, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH):
         device, n_gpu = initialize_gpu_seed(22)
 
         self.model = self.model.to(device)
@@ -32,7 +32,7 @@ class EMTERModel:
         trainF, validF = deepmatcher_format.tofiles(label_train, label_valid, dataset_name)
         train_examples = processor.get_train_examples_file(trainF)
         label_list = processor.get_labels()
-        training_data_loader = load_data(train_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE, DataType.TRAINING,
+        training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE, DataType.TRAINING,
                                          self.model_type)
 
         num_epochs = 3
@@ -46,7 +46,7 @@ class EMTERModel:
                                                weight_decay)
 
         eval_examples = processor.get_test_examples_file(validF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'datasets/temporary/' + dataset_name
@@ -74,7 +74,7 @@ class EMTERModel:
     def save(self, path):
         save_model(self.model, path, path, tokenizer=self.tokenizer)
 
-    def eval(self, label_test, dataset_name):
+    def eval(self, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH):
         device, n_gpu = initialize_gpu_seed(22)
 
         self.model = self.model.to(device)
@@ -84,7 +84,7 @@ class EMTERModel:
         label_list = processor.get_labels()
 
         eval_examples = processor.get_test_examples_file(testF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, MAX_SEQ_LENGTH, BATCH_SIZE,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'datasets/temporary/' + dataset_name
