@@ -11,7 +11,10 @@ from collections import Counter
 
 from cheaper.data.edit_dna import Sequence
 from cheaper.data.plot import plot_pretrain, plotting_dizionari, plot_dataPT
+import logging
+from cheaper.emt.logging_customized import setup_logging
 
+setup_logging()
 '''
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!IMPORTANTE!!!!!!!!!!!!!!!!!!!!
@@ -69,9 +72,9 @@ def cos_sim2Str(str1,str2):
     # OPTIONAL: Convert Sparse Matrix to Pandas Dataframe if you want to see the word frequencies.
     doc_term_matrix = sparse_matrix.todense()
     df = pd.DataFrame(doc_term_matrix,columns=count_vectorizer.get_feature_names(),index=['str1', 'str2'])
-    #print(df)
+    #logging.info(df)
     cos_sim=cosine_similarity(df,df)
-    #print(cos_sim[0][-1])
+    #logging.info(cos_sim[0][-1])
     return cos_sim[0][-1]
 
 
@@ -118,7 +121,7 @@ def minHash_LSH(data, threshold, num_perm=256):
     minhashes = {}
     for c, i in enumerate(data):
       #c è l'indice, i è la tupla
-      #print(i)
+      #logging.info(i)
       minhash = MinHash(num_perm=num_perm)
       for el in i:
           minhash.update(el.encode('utf8'))
@@ -126,7 +129,7 @@ def minHash_LSH(data, threshold, num_perm=256):
 #        minhash.update("".join(d).encode('utf-8'))
       lsh.insert(c, minhash)
       minhashes[c] = minhash
-      #print(str(c)+" "+str(minhashes[c]))
+      #logging.info(str(c)+" "+str(minhashes[c]))
       
     res_match=[]
     for i in range(len(minhashes.keys())):
@@ -134,11 +137,11 @@ def minHash_LSH(data, threshold, num_perm=256):
       
       if result not in res_match and len(result)==2:
           res_match.append(result)
-          #print("Candidates with Jaccard similarity > 0.6 for input", i, ":", result)
-    #print(res)
+          #logging.info("Candidates with Jaccard similarity > 0.6 for input", i, ":", result)
+    #logging.info(res)
 #    for i in range(len(res_match)):
-#        print(data[res_match[i][0]])
-#        print(data[res_match[i][1]])
+#        logging.info(data[res_match[i][0]])
+#        logging.info(data[res_match[i][1]])
     return res_match
 
 def create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function):
@@ -146,14 +149,14 @@ def create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dic
 #    indR=len(dataR)-1
     dataPT=[]
     i=0
-    #print("lunghezza lsh"+ str(len(res)))
+    #logging.info("lunghezza lsh"+ str(len(res)))
     for el in res:
        el1,table1,index1=find_el(el[0],dataL,dataR) 
        el2,table2,index2=find_el(el[1],dataL,dataR)
-       #print("creo dataset da lsh"+str(i))
+       #logging.info("creo dataset da lsh"+str(i))
        i=i+1
        if table1!=table2:
-           #print("controllo table1!=table2")
+           #logging.info("controllo table1!=table2")
        
            if table1=="L":
                tableL_ELEM = concatenate_list_data(tableLlist[index1])
@@ -173,7 +176,7 @@ def create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dic
                    dataPT.append((el1,el2,sim_vector))
                    
            #dataPT.append((el1,el2,sim_vector))
-    #print(dataPT)
+    #logging.info(dataPT)
     return dataPT    
 
 def find_el(index,dataL,dataR):
@@ -203,7 +206,7 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match,dictR_matc
     data4hash,dataL,dataR,tableLlist,tableRlist=create_data(tableL, tableR, indiciL,indiciR)
     res=minHash_LSH(data4hash, max_sim-0.1, num_perm=256)
     dataset_pt=create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
-    print("LSH blocking done")
+    logging.info("LSH blocking done")
     plot_dataPT(dataset_pt)
 
     return dataset_pt
@@ -215,11 +218,11 @@ def copy_EDIT_match(tupla):
         change_attr=random.randint(0,2)
         attr=Sequence(tupla[i])    
         if len(tupla[i])>1 and change_attr==1:
-            #print(attr)
+            #logging.info(attr)
             d = 1  # max edit distance
             n = 3  # number of strings in result
             mutates=attr.mutate(d, n)
-            #print(mutates[1])
+            #logging.info(mutates[1])
             
             copy_tup.append(str(mutates[1]))
         else:
@@ -240,8 +243,8 @@ def create_flat_list(lista):
  
 def dict_tuple(csv_list):
     flatList=create_flat_list(csv_list)
-    #print("elemento 0 della flat list")
-    #print(flatList[0])
+    #logging.info("elemento 0 della flat list")
+    #logging.info(flatList[0])
     dictTuple=dict((el,0) for el in flatList)
     return dictTuple        
 
@@ -269,25 +272,25 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
    
     #convert to list for direct access
     tableLlist = list(table1)
-    print(len(tableLlist))
+    logging.info(len(tableLlist))
     tableRlist = list(table2)
-    print(len(tableRlist))
-    #print("sono il csv riga 0")
-    #print(tableLlist[0])
+    logging.info(len(tableRlist))
+    #logging.info("sono il csv riga 0")
+    #logging.info(tableLlist[0])
     #create dict for count the occorrence
     
     
     dictL_match=dict_tuple(tableLlist)
     #dictL_match=dict((el[0],0) for el in tableLlist)
-    print(len(dictL_match))
+    logging.info(len(dictL_match))
     dictR_match=dict_tuple(tableRlist)
-    print(len(dictR_match))
+    logging.info(len(dictR_match))
     #dictR_match=dict((el,0) for el in tableRlist)
     dictL_NOmatch=dict_tuple(tableLlist)
-    print(len(dictL_NOmatch))
+    logging.info(len(dictL_NOmatch))
     #dictL_NOmatch=dict((el,0) for el in tableLlist)
     dictR_NOmatch=dict_tuple(tableRlist)
-    print(len(dictR_NOmatch))
+    logging.info(len(dictR_NOmatch))
     #dictR_NOmatch=dict((el,0) for el in tableRlist)
     
     no_match=0
@@ -302,13 +305,13 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
             result_list_match.append(el)
                 
 #                match=match+1
-#                print("lista lsh match: " +str(match))
+#                logging.info("lista lsh match: " +str(match))
 #            if el[2][0]<min_sim and el not in result_list:
 #                result_list.append(el)
 #                no_match=no_match+1
-#                print("lista lsh no match: " +str(no_match))
+#                logging.info("lista lsh no match: " +str(no_match))
 
-    print(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
+    logging.info(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
     count_i = 0
     while loop_i<120000 and (match<totale or no_match<totale):
         
@@ -342,7 +345,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                         result_list_match.append((tableL_el,tableR_el,sim_vector))
                         match=match+1
     
-                        #print("lista random match: " +str(match)+" loop_i: "+str(loop_i))
+                        #logging.info("lista random match: " +str(match)+" loop_i: "+str(loop_i))
                         loop_i=0
                     else:
                         loop_i=loop_i+1
@@ -357,7 +360,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                         result_list_noMatch.append((tableL_el,tableR_el,sim_vector))
                         no_match=no_match+1
                         loop_i=0
-                        #print("lista random no match: " +str(no_match)+" loop_i: "+str(loop_i))
+                        #logging.info("lista random no match: " +str(no_match)+" loop_i: "+str(loop_i))
                     else:
                         loop_i=loop_i+1
                     
@@ -373,8 +376,8 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                     copy_match_list.append((tableL_el,tableL_el2,sim_vector))
                     copy_match=copy_match+1
     
-                    #print("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
-                    #print(tableL_el,tableL_el2,sim_vector)
+                    #logging.info("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
+                    #logging.info(tableL_el,tableL_el2,sim_vector)
                     loop_i=0
             
             tableR_el2=copy_EDIT_match(tableR_el)
@@ -387,8 +390,8 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                     copy_match_list.append((tableR_el,tableR_el2,sim_vector))
                     copy_match=copy_match+1
     
-                    #print("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
-                    #print(tableR_el,tableR_el2,sim_vector)
+                    #logging.info("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
+                    #logging.info(tableR_el,tableR_el2,sim_vector)
                     loop_i=0
 
         elif no_match<(totale+tot_copy_match):
@@ -402,7 +405,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                     result_list_noMatch.append((tableL_el,tableR_el,sim_vector))
                     no_match=no_match+1
                     loop_i=0
-                #print("lista random no match wo cos_sim: " +str(no_match)+" loop_i: "+str(loop_i))
+                #logging.info("lista random no match wo cos_sim: " +str(no_match)+" loop_i: "+str(loop_i))
             else:
                 loop_i=loop_i+1
         else:
@@ -410,9 +413,9 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
         count_i += 1
             
     
-    print("dizionari")   
+    logging.info("dizionari")   
     plotting_dizionari(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch)       
-    print("create candidates set")
+    logging.info("create candidates set")
     return result_list_noMatch, result_list_match
 
 
@@ -431,25 +434,25 @@ def csvTable2datasetRANDOM_NOOcc(tableL,tableR,totale,min_sim,max_sim,indici,min
    
     #convert to list for direct access
     tableLlist = list(table1)
-    print(len(tableLlist))
+    logging.info(len(tableLlist))
     tableRlist = list(table2)
-    print(len(tableRlist))
-    #print("sono il csv riga 0")
-    #print(tableLlist[0])
+    logging.info(len(tableRlist))
+    #logging.info("sono il csv riga 0")
+    #logging.info(tableLlist[0])
     #create dict for count the occorrence
     
     
     dictL_match=dict_tuple(tableLlist)
     #dictL_match=dict((el[0],0) for el in tableLlist)
-    print(len(dictL_match))
+    logging.info(len(dictL_match))
     dictR_match=dict_tuple(tableRlist)
-    print(len(dictR_match))
+    logging.info(len(dictR_match))
     #dictR_match=dict((el,0) for el in tableRlist)
     dictL_NOmatch=dict_tuple(tableLlist)
-    print(len(dictL_NOmatch))
+    logging.info(len(dictL_NOmatch))
     #dictL_NOmatch=dict((el,0) for el in tableLlist)
     dictR_NOmatch=dict_tuple(tableRlist)
-    print(len(dictR_NOmatch))
+    logging.info(len(dictR_NOmatch))
     #dictR_NOmatch=dict((el,0) for el in tableRlist)
     
     no_match=0
@@ -470,15 +473,15 @@ def csvTable2datasetRANDOM_NOOcc(tableL,tableR,totale,min_sim,max_sim,indici,min
 #                result_list.append(el)
 #                
 #                match=match+1
-#                print("lista lsh match: " +str(match))
+#                logging.info("lista lsh match: " +str(match))
 #            if el[2][0]<min_sim and el not in result_list:
 #                result_list.append(el)
 #                no_match=no_match+1
-#                print("lista lsh no match: " +str(no_match))
+#                logging.info("lista lsh no match: " +str(no_match))
                 
     while loop_i<120000:#300000:# and (match<totale or no_match<totale):
         #if loop_i%1000000==0:
-            #print("loop_i: "+str(loop_i))
+            #logging.info("loop_i: "+str(loop_i))
         
         
         x = random.randint(1,len(tableLlist)-1)
@@ -506,7 +509,7 @@ def csvTable2datasetRANDOM_NOOcc(tableL,tableR,totale,min_sim,max_sim,indici,min
                     result_list_match.append((tableL_el,tableR_el,sim_vector))
                     match=match+1
     
-                    #print("lista random match: " +str(match)+" loop_i: "+str(loop_i))
+                    #logging.info("lista random match: " +str(match)+" loop_i: "+str(loop_i))
                     loop_i=0
                 else:
                     loop_i=loop_i+1
@@ -557,7 +560,7 @@ def csvTable2datasetRANDOM_NOOcc(tableL,tableR,totale,min_sim,max_sim,indici,min
             loop_i=loop_i+1
             
         
-    print("create candidates set")
+    logging.info("create candidates set")
     return result_list_noMatch,result_list_match
 
 def csvTable2datasetRANDOM_sciocco(tableL,tableR,totale,min_sim,max_sim,indici,min_cos_sim,tot_copy_match, sim_function=lambda x, y: [1, 1] ):
@@ -576,25 +579,25 @@ def csvTable2datasetRANDOM_sciocco(tableL,tableR,totale,min_sim,max_sim,indici,m
    
     #convert to list for direct access
     tableLlist = list(table1)
-    print(len(tableLlist))
+    logging.info(len(tableLlist))
     tableRlist = list(table2)
-    print(len(tableRlist))
-    #print("sono il csv riga 0")
-    #print(tableLlist[0])
+    logging.info(len(tableRlist))
+    #logging.info("sono il csv riga 0")
+    #logging.info(tableLlist[0])
     #create dict for count the occorrence
     
     
     dictL_match=dict_tuple(tableLlist)
     #dictL_match=dict((el[0],0) for el in tableLlist)
-    print(len(dictL_match))
+    logging.info(len(dictL_match))
     dictR_match=dict_tuple(tableRlist)
-    print(len(dictR_match))
+    logging.info(len(dictR_match))
     #dictR_match=dict((el,0) for el in tableRlist)
     dictL_NOmatch=dict_tuple(tableLlist)
-    print(len(dictL_NOmatch))
+    logging.info(len(dictL_NOmatch))
     #dictL_NOmatch=dict((el,0) for el in tableLlist)
     dictR_NOmatch=dict_tuple(tableRlist)
-    print(len(dictR_NOmatch))
+    logging.info(len(dictR_NOmatch))
     #dictR_NOmatch=dict((el,0) for el in tableRlist)
     
     no_match=0
@@ -606,7 +609,7 @@ def csvTable2datasetRANDOM_sciocco(tableL,tableR,totale,min_sim,max_sim,indici,m
                 
     while loop_i<120000:#300000:# and (match<totale or no_match<totale):
         #if loop_i%1000000==0:
-            #print("loop_i: "+str(loop_i))
+            #logging.info("loop_i: "+str(loop_i))
         
         
         x = random.randint(1,len(tableLlist)-1)
@@ -639,8 +642,8 @@ def csvTable2datasetRANDOM_sciocco(tableL,tableR,totale,min_sim,max_sim,indici,m
                     copy_match_list.append((tableL_el,tableL_el2,sim_vector))
                     copy_match=copy_match+1
     
-                    #print("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
-                    #print(tableL_el,tableL_el2,sim_vector)
+                    #logging.info("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
+                    #logging.info(tableL_el,tableL_el2,sim_vector)
                     loop_i=0
             
             tableR_el2=copy_EDIT_match(tableR_el)
@@ -653,8 +656,8 @@ def csvTable2datasetRANDOM_sciocco(tableL,tableR,totale,min_sim,max_sim,indici,m
                     copy_match_list.append((tableR_el,tableR_el2,sim_vector))
                     copy_match=copy_match+1
     
-                    #print("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
-                    #print(tableR_el,tableR_el2,sim_vector)
+                    #logging.info("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
+                    #logging.info(tableR_el,tableR_el2,sim_vector)
                     loop_i=0
 
         elif no_match<(tot_copy_match):
@@ -668,16 +671,16 @@ def csvTable2datasetRANDOM_sciocco(tableL,tableR,totale,min_sim,max_sim,indici,m
                     result_list_noMatch.append((tableL_el,tableR_el,sim_vector))
                     no_match=no_match+1
                     loop_i=0
-                #print("lista random no match wo cos_sim: " +str(no_match)+" loop_i: "+str(loop_i))
+                #logging.info("lista random no match wo cos_sim: " +str(no_match)+" loop_i: "+str(loop_i))
             else:
                 loop_i=loop_i+1
         else:
             loop_i=loop_i+1
             
     
-    print("dizionari")   
+    logging.info("dizionari")   
     plotting_dizionari(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch)       
-    print("create candidates set")
+    logging.info("create candidates set")
     return result_list_noMatch,result_list_match
 
 
@@ -706,7 +709,7 @@ if __name__ == "__main__":
     random_tuples0 =csvTable2datasetRANDOM_countOcc(TABLE1_FILE,TABLE2_FILE,7000,min_sim,max_sim,ATT_INDEXES,min_cos_sim, tot_copy, simf )
     random.shuffle(random_tuples0)
     random_tuples0sort = sorted(random_tuples0, key=lambda tup: (tup[2][0]))
-    print("---------------- RANDOM TUPLES -------------------------")
+    logging.info("---------------- RANDOM TUPLES -------------------------")
     plot_pretrain(random_tuples0sort)
     
     
@@ -720,7 +723,7 @@ if __name__ == "__main__":
     #data4hash,dataL,dataR=create_data(tableL, tableR, indiciL,indiciR)
     #res=minHash_LSH(data4hash)
     #dataset_pt=create_dataset_pt(res, dataL,dataR,sim4attrFZ)
-    #print(dataset_pt[10:])
+    #logging.info(dataset_pt[10:])
     
     #data = ['minhash is a probabilistic data structure for estimating the similarity between datasets',
     #  'finhash dis fa frobabilistic fata ftructure for festimating the fimilarity fetween fatasets',

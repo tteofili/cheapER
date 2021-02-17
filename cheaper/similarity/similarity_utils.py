@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+import logging
+from cheaper.emt.logging_customized import setup_logging
 import operator
 from inspect import getsource
 from random import shuffle
@@ -14,6 +16,7 @@ from cheaper.data.plot import plot_dataPT
 
 get_lambda_name = lambda l: getsource(l).split('=')[0].strip()
 
+setup_logging()
 
 def unflat(data):
     u_data = np.zeros_like(data)
@@ -46,16 +49,16 @@ def brute_force_per_attribute(gt_file, t1_file, t2_file, attr_indexes, sim_funct
                 mse_zeros = np.square((zeros - zeros_sim)).mean(axis=None)
             alpha = 0.5 + (len(ones_sim) - len(zeros_sim)) / (len(ones_sim) + len(zeros_sim))
             mse = mse_ones * alpha + mse_zeros * (1 - alpha)
-            print(f'{k}:{name}:{mse}')
+            logging.info(f'{k}:{name}:{mse}')
             if mse < lowestMSE:
                 lowestMSE = mse
                 bestFun = simf
-                print(f'update for {k}: function={get_lambda_name(bestFun)}, MSE={lowestMSE}')
+                logging.info(f'update for {k}: function={get_lambda_name(bestFun)}, MSE={lowestMSE}')
 
-        print(f'BEST for {k}: function={get_lambda_name(bestFun)}, MSE={lowestMSE}')
+        logging.info(f'BEST for {k}: function={get_lambda_name(bestFun)}, MSE={lowestMSE}')
         best.append(bestFun)
     single_sim = create_single_sim(best)
-    print(f'final aggregated function: {single_sim}')
+    logging.info(f'final aggregated function: {single_sim}')
     return single_sim
 
 
@@ -68,7 +71,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
                          normalize=True):
     best = []
     for k in attr_indexes:
-        print('getting attribute values')
+        logging.info('getting attribute values')
         data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, [k], sim_functions[2])
         c_data = data
         if cut < 1:
@@ -79,7 +82,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         X = np.zeros([len(npdata), len(sim_functions)])
         Y = np.zeros(len(npdata))
         tc = 0
-        print('building training set')
+        logging.info('building training set')
         for t in npdata:
             ar = np.zeros(len(sim_functions))
             arc = 0
@@ -89,7 +92,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             X[tc] = ar
             Y[tc] = t[3]
             tc += 1
-        print('fitting classifier')
+        logging.info('fitting classifier')
         score = 0
         clf = linear_model.SGDClassifier(loss='perceptron')
         r = 0
@@ -97,7 +100,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             clf.fit(X, Y)
             score = clf.score(X, Y)
             r += 1
-        print(f'score: {score}')
+        logging.info(f'score: {score}')
         weights = clf.coef_[0]
         comb = []
         combprint = []
@@ -111,7 +114,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         comb.sort(key=operator.itemgetter(1), reverse=True)
         combprint.sort(key=operator.itemgetter(1), reverse=True)
 
-        print(f'sim weights for {k}: {combprint}')
+        logging.info(f'sim weights for {k}: {combprint}')
 
         best.append(comb)
 
@@ -122,9 +125,9 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         sw = np.sum(np.array(top_sims_k)[:, 1])
         for w in top_sims_k:
             w[1] = w[1] / sw
-        print(f'for attributes {attr_indexes[ind]}:')
+        logging.info(f'for attributes {attr_indexes[ind]}:')
         for bsa in top_sims_k:
-            print(f'{get_lambda_name(bsa[0])}, w:{bsa[1]}')
+            logging.info(f'{get_lambda_name(bsa[0])}, w:{bsa[1]}')
         fsims.append(top_sims_k)
         ind += 1
 
@@ -138,7 +141,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     X = np.zeros([len(npdata), len(fsims)])
     Y = np.zeros(len(npdata))
     tc = 0
-    print('building agg-sim training set')
+    logging.info('building agg-sim training set')
     for t in npdata:
         ar = np.zeros(len(fsims))
         arc = 0
@@ -148,7 +151,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         X[tc] = ar
         Y[tc] = t[3]
         tc += 1
-    print('fitting agg-sim classifier')
+    logging.info('fitting agg-sim classifier')
     score = 0
     clf = linear_model.SGDClassifier(loss='perceptron')
     r = 0
@@ -156,14 +159,14 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         clf.fit(X, Y)
         score = clf.score(X, Y)
         r += 1
-    print(f'agg-sim score: {score}')
+    logging.info(f'agg-sim score: {score}')
     f_weights = clf.coef_[0]
 
     if normalize and min(f_weights) < 0:
         f_weights = f_weights + abs(min(f_weights))
 
     f_weights = f_weights / np.sum(f_weights)
-    print(f_weights)
+    logging.info(f_weights)
 
     generated_sim = lambda t1, t2: agg_sim(fsims, t1, t2, weights=f_weights)
     if check:
@@ -208,7 +211,7 @@ def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunc
         lowestMSE = 1e10
         # for each sim function
         for simf in simfunctions:
-            print(f'using sim {get_lambda_name(simf)}')
+            logging.info(f'using sim {get_lambda_name(simf)}')
             data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file, t2_file, indexes,
                                                                                      simf,
                                                                                      "sanity_check", tot_pt, flagAnhai,
@@ -228,12 +231,12 @@ def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunc
                     else:
                         gradino.append(0)
                 mse = (np.square(np.array(gradino) - sim_list)).mean(axis=None)
-                print(f'{get_lambda_name(simf)} -> mse({mse})')
+                logging.info(f'{get_lambda_name(simf)} -> mse({mse})')
                 if (mse < lowestMSE):
                     lowestMSE = mse
                     bestFun = simf
-                    print("update: function=" + get_lambda_name(bestFun) + "', MSE=" + str(lowestMSE))
+                    logging.info("update: function=" + get_lambda_name(bestFun) + "', MSE=" + str(lowestMSE))
 
-        print("best function is '" + get_lambda_name(bestFun) + "' with MSE=" + str(lowestMSE))
+        logging.info("best function is '" + get_lambda_name(bestFun) + "' with MSE=" + str(lowestMSE))
         best.append(bestFun)
     return best

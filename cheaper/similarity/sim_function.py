@@ -243,8 +243,7 @@ def remove_symb(tupla):
     for el in tupla:
         t=re.sub(r'[^\w]', ' ', str(el))
         tupla1.append(t)
-    print(tupla1)
-    
+
     return tupla1
 
 def min_cos(data):

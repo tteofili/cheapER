@@ -109,8 +109,7 @@ def minHash_lsh(tableL, tableR, indici,simf):
     res=minHash_LSH(data4hash)
     dataset_pt=create_dataset_pt(res, dataL,dataR,simf)
     plot_dataPT(dataset_pt)
-    print(dataset_pt[:10])
-    
+
     return dataset_pt
 
 

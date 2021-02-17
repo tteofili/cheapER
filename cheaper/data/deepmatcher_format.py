@@ -28,7 +28,6 @@ def tofiles(pt_train, pt_valid, name):
                        thresh=None,
                        subset=None, )
         df.columns = names
-        print(df.head())
     trainName = datadir + name + '_trainSim'+str(len(pt_train))+'.csv'
     tr = df.to_csv(trainName, index=False)
 
@@ -43,7 +42,6 @@ def tofiles(pt_train, pt_valid, name):
                        thresh=None,
                        subset=None, )
         df.columns = names
-        print(df.head())
     validName = datadir + name + '_validSim'+str(len(pt_train))+'.csv'
     vd = df.to_csv(validName, index=False)
 

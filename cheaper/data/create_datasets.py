@@ -7,12 +7,14 @@ from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc
 from cheaper.data.test_occ_attr import init_dict_lista
 from cheaper.similarity.sim_function import min_cos
 from random import shuffle
+import logging
+from cheaper.emt.logging_customized import setup_logging
 
+setup_logging()
 
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
                     soglia, tot_copy, num_run, cut, valid_file, test_file):
-
-    print('Parsing original dataset')
+    logging.info('Parsing original dataset')
     if flag_Anhai == False:
         data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
@@ -24,13 +26,13 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
-    print("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
+    logging.info("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
     max_sim = soglia + max(min_sim_Match, max_sim_noMatch)
     if max_sim > 0.9:
         max_sim = 0.9
-    print("!max_sim " + str(max_sim))
+    logging.info("!max_sim " + str(max_sim))
     min_sim = min(min_sim_Match, max_sim_noMatch)  # -soglia
-    print("!min_sim " + str(min_sim))
+    logging.info("!min_sim " + str(min_sim))
 
     # Dataset per DeepER classico: [(tupla1, tupla2, label), ...].
     deeper_data = list(map(lambda q: (q[0], q[1], q[3]), data))
@@ -66,7 +68,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     deeper_valid = deeper_valid_data
     deeper_test = deeper_test_data
 
-    print("--------------- Generating datasets --------------")
+    logging.info("--------------- Generating datasets --------------")
     # Costruzione Dataset
     k_slice = int(tot_pt // 2)  # quanti match e non match andranno a formare il dataset di PT
 
@@ -83,50 +85,51 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     vinsim_data = vinsim_data[:bound]
 
     min_cos_sim = min_cos(vinsim_data)
-    print("min_cos_sim " + str(min_cos_sim))
+    logging.info("min_cos_sim " + str(min_cos_sim))
 
     max_occ = 8
 
     vinsim_data = []
     # costruisce i dataset di pt con un max di occurrenza di una tuple di max_occ volte   csvTable2datasetRANDOM_NOOcc
-    #tot_pt = max(1000, bound * 2)
-    #tot_copy = tot_pt * 0.1
-    result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, 2 * tot_pt, min_sim,
+    # tot_pt = max(1000, bound * 2)
+    # tot_copy = tot_pt * 0.1
+    result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, 2 * tot_pt,
+                                                                             min_sim,
                                                                              max_sim, ATT_INDEXES,
                                                                              min_cos_sim, tot_copy, max_occ, simf)
 
     # test per il count dei valori degli attributi
     lista_attrMATCH, lista_attrNO_MATCH = init_dict_lista(result_list_match, result_list_noMatch, len(ATT_INDEXES))
-    print("dizionari occorrenze degli attributi del dataset di pt")
+    logging.info("dizionari occorrenze degli attributi del dataset di pt")
     j = 0
     for dictionario in lista_attrMATCH:
         j = j + 1
         plotting_occorrenze(list(dictionario.values()), f'lista_attrMATCH{j}')
         d = Counter(dictionario)
         for k, v in d.most_common(5):
-            print('%s: %i' % (k, v))
+            logging.info('%s: %i' % (k, v))
     j = 0
     for dictionario in lista_attrNO_MATCH:
         j = j + 1
         plotting_occorrenze(list(dictionario.values()), f'lista_attrNO_MATCH{j}')
         d = Counter(dictionario)
         for k, v in d.most_common(5):
-            print('%s: %i' % (k, v))
+            logging.info('%s: %i' % (k, v))
 
     # fine test
 
     # unione in una sola lista random_tuples0= insieme dei candidati per il pt
     random_tuples0 = result_list_noMatch + result_list_match
 
-    print("tot_pt: " + str(tot_pt))
+    logging.info("tot_pt: " + str(tot_pt))
     # print("len(datapt_hash) " +str(len(datapt_hash)))
-    print("len(random_tuples0) " + str(len(random_tuples0)))
-    print("len(result_list_noMatch) " + str(len(result_list_noMatch)))
-    print("len(result_list_match) " + str(len(result_list_match)))
+    logging.info("len(random_tuples0) " + str(len(random_tuples0)))
+    logging.info("len(result_list_noMatch) " + str(len(result_list_noMatch)))
+    logging.info("len(result_list_match) " + str(len(result_list_match)))
 
     random.shuffle(random_tuples0)
     random_tuples0sort = sorted(random_tuples0, key=lambda tup: (tup[2][0]))
-    print("---------------- CANDIDATES RANDOM TUPLES -------------------------")
+    logging.info("---------------- CANDIDATES RANDOM TUPLES -------------------------")
     plot_pretrain(random_tuples0sort)
 
     # SERVE per controllare che i match e i non match siano di egual numero
@@ -135,24 +138,24 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     if len(result_list_match) <= tot_pt / 2:
         k_slice = int(len(result_list_match))
 
-        print("riduco k")
+        logging.info("riduco k")
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
-    print("k_slice : " + str(k_slice))
+    logging.info("k_slice : " + str(k_slice))
     random_tuples1 = random_tuples0sort[:k_slice]
-    print("random_tuples1[:10]")
-    print(random_tuples1[:10])
-    print("random_tuples1[-10:]")
-    print(random_tuples1[-10:])
+    logging.info("random_tuples1[:10]")
+    logging.info(random_tuples1[:10])
+    logging.info("random_tuples1[-10:]")
+    logging.info(random_tuples1[-10:])
     random_tuples2 = random_tuples0sort[-k_slice:]
-    print("random_tuples2[:10]")
-    print(random_tuples2[:10])
-    print("random_tuples2[-10:]")
-    print(random_tuples2[-10:])
+    logging.info("random_tuples2[:10]")
+    logging.info(random_tuples2[:10])
+    logging.info("random_tuples2[-10:]")
+    logging.info(random_tuples2[-10:])
 
     random_tuples1 += random_tuples2
 
-    print(len(random_tuples1))
+    logging.info(len(random_tuples1))
     # Concatenazione.
     vinsim_data += random_tuples1
 
@@ -164,7 +167,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # plotting del dataset di pt finale
     plot_dataPT(vinsim_data)
 
-    print("--------------- data augmentation creating dataset --------------")
+    logging.info("--------------- data augmentation creating dataset --------------")
 
     # arrotonda il sim_value a 0/1 per il test di data_augmentation
     def converti_approssima(tuples, threshold=0.5):
@@ -178,9 +181,9 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         return round_list
 
     # vinsim_data_app è il dataset di pt approssimato a 0/1
-    print(f'using threshold={max_sim} to approximate label')
+    logging.info(f'using threshold={max_sim} to approximate label')
     vinsim_data_app = converti_approssima(vinsim_data, threshold=max_sim)
-    print(vinsim_data_app[:15])
+    logging.info(vinsim_data_app[:15])
 
     # Filtro.
     vinsim_data_app = shrink_data(vinsim_data_app)

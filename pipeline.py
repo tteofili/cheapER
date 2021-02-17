@@ -1,7 +1,8 @@
 from __future__ import print_function
 
 import pandas as pd
-
+import logging
+from cheaper.emt.logging_customized import setup_logging
 from cheaper.data.create_datasets import create_datasets
 import os
 from cheaper.data.csv2dataset import splitting_dataSet
@@ -32,6 +33,7 @@ simfunctions = [
 
 get_lambda_name = lambda l: getsource(l).strip()
 
+setup_logging()
 
 def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
                 slicing, compare=False, sim_length=len(simfunctions)):
@@ -41,7 +43,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
             simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, sim_length,
                                         normalize=True)
 
-            print(f'Generating dataset')
+            logging.info('Generating dataset')
             # create datasets
             test_file = base_dir + dataset_name + os.sep + 'test.csv'
             valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
@@ -52,15 +54,15 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                                                                                      flag_Anhai, soglia, tot_copy,
                                                                                      num_run, cut, valid_file,
                                                                                      test_file)
-            print(f'Generated dataset size: {len(vinsim_data_app)}')
+            logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
             train_cut = splitting_dataSet(cut, train)
 
             for model_type in config.Config.MODEL_CLASSES:
 
                 if compare:
-                    print(f"------------- Vanilla EMT Training {model_type} ------------------")
-                    print(f'Training with {len(train_cut)} record pairs ({100 * cut}% GT)')
+                    logging.info("------------- Vanilla EMT Training {model_type} ------------------")
+                    logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     model = EMTERModel(model_type)
 
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
@@ -72,9 +74,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                                'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
 
-                print(f"------------- Data augmented EMT Training {model_type} -----------------")
+                logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
                 dataDa = vinsim_data_app +  train_cut
-                print(f'Training with {len(dataDa)} record pairs (generated dataset + {100 * cut}% GT)')
+                logging.info('Training with {} record pairs (generated dataset + {}% GT)'.format(len(dataDa), 100 * cut))
                 model = EMTERModel(model_type)
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
                     dataDa, valid, test, dataset_name, seq_length=seq_length)
@@ -84,7 +86,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                            'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
                 results = results.append(new_row, ignore_index=True)
 
-                print(results.to_string)
+                logging.info(results.to_string)
 
         today = date.today()
         results.to_csv(
@@ -150,14 +152,14 @@ if train:
         datadir = d[5]
         flag_Anhai = d[6]
         seq_length = d[7]
-        print(f'---{dataset_name}---')
+        logging.info('---{}---'.format(dataset_name))
         sigma = 1000  # generated dataset size
         kappa = 400  # no. of samples for consistency training
         epsilon = 0.015  # deviation from calculated min/max thresholds
         slicing = [0.05, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
         num_runs = 1
         train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                    compare=True, sim_length=2)
+                    compare=True, sim_length=5)
 if ablation:
     for d in datasets[:2]:
         gt_file = d[0]
@@ -167,7 +169,7 @@ if ablation:
         dataset_name = d[4]
         datadir = d[5]
         flag_Anhai = d[6]
-        print(f'ablation---{dataset_name}---')
+        logging.info('ablation---{}---', dataset_name)
         for sigma in [100]:
             for epsilon in [0, 0.2]:
                 for kappa in [0, 50]:
