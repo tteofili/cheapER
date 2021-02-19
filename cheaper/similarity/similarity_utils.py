@@ -11,7 +11,7 @@ import numpy as np
 from sklearn import linear_model
 
 from cheaper.data.create_datasets import create_datasets
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter, parsing_anhai_dataOnlyMatch
 from cheaper.data.plot import plot_dataPT
 
 get_lambda_name = lambda l: getsource(l).split('=')[0].strip()
@@ -72,7 +72,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     best = []
     for k in attr_indexes:
         logging.info('getting attribute values')
-        data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, [k], sim_functions[2])
+        data = parsing_anhai_dataOnlyMatch(gt_file, t1_file, t2_file, [k], sim_functions[2])
         c_data = data
         if cut < 1:
             sl = int(max(len(data) * cut, 5))
