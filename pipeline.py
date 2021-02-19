@@ -104,7 +104,7 @@ datasets = [
      ('%stemporary/' % base_dir), True, 150],
     [('%samazon_google/train.csv' % base_dir),
      ('%samazon_google/tableA.csv' % base_dir),
-     ('%samazon_google/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'amazon_google',
+     ('%samazon_google/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3)], 'amazon_google',
      ('%stemporary/' % base_dir), True, 180],
     [('%sdblp_scholar/train.csv' % base_dir), ('%sdblp_scholar/tableA.csv' % base_dir),
      ('%sdblp_scholar/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dblp_scholar',
