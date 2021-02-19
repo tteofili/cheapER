@@ -153,13 +153,13 @@ if train:
         flag_Anhai = d[6]
         seq_length = d[7]
         logging.info('---{}---'.format(dataset_name))
-        sigma = 1000  # generated dataset size
-        kappa = 400  # no. of samples for consistency training
+        sigma = 3000  # generated dataset size
+        kappa = 1000  # no. of samples for consistency training
         epsilon = 0.15  # deviation from calculated min/max thresholds
-        slicing = [0.05, 0.15, 1]
+        slicing = [0.05, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
         num_runs = 1
         train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                    compare=True, sim_length=len(simfunctions))
+                    compare=True, sim_length=7)
 if ablation:
     for d in datasets[:2]:
         gt_file = d[0]
