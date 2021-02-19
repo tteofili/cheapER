@@ -219,7 +219,7 @@ def copy_EDIT_match(tupla):
         attr=Sequence(tupla[i])    
         if len(tupla[i])>1 and change_attr==1:
             #logging.info(attr)
-            d = 1  # max edit distance
+            d = int(len(attr) / 3)  # max edit distance
             n = 3  # number of strings in result
             mutates=attr.mutate(d, n)
             #logging.info(mutates[1])
@@ -313,7 +313,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
 
     logging.info(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
     count_i = 0
-    while loop_i<120000 and (match<totale or no_match<totale):
+    while loop_i<12000 and (match<totale or no_match<totale):
         
         x = random.randint(1,len(tableLlist)-1)
         y =  random.randint(1,len(tableRlist)-1)
