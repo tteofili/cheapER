@@ -13,6 +13,8 @@ from cheaper.data.edit_dna import Sequence
 from cheaper.data.plot import plot_pretrain, plotting_dizionari, plot_dataPT
 import logging
 from cheaper.emt.logging_customized import setup_logging
+import numpy as np
+from scipy.stats import entropy
 
 setup_logging()
 '''
@@ -63,6 +65,12 @@ def concatenate_list_data(list):
     for element in list:
         result += ' '+str(element)
     return result
+
+
+def entropy1(labels, base=None):
+  value,counts = np.unique(labels, return_counts=True)
+  return entropy(counts, base=base)
+
 
 ##secondo metodo per il calcolo del cos-sim NON UTILIZZATO
 def cos_sim2Str(str1,str2):
@@ -221,14 +229,17 @@ def copy_EDIT_match(tupla):
             #logging.info(attr)
             d = int(len(attr) / 3)  # max edit distance
             n = 3  # number of strings in result
-            mutates=attr.mutate(d, n)
-            #logging.info(mutates[1])
-            
-            copy_tup.append(str(mutates[1]))
+            try:
+                mutates = attr.mutate(d, n)
+                #logging.info(mutates[1])
+
+                copy_tup.append(str(mutates[1]))
+            except:
+                copy_tup.append(str(tupla[i])+'  ')
         else:
             copy_tup.append(tupla[i])
         
-    if (copy_tup == tupla):
+    if copy_tup == tupla:
         copy_tup = copy_EDIT_match(tupla)
     return copy_tup
     
