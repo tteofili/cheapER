@@ -357,7 +357,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                         result_list_match.append((tableL_el,tableR_el,sim_vector))
                         marginal_entropy = (entropy1(concatenate_list_data(tableL_el).split(' ')) + entropy1(
                             concatenate_list_data(tableR_el).split(' '))) / (1 + len(result_list_match))
-                        if marginal_entropy < 1e-2:
+                        if marginal_entropy < 1e-3:
                             stop = True
                         match=match+1
     
@@ -374,7 +374,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                         #count_occurrence(dictR_NOmatch, tableR_ELEM)
                         marginal_entropy = (entropy1(concatenate_list_data(tableL_el).split(' ')) + entropy1(
                             concatenate_list_data(tableR_el).split(' '))) / (1 + len(result_list_noMatch))
-                        if marginal_entropy < 1e-2:
+                        if marginal_entropy < 1e-3:
                             stop = True
                         result_list_noMatch.append((tableL_el,tableR_el,sim_vector))
                         no_match=no_match+1

@@ -38,10 +38,10 @@ class EMTERModel:
         num_epochs = 15
         num_train_steps = len(training_data_loader) * num_epochs
 
-        learning_rate = 1e-5
+        learning_rate = 2e-5
         adam_eps = 1e-8
-        warmup_steps = 500
-        weight_decay = 0.01
+        warmup_steps = 0
+        weight_decay = 0
         optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
                                                weight_decay)
 

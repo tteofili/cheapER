@@ -98,6 +98,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
                                                                              max_sim, ATT_INDEXES,
                                                                              min_cos_sim, tot_copy, max_occ, simf)
 
+    result_list_noMatch = result_list_noMatch[:len(result_list_match)]
     # test per il count dei valori degli attributi
     lista_attrMATCH, lista_attrNO_MATCH = init_dict_lista(result_list_match, result_list_noMatch, len(ATT_INDEXES))
     logging.info("dizionari occorrenze degli attributi del dataset di pt")
