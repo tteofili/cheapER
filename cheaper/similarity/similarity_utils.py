@@ -72,13 +72,9 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     best = []
     for k in attr_indexes:
         logging.info('getting attribute values')
-        data = parsing_anhai_dataOnlyMatch(gt_file, t1_file, t2_file, [k], sim_functions[2])
-        c_data = data
-        if cut < 1:
-            sl = int(max(len(data) * cut, 5))
-            c_data = data[:sl] + data[-sl:]
+        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], max_len=100, cut=cut)
 
-        npdata = np.array(c_data, dtype=object)
+        npdata = np.array(data, dtype=object)
         X = np.zeros([len(npdata), len(sim_functions)])
         Y = np.zeros(len(npdata))
         tc = 0
@@ -131,11 +127,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         fsims.append(top_sims_k)
         ind += 1
 
-    data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, attr_indexes, sim_functions[2])
-    c_data = data
-    if cut < 1:
-        sl = int(max(len(data) * cut, 5))
-        c_data = data[:sl] + data[-sl:]
+    c_data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, attr_indexes, sim_functions[2], max_len=100, cut=cut)
 
     npdata = np.array(c_data, dtype=object)
     X = np.zeros([len(npdata), len(fsims)])

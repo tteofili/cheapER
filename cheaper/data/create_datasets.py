@@ -21,11 +21,11 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
     else:
         # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, cut=cut)
         valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
-    min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
+    min_sim_Match, max_sim_noMatch = plot_graph(data, 1)
     logging.info("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
     max_sim = soglia + max(min_sim_Match, max_sim_noMatch)
     if max_sim > 0.9:
@@ -81,8 +81,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             vinsim_data.append((r[0], r[1], r[2]))
 
     # Taglio della porzione desiderata.
-    bound = int(len(vinsim_data) * cut)
-    vinsim_data = vinsim_data[:bound]
+    #bound = int(len(vinsim_data) * cut)
+    #vinsim_data = vinsim_data[:bound]
 
     min_cos_sim = min_cos(vinsim_data)
     logging.info("min_cos_sim " + str(min_cos_sim))
