@@ -35,18 +35,18 @@ class EMTERModel:
         training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE, DataType.TRAINING,
                                          self.model_type)
 
-        num_epochs = 15
+        num_epochs = 5
         num_train_steps = len(training_data_loader) * num_epochs
 
-        learning_rate = 2e-5
+        learning_rate = 1e-4
         adam_eps = 1e-8
-        warmup_steps = 0
-        weight_decay = 0
+        warmup_steps = 500
+        weight_decay = 0.01
         optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
                                                weight_decay)
 
         eval_examples = processor.get_test_examples_file(validF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 4*BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'datasets/temporary/' + dataset_name
@@ -84,7 +84,7 @@ class EMTERModel:
         label_list = processor.get_labels()
 
         eval_examples = processor.get_test_examples_file(testF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 4*BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'datasets/temporary/' + dataset_name
