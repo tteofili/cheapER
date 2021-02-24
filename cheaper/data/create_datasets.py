@@ -172,19 +172,20 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     logging.info("--------------- data augmentation creating dataset --------------")
 
     # arrotonda il sim_value a 0/1 per il test di data_augmentation
-    def converti_approssima(tuples, threshold=0.5):
+    def converti_approssima(tuples, min_t=0.5, max_t=0.5):
         round_list = []
         for el in tuples:
-            if el[2][0] > threshold:
+            if el[2][0] > max_t:
                 sim_value = 1
-            else:
+                round_list.append((el[0], el[1], [sim_value]))
+            elif el[2][0] < min_t:
                 sim_value = 0
-            round_list.append((el[0], el[1], [sim_value]))
+                round_list.append((el[0], el[1], [sim_value]))
         return round_list
 
     # vinsim_data_app è il dataset di pt approssimato a 0/1
     logging.info(f'using threshold={max_sim} to approximate label')
-    vinsim_data_app = converti_approssima(vinsim_data, threshold=max_sim)
+    vinsim_data_app = converti_approssima(vinsim_data, min_t=min_sim, max_t=max_sim)
     logging.info(vinsim_data_app[:15])
 
     # Filtro.
