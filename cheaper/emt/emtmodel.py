@@ -9,7 +9,7 @@ from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
 
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 
 MAX_SEQ_LENGTH = 128
 
