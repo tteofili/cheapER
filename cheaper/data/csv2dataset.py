@@ -1397,10 +1397,16 @@ def check_anhai_dataset(ground_truth, tableA, tableB, indici, sim_function=lambd
     '''unisce le due liste dei match e No_match alternandole'''
     result_list=[]
     random.shuffle(result_list_NOmatch)
-    for i in range(min(len(result_list_match),len(result_list_NOmatch))):
-        result_list.append(result_list_match[i])
-        result_list.append(result_list_NOmatch[i])
-    
+    i = 0
+    j = 0
+    while i < len(result_list_match) or j < len(result_list_NOmatch):
+        if i < len(result_list_match):
+            result_list.append(result_list_match[i])
+        if j < len(result_list_NOmatch):
+            result_list.append(result_list_NOmatch[j])
+        i += 1
+        j += 1
+
     return result_list
 ''' ############# Dataset splitting ####################'''
 ''' ############# Dataset splitting ####################'''
