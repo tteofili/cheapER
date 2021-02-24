@@ -127,7 +127,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         fsims.append(top_sims_k)
         ind += 1
 
-    c_data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, attr_indexes, sim_functions[2], max_len=100, cut=cut)
+    c_data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, attr_indexes, sim_functions[2], cut=cut)
 
     npdata = np.array(c_data, dtype=object)
     X = np.zeros([len(npdata), len(fsims)])
