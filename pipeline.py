@@ -154,7 +154,7 @@ if train:
         seq_length = d[7]
         logging.info('---{}---'.format(dataset_name))
         sigma = 5000  # generated dataset size
-        kappa = 500  # no. of samples for consistency training
+        kappa = 10  # no. of samples for consistency training
         epsilon = 0.015  # deviation from calculated min/max thresholds
         slicing = [0.01, 0.05, 0.1, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
         num_runs = 1
