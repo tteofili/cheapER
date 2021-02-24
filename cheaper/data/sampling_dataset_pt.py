@@ -119,7 +119,7 @@ def sampling_table(table_list,indici):
    
 
 
-def minHash_LSH(data, threshold, num_perm=256):
+def minHash_LSH(data, threshold, num_perm=128):
     # Create an MinHashLSH index optimized for Jaccard threshold 0.5,
     # that accepts MinHash objects with 128 permutations functions
     # Create LSH index
@@ -212,7 +212,7 @@ def split_indici(indici):
 def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function):
     indiciL,indiciR=split_indici(indici)
     data4hash,dataL,dataR,tableLlist,tableRlist=create_data(tableL, tableR, indiciL,indiciR)
-    res=minHash_LSH(data4hash, max_sim-0.1, num_perm=128)
+    res=minHash_LSH(data4hash, max_sim-0.1, num_perm=256)
     dataset_pt=create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
     logging.info("LSH blocking done")
     plot_dataPT(dataset_pt)
