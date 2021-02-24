@@ -72,7 +72,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     best = []
     for k in attr_indexes:
         logging.info('getting attribute values')
-        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], max_len=100, cut=cut)
+        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], cut=cut)
 
         npdata = np.array(data, dtype=object)
         X = np.zeros([len(npdata), len(sim_functions)])
@@ -92,7 +92,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         score = 0
         clf = linear_model.SGDClassifier(loss='perceptron')
         r = 0
-        while (score < 0.9 and r < 50):
+        while score < 0.9 and r < 50:
             clf.fit(X, Y)
             score = clf.score(X, Y)
             r += 1
@@ -147,7 +147,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     score = 0
     clf = linear_model.SGDClassifier(loss='perceptron')
     r = 0
-    while (score < 0.9 and r < 50):
+    while score < 0.9 and r < 50:
         clf.fit(X, Y)
         score = clf.score(X, Y)
         r += 1

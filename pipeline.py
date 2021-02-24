@@ -75,8 +75,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                     results = results.append(new_row, ignore_index=True)
 
                 logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
-                dataDa = vinsim_data_app +  train_cut
-                logging.info('Training with {} record pairs (generated dataset + {}% GT)'.format(len(dataDa), 100 * cut))
+                dataDa = vinsim_data_app + train_cut
+                logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
                 model = EMTERModel(model_type)
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
                     dataDa, valid, test, dataset_name, seq_length=seq_length)
@@ -155,7 +155,7 @@ if train:
         logging.info('---{}---'.format(dataset_name))
         sigma = 5000  # generated dataset size
         kappa = 10  # no. of samples for consistency training
-        epsilon = 0.015  # deviation from calculated min/max thresholds
+        epsilon = 0.15  # deviation from calculated min/max thresholds
         slicing = [0.01, 0.05, 0.1, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
         num_runs = 1
         train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
