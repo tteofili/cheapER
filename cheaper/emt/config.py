@@ -21,11 +21,11 @@ class Config():
     EXPERIMENT_PREFIX = "experiments"
 
     MODEL_CLASSES = {
-        'bert-base-uncased': (BertConfig, BertForSequenceClassification, BertTokenizer),
-        'roberta-base': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
+        #'bert-base-uncased': (BertConfig, BertForSequenceClassification, BertTokenizer),
+        #'roberta-base': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
         'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
-        'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
-        'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer),
+        #'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
+        #'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer),
     }
 
 
