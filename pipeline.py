@@ -56,7 +56,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                                                                                      test_file)
             logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
-            train_cut = train#splitting_dataSet(cut, train)
+            train_cut = splitting_dataSet(cut, train)
 
             for model_type in config.Config.MODEL_CLASSES:
 
