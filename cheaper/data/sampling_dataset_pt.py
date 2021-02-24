@@ -212,7 +212,7 @@ def split_indici(indici):
 def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function):
     indiciL,indiciR=split_indici(indici)
     data4hash,dataL,dataR,tableLlist,tableRlist=create_data(tableL, tableR, indiciL,indiciR)
-    res=minHash_LSH(data4hash, max_sim-0.1, num_perm=256)
+    res=minHash_LSH(data4hash, max_sim-0.1, num_perm=128)
     dataset_pt=create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
     logging.info("LSH blocking done")
     plot_dataPT(dataset_pt)
@@ -325,7 +325,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
     logging.info(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
     count_i = 0
     stop = False
-    pair_max_visit = int((len(tableLlist)*len(tableRlist))/3)
+    pair_max_visit = int((len(tableLlist)*len(tableRlist))/100)
     logging.info(f'max pair visit: {pair_max_visit}')
     while loop_i<pair_max_visit and (match<totale or no_match<totale) and not stop:
         
