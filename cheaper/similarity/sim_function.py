@@ -321,7 +321,7 @@ tokenizer.save_pretrained(PATH + os.sep + 'bert-encoder')
 embedder = SentenceTransformer('bert-base-nli-mean-tokens')
 
 # s-bert II
-embedding = models.BERT(PATH, max_seq_length=128, do_lower_case=True)
+embedding = models.BERT('bert-base-uncased', max_seq_length=128, do_lower_case=True)
 pooling_model = models.Pooling(embedding.get_word_embedding_dimension(),
                                pooling_mode_mean_tokens=True,
                                pooling_mode_cls_token=False,
