@@ -146,7 +146,8 @@ ablation = False
 train = True
 '''
 
-def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs, compare):
+def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=False, normalize=True,
+                  sim_length=len(simfunctions)):
     gt_file = dataset[0]
     t1_file = dataset[1]
     t2_file = dataset[2]
@@ -157,7 +158,7 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs, compare):
     seq_length = dataset[7]
     logging.info('---{}---'.format(dataset_name))
     train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                seq_length, compare=compare)
+                seq_length, compare=compare, normalize=normalize, sim_length=sim_length)
 
 '''if ablation:
     for d in datasets[:2]:
