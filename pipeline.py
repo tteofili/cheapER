@@ -29,9 +29,6 @@ simfunctions = [
     lambda t1, t2: sim_function.sim_ngram(t1.split(), t2.split()),
     lambda t1, t2: sim_function.jaro(t1.split(), t2.split()),
     lambda t1, t2: sim_function.sim_lev(t1.split(), t2.split()),
-    lambda t1, t2: sim_function.sim_bert(t1, t2),
-    lambda t1, t2: sim_function.sim_sbert(t1, t2),
-    lambda t1, t2: sim_function.sim_sbert2(t1, t2),
 ]
 
 get_lambda_name = lambda l: getsource(l).strip()
