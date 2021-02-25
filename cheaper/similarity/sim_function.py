@@ -308,7 +308,7 @@ def extract_bert(text, tokenizer, model):
     state = torch.cat(states, axis=1)
     return text_ids, text_words, state[0]
 
-'''
+
 PATH = "models" + os.sep + "sim_bert"
 
 # bert
@@ -328,4 +328,4 @@ pooling_model = models.Pooling(embedding.get_word_embedding_dimension(),
                                pooling_mode_max_tokens=False)
 model2 = SentenceTransformer(modules=[embedding, pooling_model])
 model2.save(PATH + os.sep + 'sbert-encoder2')
-encoder = SentenceTransformer(PATH + os.sep + 'sbert-encoder2')'''
+encoder = SentenceTransformer(PATH + os.sep + 'sbert-encoder2')
