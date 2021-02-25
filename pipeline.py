@@ -36,12 +36,12 @@ get_lambda_name = lambda l: getsource(l).strip()
 setup_logging()
 
 def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
-                slicing, compare=False, sim_length=len(simfunctions)):
+                slicing, seq_length, compare=False, sim_length=len(simfunctions), normalize=True):
     results = pd.DataFrame()
     for n in range(num_run):
         for cut in slicing:
             simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, sim_length,
-                                        normalize=False)
+                                        normalize=normalize)
 
             logging.info('Generating dataset')
             # create datasets
@@ -94,73 +94,72 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
             + str(tot_copy) + '_' + str(soglia) + '.csv')
 
 
-# main program execution
-
-
 base_dir = 'datasets' + os.sep
-datasets = [
-    [('%sdirty_walmart_amazon/train.csv' % base_dir), ('%sdirty_walmart_amazon/tableA.csv' % base_dir),
-     ('%sdirty_walmart_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)], 'dirty_walmart_amazon',
-     ('%stemporary/' % base_dir), True, 150],
-    [('%sdirty_amazon_itunes/train.csv' % base_dir), ('%sdirty_amazon_itunes/tableA.csv' % base_dir),
-     ('%sdirty_amazon_itunes/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dirty_amazon_itunes',
-     ('%stemporary/' % base_dir), True, 180],
-    [('%sdirty_dblp_scholar/train.csv' % base_dir), ('%sdirty_dblp_scholar/tableA.csv' % base_dir),
-     ('%sdirty_dblp_scholar/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dirty_dblp_scholar',
-     ('%stemporary/' % base_dir), True, 128],
-    [('%sdirty_dblp_acm/train.csv' % base_dir), ('%sdirty_dblp_acm/tableA.csv' % base_dir),
-     ('%sdirty_dblp_acm/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dirty_dblp_acm',
-     ('%stemporary/' % base_dir), True, 180],
-    [('%sabt_buy/train.csv' % base_dir), ('%sabt_buy/tableA.csv' % base_dir),
-     ('%sabt_buy/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3)], 'abt_buy',
-     ('%stemporary/' % base_dir), True, 265],
-    [('%sbeers/train.csv' % base_dir), ('%sbeers/tableA.csv' % base_dir),
-     ('%sbeers/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'beers',
-     ('%stemporary/' % base_dir), True, 150],
-    [('%samazon_google/train.csv' % base_dir),
-     ('%samazon_google/tableA.csv' % base_dir),
-     ('%samazon_google/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3)], 'amazon_google',
-     ('%stemporary/' % base_dir), True, 180],
-    [('%sdblp_scholar/train.csv' % base_dir), ('%sdblp_scholar/tableA.csv' % base_dir),
-     ('%sdblp_scholar/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dblp_scholar',
-     ('%stemporary/' % base_dir), True, 180],
-    [('%swalmart_amazon/train.csv' % base_dir), ('%swalmart_amazon/talbleA.csv' % base_dir),
-     ('%swalmart_amazon/tableB.csv' % base_dir), [(5, 9), (4, 5), (3, 3), (14, 4), (6, 11)], 'walmart_amazon',
-     ('%stemporary/' % base_dir), True, 150],
-    [('%sfodo_zaga/train.csv' % base_dir), ('%sfodo_zaga/tableA.csv' % base_dir),
-     ('%sfodo_zaga/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'fodo_zaga',
-     ('%stemporary/' % base_dir), True, 150],
-    [('%sdblp_acm/train.csv' % base_dir), ('%sdblp_acm/tableA.csv' % base_dir),
-     ('%sdblp_acm/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dblp_acm',
-     ('%stemporary/' % base_dir), True, 180],
-    [('%situnes_amazon/train.csv' % base_dir), ('%situnes_amazon/tableA.csv' % base_dir),
-     ('%situnes_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8)],
-     'itunes_amazon',
-     ('%stemporary/' % base_dir), True, 180],
-]
+
+def get_datasets():
+    datasets = [
+        [('%sdirty_walmart_amazon/train.csv' % base_dir), ('%sdirty_walmart_amazon/tableA.csv' % base_dir),
+         ('%sdirty_walmart_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)], 'dirty_walmart_amazon',
+         ('%stemporary/' % base_dir), True, 150],
+        [('%sdirty_amazon_itunes/train.csv' % base_dir), ('%sdirty_amazon_itunes/tableA.csv' % base_dir),
+         ('%sdirty_amazon_itunes/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dirty_amazon_itunes',
+         ('%stemporary/' % base_dir), True, 180],
+        [('%sdirty_dblp_scholar/train.csv' % base_dir), ('%sdirty_dblp_scholar/tableA.csv' % base_dir),
+         ('%sdirty_dblp_scholar/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dirty_dblp_scholar',
+         ('%stemporary/' % base_dir), True, 128],
+        [('%sdirty_dblp_acm/train.csv' % base_dir), ('%sdirty_dblp_acm/tableA.csv' % base_dir),
+         ('%sdirty_dblp_acm/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dirty_dblp_acm',
+         ('%stemporary/' % base_dir), True, 180],
+        [('%sabt_buy/train.csv' % base_dir), ('%sabt_buy/tableA.csv' % base_dir),
+         ('%sabt_buy/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3)], 'abt_buy',
+         ('%stemporary/' % base_dir), True, 265],
+        [('%sbeers/train.csv' % base_dir), ('%sbeers/tableA.csv' % base_dir),
+         ('%sbeers/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'beers',
+         ('%stemporary/' % base_dir), True, 150],
+        [('%samazon_google/train.csv' % base_dir),
+         ('%samazon_google/tableA.csv' % base_dir),
+         ('%samazon_google/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3)], 'amazon_google',
+         ('%stemporary/' % base_dir), True, 180],
+        [('%sdblp_scholar/train.csv' % base_dir), ('%sdblp_scholar/tableA.csv' % base_dir),
+         ('%sdblp_scholar/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dblp_scholar',
+         ('%stemporary/' % base_dir), True, 180],
+        [('%swalmart_amazon/train.csv' % base_dir), ('%swalmart_amazon/talbleA.csv' % base_dir),
+         ('%swalmart_amazon/tableB.csv' % base_dir), [(5, 9), (4, 5), (3, 3), (14, 4), (6, 11)], 'walmart_amazon',
+         ('%stemporary/' % base_dir), True, 150],
+        [('%sfodo_zaga/train.csv' % base_dir), ('%sfodo_zaga/tableA.csv' % base_dir),
+         ('%sfodo_zaga/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'fodo_zaga',
+         ('%stemporary/' % base_dir), True, 150],
+        [('%sdblp_acm/train.csv' % base_dir), ('%sdblp_acm/tableA.csv' % base_dir),
+         ('%sdblp_acm/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dblp_acm',
+         ('%stemporary/' % base_dir), True, 180],
+        [('%situnes_amazon/train.csv' % base_dir), ('%situnes_amazon/tableA.csv' % base_dir),
+         ('%situnes_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8)],
+         'itunes_amazon',
+         ('%stemporary/' % base_dir), True, 180],
+    ]
+    return datasets
+
+
+'''# main program execution
 
 ablation = False
 train = True
+'''
 
-if train:
-    for d in datasets:
-        gt_file = d[0]
-        t1_file = d[1]
-        t2_file = d[2]
-        indexes = d[3]
-        dataset_name = d[4]
-        datadir = d[5]
-        flag_Anhai = d[6]
-        seq_length = d[7]
-        logging.info('---{}---'.format(dataset_name))
-        sigma = 5000  # generated dataset size
-        kappa = 50  # no. of samples for consistency training
-        epsilon = 0  # deviation from calculated min/max thresholds
-        slicing = [0.01, 0.05, 0.1, 0.15, 0.33, 0.5, 0.67, 0.75, 1]
-        num_runs = 1
-        train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                    compare=False)
-if ablation:
+def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs, compare):
+    gt_file = dataset[0]
+    t1_file = dataset[1]
+    t2_file = dataset[2]
+    indexes = dataset[3]
+    dataset_name = dataset[4]
+    datadir = dataset[5]
+    flag_Anhai = dataset[6]
+    seq_length = dataset[7]
+    logging.info('---{}---'.format(dataset_name))
+    train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
+                seq_length, compare=compare)
+
+'''if ablation:
     for d in datasets[:2]:
         gt_file = d[0]
         t1_file = d[1]
@@ -169,7 +168,7 @@ if ablation:
         dataset_name = d[4]
         datadir = d[5]
         flag_Anhai = d[6]
-        logging.info('ablation---{}---', dataset_name)
+        logging.info('ablation---{}---'.format(dataset_name))
         for sigma in [100]:
             for epsilon in [0, 0.2]:
                 for kappa in [0, 50]:
@@ -178,3 +177,4 @@ if ablation:
                                     dataset_name, flag_Anhai, 1, [1], compare=False)
                     except:
                         pass
+'''

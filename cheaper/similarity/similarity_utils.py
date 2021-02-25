@@ -90,14 +90,14 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             tc += 1
         logging.info('fitting classifier')
         score = 0
-        clf = linear_model.SGDClassifier(loss='perceptron')
+        clf = linear_model.Ridge(fit_intercept=False)
         r = 0
         while score < 0.9 and r < 50:
             clf.fit(X, Y)
             score = clf.score(X, Y)
             r += 1
         logging.info(f'score: {score}')
-        weights = clf.coef_[0]
+        weights = clf.coef_
         comb = []
         combprint = []
         normalized_weights = weights
@@ -145,14 +145,14 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         tc += 1
     logging.info('fitting agg-sim classifier')
     score = 0
-    clf = linear_model.SGDClassifier(loss='perceptron')
+    clf = linear_model.Ridge(fit_intercept=False)
     r = 0
     while score < 0.9 and r < 50:
         clf.fit(X, Y)
         score = clf.score(X, Y)
         r += 1
     logging.info(f'agg-sim score: {score}')
-    f_weights = clf.coef_[0]
+    f_weights = clf.coef_
 
     if normalize and min(f_weights) < 0:
         f_weights = f_weights + abs(min(f_weights))
