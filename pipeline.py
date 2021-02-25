@@ -44,7 +44,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
     for n in range(num_run):
         for cut in slicing:
             simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, sim_length,
-                                        normalize=True)
+                                        normalize=False)
 
             logging.info('Generating dataset')
             # create datasets
