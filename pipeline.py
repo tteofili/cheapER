@@ -36,7 +36,7 @@ get_lambda_name = lambda l: getsource(l).strip()
 setup_logging()
 
 def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
-                slicing, seq_length, compare=False, sim_length=len(simfunctions), normalize=True):
+                slicing, seq_length, warmup, epochs, lr, compare=False, normalize=True, sim_length=len(simfunctions)):
     results = pd.DataFrame()
     for n in range(num_run):
         for cut in slicing:
@@ -66,7 +66,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                     model = EMTERModel(model_type)
 
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                        .train(train_cut, valid, test, dataset_name, seq_length=seq_length)
+                        .train(train_cut, valid, test, dataset_name, seq_length=seq_length, warmup=warmup,
+                               epochs=epochs, lr=lr)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
                         .eval(test, dataset_name, seq_length=seq_length)
                     new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
@@ -147,7 +148,7 @@ train = True
 '''
 
 def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=False, normalize=True,
-                  sim_length=len(simfunctions)):
+                  sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3):
     gt_file = dataset[0]
     t1_file = dataset[1]
     t2_file = dataset[2]
@@ -158,7 +159,7 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=F
     seq_length = dataset[7]
     logging.info('---{}---'.format(dataset_name))
     train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                seq_length, compare=compare, normalize=normalize, sim_length=sim_length)
+                seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length)
 
 '''if ablation:
     for d in datasets[:2]:

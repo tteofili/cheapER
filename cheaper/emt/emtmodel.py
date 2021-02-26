@@ -23,7 +23,8 @@ class EMTERModel:
         self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
         self.model = model_class.from_pretrained(self.model_type, config=config)
 
-    def train(self, label_train, label_valid, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH):
+    def train(self, label_train, label_valid, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
+              epochs=3, lr=1e-3):
         device, n_gpu = initialize_gpu_seed(22)
 
         self.model = self.model.to(device)
@@ -35,13 +36,17 @@ class EMTERModel:
         training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE, DataType.TRAINING,
                                          self.model_type)
 
-        num_epochs = 3
+        num_epochs = epochs
         num_train_steps = len(training_data_loader) * num_epochs
 
-        learning_rate = 1e-3
+        learning_rate = lr
         adam_eps = 1e-8
-        warmup_steps = 500
-        weight_decay = 0.01
+        if warmup:
+            warmup_steps = 500
+            weight_decay = 0.01
+        else:
+            warmup_steps = 0
+            weight_decay = 0
         optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
                                                weight_decay)
 
