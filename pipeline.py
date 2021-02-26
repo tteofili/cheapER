@@ -93,6 +93,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
         results.to_csv(
             'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '_' + str(tot_pt) + '_'
             + str(tot_copy) + '_' + str(soglia) + '.csv')
+    return results
 
 
 base_dir = 'datasets' + os.sep
@@ -158,7 +159,7 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=F
     flag_Anhai = dataset[6]
     seq_length = dataset[7]
     logging.info('---{}---'.format(dataset_name))
-    train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
+    return train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
                 seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length)
 
 '''if ablation:
