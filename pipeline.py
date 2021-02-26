@@ -142,12 +142,6 @@ def get_datasets():
     return datasets
 
 
-'''# main program execution
-
-ablation = False
-train = True
-'''
-
 def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=False, normalize=True,
                   sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3):
     gt_file = dataset[0]
@@ -161,23 +155,3 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=F
     logging.info('---{}---'.format(dataset_name))
     return train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
                 seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length)
-
-'''if ablation:
-    for d in datasets[:2]:
-        gt_file = d[0]
-        t1_file = d[1]
-        t2_file = d[2]
-        indexes = d[3]
-        dataset_name = d[4]
-        datadir = d[5]
-        flag_Anhai = d[6]
-        logging.info('ablation---{}---'.format(dataset_name))
-        for sigma in [100]:
-            for epsilon in [0, 0.2]:
-                for kappa in [0, 50]:
-                    try:
-                        train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa,
-                                    dataset_name, flag_Anhai, 1, [1], compare=False)
-                    except:
-                        pass
-'''
