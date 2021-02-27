@@ -331,10 +331,9 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
     logging.info(f'{len(result_list_match)} pairs found via LSH blocking and high similarity check')
     count_i = 0
     stop = False
-    pair_max_visit = int((len(tableLlist)*len(tableRlist))/100)
+    pair_max_visit = int((len(tableLlist)*len(tableRlist))/3)
     logging.info(f'max pair visit: {pair_max_visit}')
-    while match<totale and no_match<totale and not stop:
-        
+    while loop_i < pair_max_visit and (match < totale or no_match < totale) and not stop:
         x = random.randint(1,len(tableLlist)-1)
         y =  random.randint(1,len(tableRlist)-1)
         tableL_el=[]
@@ -365,7 +364,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                         result_list_match.append((tableL_el,tableR_el,sim_vector))
                         marginal_entropy = (entropy1(concatenate_list_data(tableL_el).split(' ')) + entropy1(
                             concatenate_list_data(tableR_el).split(' '))) / (1 + len(result_list_match))
-                        if marginal_entropy < 1e-4:
+                        if marginal_entropy < 1e-3:
                             stop = True
                         match=match+1
     
@@ -382,7 +381,7 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
                         #count_occurrence(dictR_NOmatch, tableR_ELEM)
                         marginal_entropy = (entropy1(concatenate_list_data(tableL_el).split(' ')) + entropy1(
                             concatenate_list_data(tableR_el).split(' '))) / (1 + len(result_list_noMatch))
-                        if marginal_entropy < 1e-4:
+                        if marginal_entropy < 1e-3:
                             stop = True
                         result_list_noMatch.append((tableL_el,tableR_el,sim_vector))
                         no_match=no_match+1
