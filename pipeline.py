@@ -36,7 +36,8 @@ get_lambda_name = lambda l: getsource(l).strip()
 setup_logging()
 
 def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
-                slicing, seq_length, warmup, epochs, lr, compare=False, normalize=True, sim_length=len(simfunctions)):
+                slicing, seq_length, warmup, epochs, lr, compare=False, normalize=True, sim_length=len(simfunctions),
+                models=config.Config.MODEL_CLASSES):
     results = pd.DataFrame()
     for n in range(num_run):
         for cut in slicing:
@@ -58,7 +59,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
             train_cut = splitting_dataSet(cut, train)
 
-            for model_type in config.Config.MODEL_CLASSES:
+            for model_type in models:
 
                 if compare:
                     logging.info("------------- Vanilla EMT Training {model_type} ------------------")
@@ -143,7 +144,7 @@ def get_datasets():
 
 
 def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=False, normalize=True,
-                  sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3):
+                  sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3, models=config.Config.MODEL_CLASSES):
     gt_file = dataset[0]
     t1_file = dataset[1]
     t2_file = dataset[2]
@@ -154,4 +155,5 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=F
     seq_length = dataset[7]
     logging.info('---{}---'.format(dataset_name))
     return train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length)
+                seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length,
+                       models=models)
