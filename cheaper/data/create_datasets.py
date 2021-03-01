@@ -175,10 +175,10 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     def converti_approssima(tuples, min_t=0.5, max_t=0.5):
         round_list = []
         for el in tuples:
-            if el[2][0] > max_t:
+            if el[2][0] >= max_t:
                 sim_value = 1
                 round_list.append((el[0], el[1], [sim_value]))
-            elif el[2][0] < min_t:
+            elif el[2][0] <= min_t:
                 sim_value = 0
                 round_list.append((el[0], el[1], [sim_value]))
         return round_list
