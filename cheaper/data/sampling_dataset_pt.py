@@ -219,6 +219,8 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match,dictR_matc
     res += minHash_LSH(data4hash, max_sim, num_perm=128)
     res += minHash_LSH(data4hash, max_sim, num_perm=64)
     res += minHash_LSH(data4hash, 0.9, num_perm=256)
+    res += minHash_LSH(data4hash, 0.9, num_perm=128)
+    res += minHash_LSH(data4hash, 0.9, num_perm=64)
     dataset_pt=create_dataset_pt(res, dataL,dataR,tableLlist,tableRlist,min_sim,max_sim,dictL_match,dictR_match,dictL_NOmatch,dictR_NOmatch,sim_function)
     logging.info("LSH blocking done")
     plot_dataPT(dataset_pt)
