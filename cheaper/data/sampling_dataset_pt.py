@@ -123,7 +123,7 @@ def minHash_LSH(data, threshold, num_perm=128):
     # Create an MinHashLSH index optimized for Jaccard threshold 0.5,
     # that accepts MinHash objects with 128 permutations functions
     # Create LSH index
-    lsh = MinHashLSH(threshold=threshold, num_perm=num_perm)
+    lsh = MinHashLSH(threshold=threshold, num_perm=num_perm, weights=(0.4, 0.6))
     
     # Create MinHash objects
     minhashes = {}
