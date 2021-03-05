@@ -14,7 +14,7 @@ from cheaper.emt.logging_customized import setup_logging
 setup_logging()
 
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
-                    soglia, tot_copy, num_run, cut, valid_file, test_file):
+                    soglia, tot_copy, num_run, cut, valid_file, test_file, adjust_ds_size=True):
     logging.info('Parsing original dataset')
     if flag_Anhai == False:
         data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
@@ -25,6 +25,10 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         # data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+
+    if adjust_ds_size:
+        tot_pt = max(tot_pt, 2 * len(data))
+        tot_copy = min(tot_copy, int(len(data) / 10))
 
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
     logging.info("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
