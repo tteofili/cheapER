@@ -9,7 +9,8 @@ from pytorch_transformers import BertConfig, BertForSequenceClassification, Bert
     DistilBertForSequenceClassification, DistilBertTokenizer
 from transformers import AlbertTokenizer, AlbertForSequenceClassification, AlbertConfig, ReformerTokenizer, \
     ReformerForSequenceClassification, ReformerConfig, T5Tokenizer, T5Config, SqueezeBertConfig, SqueezeBertTokenizer, \
-    SqueezeBertForSequenceClassification
+    SqueezeBertForSequenceClassification, FunnelTokenizer, FunnelConfig, FunnelForSequenceClassification, DebertaConfig, \
+    DebertaForSequenceClassification, DebertaTokenizer
 
 from cheaper.emt.logging_customized import setup_logging
 
@@ -26,6 +27,9 @@ class Config():
         'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
         'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
         'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer),
+        'google/reformer-crime-and-punishment' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer),
+        'funnel-transformer/small-base' : (FunnelConfig, FunnelForSequenceClassification, FunnelTokenizer),
+        'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer),
     }
 
 
