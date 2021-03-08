@@ -54,11 +54,11 @@ class EMTERModel:
         evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 4*BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
-        exp_name = 'datasets/temporary/' + dataset_name
+        exp_name = 'models/' + dataset_name
         evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
 
-        result = train(device, training_data_loader, self.model, optimizer, scheduler, evaluation, num_epochs, 1.0,
-                       True, experiment_name=exp_name, output_dir=exp_name, model_type=self.model_type)
+        self.model, result = train(device, training_data_loader, self.model, optimizer, scheduler, evaluation, num_epochs, 1.0,
+                       False, experiment_name=exp_name, output_dir=exp_name, model_type=self.model_type)
 
         save_model(self.model, exp_name, exp_name, tokenizer=self.tokenizer)
 
@@ -92,7 +92,7 @@ class EMTERModel:
         evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 4*BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
-        exp_name = 'datasets/temporary/' + dataset_name
+        exp_name = 'models/' + dataset_name
         evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
         result = evaluation.evaluate(self.model, device, -1)
 

@@ -5,7 +5,7 @@ import torch
 from tqdm import tqdm, trange
 
 from cheaper.emt.logging_customized import setup_logging
-from cheaper.emt.model import save_model
+from cheaper.emt.model import save_model, load_model
 from tensorboardX import SummaryWriter
 
 setup_logging()
@@ -35,6 +35,9 @@ def train(device,
     # for key, value in eval_results.items():
     #     tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
 
+    f1_top = 0
+    best_model_location = None
+    best_eval = None
     for epoch in trange(int(num_epocs), desc="Epoch"):
         for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
             model.train()
@@ -69,8 +72,17 @@ def train(device,
         # for key, value in eval_results.items():
         #     tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
 
+        l1 = eval_results['report'].split('\n')[3].split('       ')[2].split('      ')
+        f1 = float(l1[2])
+        if f1 > f1_top or f1_top == 0:
+            f1_top = f1
+            best_model_location = save_model(model, experiment_name + "_best", output_dir, epoch=epoch)
+            best_eval = eval_results
+
         if save_model_after_epoch:
             save_model(model, experiment_name, output_dir, epoch=epoch)
 
+    best_model = load_model(best_model_location)
+
     tb_writer.close()
-    return eval_results
+    return best_model, best_eval

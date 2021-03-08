@@ -335,6 +335,8 @@ def csvTable2datasetRANDOM_countOcc(tableL,tableR,totale,min_sim,max_sim,indici,
     stop = False
     pair_max_visit = int((len(tableLlist)*len(tableRlist))/3)
     logging.info(f'max pair visit: {pair_max_visit}')
+    match = len(result_list_match)
+    no_match = len(result_list_noMatch)
     while loop_i < pair_max_visit and (match < totale or no_match < totale) and not stop:
         x = random.randint(1,len(tableLlist)-1)
         y =  random.randint(1,len(tableRlist)-1)
