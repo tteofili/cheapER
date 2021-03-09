@@ -98,12 +98,12 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # costruisce i dataset di pt con un max di occurrenza di una tuple di max_occ volte   csvTable2datasetRANDOM_NOOcc
     # tot_pt = max(1000, bound * 2)
     # tot_copy = tot_pt * 0.1
-    result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, 2 * tot_pt,
+    result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, tot_pt,
                                                                              min_sim,
                                                                              max_sim, ATT_INDEXES,
                                                                              min_cos_sim, tot_copy, max_occ, simf)
 
-    result_list_noMatch = result_list_noMatch[:len(result_list_match)]
+    #result_list_noMatch = result_list_noMatch[:len(result_list_match)]
     # test per il count dei valori degli attributi
     lista_attrMATCH, lista_attrNO_MATCH = init_dict_lista(result_list_match, result_list_noMatch, len(ATT_INDEXES))
     logging.info("dizionari occorrenze degli attributi del dataset di pt")
@@ -153,7 +153,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     logging.info(random_tuples1[:10])
     logging.info("random_tuples1[-10:]")
     logging.info(random_tuples1[-10:])
-    random_tuples2 = random_tuples0sort[-k_slice:]
+    random_tuples2 = random_tuples0sort[-int(k_slice/2):]
     logging.info("random_tuples2[:10]")
     logging.info(random_tuples2[:10])
     logging.info("random_tuples2[-10:]")

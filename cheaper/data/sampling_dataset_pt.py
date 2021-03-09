@@ -235,7 +235,7 @@ def copy_EDIT_match(tupla):
         attr=Sequence(tupla[i])    
         if len(tupla[i])>1 and change_attr==1:
             #logging.info(attr)
-            d = 5  # max edit distance
+            d = 3  # max edit distance
             n = 3  # number of strings in result
             try:
                 mutates = attr.mutate(d, n)
