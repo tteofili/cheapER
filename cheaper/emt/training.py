@@ -82,6 +82,7 @@ def train(device,
         if save_model_after_epoch:
             save_model(model, experiment_name, output_dir, epoch=epoch)
 
+    logging.info("using best model from {}".format(best_model_location))
     best_model = load_model(best_model_location)
 
     tb_writer.close()
