@@ -27,10 +27,10 @@ class EMTERModel:
         self.model = model_class.from_pretrained(self.model_type, config=config)
         self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
 
-    def pretrain(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
+    def pretrain(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type, seq_length=MAX_SEQ_LENGTH, warmup=False,
                  epochs=3, lr=1e-3):
 
-        model_dir = 'models/' + dataset_name + "/mlm"
+        model_dir = 'models/' + dataset_name + "/mlm-"+model_type
         if os.path.exists(model_dir + '/pytorch_model.bin'):
             load_model(model_dir)
         else:
@@ -72,12 +72,12 @@ class EMTERModel:
             trainer.save_model(model_dir)
 
 
-    def train(self, label_train, label_valid, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
+    def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
               epochs=3, lr=1e-5, pretrain=False):
         device, n_gpu = initialize_gpu_seed(22)
 
         if pretrain:
-            load_model('models/'+dataset_name+"/mlm")
+            load_model('models/'+dataset_name+"/mlm-"+model_type)
 
         self.model = self.model.to(device)
 

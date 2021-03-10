@@ -76,7 +76,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                     model = EMTERModel(model_type)
 
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                        .train(train_cut, valid, test, dataset_name, seq_length=seq_length, warmup=warmup,
+                        .train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=warmup,
                                epochs=epochs, lr=lr)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
                         .eval(test, dataset_name, seq_length=seq_length)
@@ -91,9 +91,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                 model = EMTERModel(model_type)
 
                 if pretrain:
-                    model.pretrain(unlabelled_train, unlabelled_valid, dataset_name)
+                    model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type)
 
-                model.train(dataDa, valid, test, dataset_name, seq_length=seq_length, warmup=warmup, epochs=epochs, lr=lr, pretrain=pretrain)
+                model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=warmup, epochs=epochs, lr=lr, pretrain=pretrain)
 
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test, dataset_name, seq_length=seq_length)
                 new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
