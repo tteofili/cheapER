@@ -43,8 +43,11 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
     tableA = pd.read_csv(t1_file)
     tableB = pd.read_csv(t2_file)
 
-    unlabelled_train = 'models/' + dataset_name + '/unlabelled_train.txt'
-    unlabelled_valid = 'models/' + dataset_name + '/unlabelled_valid.txt'
+    basedir = 'models/' + dataset_name
+    if not os.path.exists(basedir):
+        os.makedirs(basedir)
+    unlabelled_train = basedir + '/unlabelled_train.txt'
+    unlabelled_valid = basedir + '/unlabelled_valid.txt'
 
     for n in range(num_run):
         for cut in slicing:
@@ -115,6 +118,9 @@ def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vins
         os.remove(unlabelled_train)
     if os.path.exists(unlabelled_valid):
         os.remove(unlabelled_valid)
+
+    open(unlabelled_train, 'w').close()
+    open(unlabelled_valid, 'w').close()
 
     lines = []
     for l in tableA.values:
