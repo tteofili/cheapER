@@ -120,12 +120,12 @@ def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vins
     for l in tableA.values:
         row = ''
         for a in l[1:]:
-            row += a + ' '
+            row += str(a) + ' '
         lines.append(row)
     for l in tableB.values:
         row = ''
         for a in l[1:]:
-            row += a + ' '
+            row += str(a) + ' '
         lines.append(row)
 
     ug = []
@@ -136,7 +136,7 @@ def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vins
     for l in ug.values:
         row = ''
         for a in l[1:]:
-            row += a + ' '
+            row += str(a) + ' '
         lines.append(row)
 
     split = int(len(lines) * 0.9)
