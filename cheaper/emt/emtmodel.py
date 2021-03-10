@@ -1,10 +1,11 @@
-from keras.models import Model, load_model
+import os
+
 from cheaper.data import deepmatcher_format
 from cheaper.emt.config import Config
 from cheaper.emt.data_loader import load_data, DataType
 from cheaper.emt.data_representation import DeepMatcherProcessor
 from cheaper.emt.evaluation import Evaluation
-from cheaper.emt.model import save_model
+from cheaper.emt.model import save_model, load_model
 from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
@@ -29,51 +30,54 @@ class EMTERModel:
     def pretrain(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
                  epochs=3, lr=1e-3):
 
-        train_dataset = LineByLineTextDataset(
-            tokenizer=self.tokenizer,
-            file_path=unlabelled_train_file,
-            block_size=128,
-        )
+        model_dir = 'models/' + dataset_name + "/mlm"
+        if os.path.exists(model_dir + '/pytorch_model.bin'):
+            load_model(model_dir)
+        else:
+            train_dataset = LineByLineTextDataset(
+                tokenizer=self.tokenizer,
+                file_path=unlabelled_train_file,
+                block_size=128,
+            )
 
-        valid_dataset = LineByLineTextDataset(
-            tokenizer=self.tokenizer,
-            file_path=unlabelled_valid_file,
-            block_size=128,
-        )
+            valid_dataset = LineByLineTextDataset(
+                tokenizer=self.tokenizer,
+                file_path=unlabelled_valid_file,
+                block_size=128,
+            )
 
-        training_args = TrainingArguments(
-            learning_rate=lr,
-            output_dir='./results',  # output directory
-            num_train_epochs=epochs,  # total # of training epochs
-            per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
-            per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
-            warmup_steps=500,  # number of warmup steps for learning rate scheduler
-            weight_decay=0.01,  # strength of weight decay
-            logging_dir='./logs',  # directory for storing logs
-        )
+            training_args = TrainingArguments(
+                output_dir='./results',  # output directory
+                num_train_epochs=epochs,  # total # of training epochs
+                per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
+                per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
+                warmup_steps=500,  # number of warmup steps for learning rate scheduler
+                weight_decay=0.01,  # strength of weight decay
+                logging_dir='./logs',  # directory for storing logs
+            )
 
-        data_collator = DataCollatorForLanguageModeling(
-            tokenizer=self.tokenizer, mlm=True, mlm_probability=0.15
-        )
+            data_collator = DataCollatorForLanguageModeling(
+                tokenizer=self.tokenizer, mlm=True, mlm_probability=0.15
+            )
 
-        trainer = Trainer(
-            model=self.mlm_model,  # the instantiated 🤗 Transformers model to be trained
-            args=training_args,  # training arguments, defined above
-            data_collator=data_collator,
-            train_dataset=train_dataset,  # training dataset
-            eval_dataset=valid_dataset  # evaluation dataset
-        )
+            trainer = Trainer(
+                model=self.mlm_model,  # the instantiated 🤗 Transformers model to be trained
+                args=training_args,  # training arguments, defined above
+                data_collator=data_collator,
+                train_dataset=train_dataset,  # training dataset
+                eval_dataset=valid_dataset  # evaluation dataset
+            )
 
-        trainer.train()
-        trainer.save_model('models/'+dataset_name+"/mlm")
+            trainer.train()
+            trainer.save_model(model_dir)
 
 
     def train(self, label_train, label_valid, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
-              epochs=3, lr=1e-3, pretrain=False):
+              epochs=3, lr=1e-5, pretrain=False):
         device, n_gpu = initialize_gpu_seed(22)
 
         if pretrain:
-            self.load('models/'+dataset_name+"/mlm")
+            load_model('models/'+dataset_name+"/mlm")
 
         self.model = self.model.to(device)
 
@@ -121,7 +125,7 @@ class EMTERModel:
         return p, r, f1, pnm, rnm, f1nm
 
     def load(self, path):
-        self.model, self.tokenizer = load_model(path, True)
+        self.model = load_model(path, do_lower_case=True)
         return self
 
     def save(self, path):
