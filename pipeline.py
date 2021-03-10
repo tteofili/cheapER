@@ -37,8 +37,15 @@ setup_logging()
 
 def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
                 slicing, seq_length, warmup, epochs, lr, compare=False, normalize=True, sim_length=len(simfunctions),
-                models=config.Config.MODEL_CLASSES):
+                models=config.Config.MODEL_CLASSES, pretrain=False):
     results = pd.DataFrame()
+
+    tableA = pd.read_csv(t1_file)
+    tableB = pd.read_csv(t2_file)
+
+    unlabelled_train = 'models/' + dataset_name + '/unlabelled_train.txt'
+    unlabelled_valid = 'models/' + dataset_name + '/unlabelled_valid.txt'
+
     for n in range(num_run):
         for cut in slicing:
             simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, sim_length,
@@ -56,6 +63,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                                                                                      num_run, cut, valid_file,
                                                                                      test_file, adjust_ds_size=False)
             logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
+
+            generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
 
             train_cut = splitting_dataSet(cut, train)
 
@@ -80,8 +89,12 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                 dataDa = vinsim_data_app + train_cut
                 logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
                 model = EMTERModel(model_type)
-                da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.train(
-                    dataDa, valid, test, dataset_name, seq_length=seq_length, warmup=warmup, epochs=epochs, lr=lr)
+
+                if pretrain:
+                    model.pretrain(unlabelled_train, unlabelled_valid, dataset_name)
+
+                model.train(dataDa, valid, test, dataset_name, seq_length=seq_length, warmup=warmup, epochs=epochs, lr=lr, pretrain=pretrain)
+
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test, dataset_name, seq_length=seq_length)
                 new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
                            'pNM': da_precisionNOMATCH,
@@ -95,6 +108,50 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
             'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '_' + str(tot_pt) + '_'
             + str(tot_copy) + '_' + str(soglia) + '.csv')
     return results
+
+
+def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app):
+    if os.path.exists(unlabelled_train):
+        os.remove(unlabelled_train)
+    if os.path.exists(unlabelled_valid):
+        os.remove(unlabelled_valid)
+
+    lines = []
+    for l in tableA.values:
+        row = ''
+        for a in l[1:]:
+            row += a + ' '
+        lines.append(row)
+    for l in tableB.values:
+        row = ''
+        for a in l[1:]:
+            row += a + ' '
+        lines.append(row)
+
+    ug = []
+    for pair in vinsim_data_app:
+        ug.append(pair[0])
+        ug.append(pair[1])
+    ug = pd.DataFrame(ug)
+    for l in ug.values:
+        row = ''
+        for a in l[1:]:
+            row += a + ' '
+        lines.append(row)
+
+    split = int(len(lines) * 0.9)
+    lines_train = lines[:split]
+    lines_valid = lines[split:]
+
+    with open(unlabelled_train, "w") as train_output:
+        for l in lines_train:
+            train_output.write(l)
+            train_output.write("\n")
+
+    with open(unlabelled_valid, "w") as train_output:
+        for l in lines_valid:
+            train_output.write(l)
+            train_output.write("\n")
 
 
 base_dir = 'datasets' + os.sep
@@ -143,7 +200,7 @@ def get_datasets():
     return datasets
 
 
-def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=False, normalize=True,
+def cheaper_train(dataset, sigma, kappa, epsilon, slicing, pretrain=False, num_runs=1, compare=False, normalize=True,
                   sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3, models=config.Config.MODEL_CLASSES):
     gt_file = dataset[0]
     t1_file = dataset[1]
@@ -156,4 +213,4 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, num_runs=1, compare=F
     logging.info('---{}---'.format(dataset_name))
     return train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
                 seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length,
-                       models=models)
+                       models=models, pretrain=pretrain)

@@ -3,14 +3,13 @@ import json
 import os
 import logging
 
-from pytorch_transformers import BertConfig, BertForSequenceClassification, BertTokenizer, XLNetTokenizer, \
-    XLNetForSequenceClassification, XLNetConfig, XLMForSequenceClassification, XLMConfig, XLMTokenizer, \
-    RobertaTokenizer, RobertaForSequenceClassification, RobertaConfig, DistilBertConfig, \
-    DistilBertForSequenceClassification, DistilBertTokenizer
 from transformers import AlbertTokenizer, AlbertForSequenceClassification, AlbertConfig, ReformerTokenizer, \
     ReformerForSequenceClassification, ReformerConfig, T5Tokenizer, T5Config, SqueezeBertConfig, SqueezeBertTokenizer, \
     SqueezeBertForSequenceClassification, FunnelTokenizer, FunnelConfig, FunnelForSequenceClassification, DebertaConfig, \
-    DebertaForSequenceClassification, DebertaTokenizer
+    DebertaForSequenceClassification, DebertaTokenizer, AlbertForMaskedLM, DistilBertForMaskedLM, BertConfig, \
+    BertForSequenceClassification, BertTokenizer, RobertaTokenizer, RobertaForSequenceClassification, RobertaConfig, \
+    DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer, RobertaForMaskedLM, BertForMaskedLM, \
+    SqueezeBertForMaskedLM, ReformerForMaskedLM, FunnelForMaskedLM, DebertaForMaskedLM
 
 from cheaper.emt.logging_customized import setup_logging
 
@@ -22,14 +21,14 @@ class Config():
     EXPERIMENT_PREFIX = "experiments"
 
     MODEL_CLASSES = {
-        'bert-base-uncased': (BertConfig, BertForSequenceClassification, BertTokenizer),
-        'roberta-base': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
-        'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
-        'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer),
-        'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer),
-        'google/reformer-crime-and-punishment' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer),
-        'funnel-transformer/small-base' : (FunnelConfig, FunnelForSequenceClassification, FunnelTokenizer),
-        'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer),
+        'bert-base-uncased': (BertConfig, BertForSequenceClassification, BertTokenizer, BertForMaskedLM),
+        'roberta-base': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer, RobertaForMaskedLM),
+        'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer, DistilBertForMaskedLM),
+        'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer, AlbertForMaskedLM),
+        'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer, SqueezeBertForMaskedLM),
+        'google/reformer-crime-and-punishment' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer, ReformerForMaskedLM),
+        'funnel-transformer/small-base' : (FunnelConfig, FunnelForSequenceClassification, FunnelTokenizer, FunnelForMaskedLM),
+        'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer, DebertaForMaskedLM),
     }
 
 

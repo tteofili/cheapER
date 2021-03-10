@@ -9,8 +9,10 @@ from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
 
-BATCH_SIZE = 16
+from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling
+from transformers import LineByLineTextDataset
 
+BATCH_SIZE = 16
 MAX_SEQ_LENGTH = 128
 
 
@@ -18,14 +20,60 @@ class EMTERModel:
 
     def __init__(self, model_type):
         self.model_type = model_type
-        config_class, model_class, tokenizer_class = Config().MODEL_CLASSES[self.model_type]
+        config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
         config = config_class.from_pretrained(self.model_type)
         self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
         self.model = model_class.from_pretrained(self.model_type, config=config)
+        self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
+
+    def pretrain(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
+                 epochs=3, lr=1e-3):
+
+        train_dataset = LineByLineTextDataset(
+            tokenizer=self.tokenizer,
+            file_path=unlabelled_train_file,
+            block_size=128,
+        )
+
+        valid_dataset = LineByLineTextDataset(
+            tokenizer=self.tokenizer,
+            file_path=unlabelled_valid_file,
+            block_size=128,
+        )
+
+        training_args = TrainingArguments(
+            learning_rate=lr,
+            output_dir='./results',  # output directory
+            num_train_epochs=epochs,  # total # of training epochs
+            per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
+            per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
+            warmup_steps=500,  # number of warmup steps for learning rate scheduler
+            weight_decay=0.01,  # strength of weight decay
+            logging_dir='./logs',  # directory for storing logs
+        )
+
+        data_collator = DataCollatorForLanguageModeling(
+            tokenizer=self.tokenizer, mlm=True, mlm_probability=0.15
+        )
+
+        trainer = Trainer(
+            model=self.mlm_model,  # the instantiated 🤗 Transformers model to be trained
+            args=training_args,  # training arguments, defined above
+            data_collator=data_collator,
+            train_dataset=train_dataset,  # training dataset
+            eval_dataset=valid_dataset  # evaluation dataset
+        )
+
+        trainer.train()
+        trainer.save_model('models/'+dataset_name+"/mlm")
+
 
     def train(self, label_train, label_valid, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
-              epochs=3, lr=1e-3):
+              epochs=3, lr=1e-3, pretrain=False):
         device, n_gpu = initialize_gpu_seed(22)
+
+        if pretrain:
+            self.load('models/'+dataset_name+"/mlm")
 
         self.model = self.model.to(device)
 
