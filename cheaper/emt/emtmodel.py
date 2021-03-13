@@ -48,12 +48,14 @@ class EMTERModel:
 
             training_args = TrainingArguments(
                 output_dir='./results',  # output directory
-                num_train_epochs=epochs,  # total # of training epochs
+                num_train_epochs=1,  # total # of training epochs
                 per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
                 per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
                 warmup_steps=500,  # number of warmup steps for learning rate scheduler
                 weight_decay=0.01,  # strength of weight decay
                 logging_dir='./logs',  # directory for storing logs
+                save_total_limit=2,
+                do_eval=True
             )
 
             data_collator = DataCollatorForLanguageModeling(
