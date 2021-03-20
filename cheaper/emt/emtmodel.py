@@ -30,7 +30,10 @@ class EMTERModel:
     def pretrain(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type, seq_length=MAX_SEQ_LENGTH, warmup=False,
                  epochs=3, lr=1e-3):
 
-        model_dir = 'models/' + dataset_name + "/mlm-"+model_type
+        model_dir = 'models/' + dataset_name + "/mlm-" + model_type
+        if not os.path.exists(model_dir):
+            os.makedirs(model_dir, exist_ok=True)
+
         if os.path.exists(model_dir + '/pytorch_model.bin'):
             load_model(model_dir)
         else:

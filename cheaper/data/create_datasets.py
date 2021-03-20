@@ -21,14 +21,14 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
     else:
-        data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        # data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
     if adjust_ds_size:
-        tot_pt = max(tot_pt, 2 * len(data))
-        tot_copy = min(tot_copy, int(len(data) / 10))
+        tot_pt = max(tot_pt, len(data))
+        tot_copy = min(tot_copy, int(tot_pt / 10))
 
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
     logging.info("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
@@ -153,7 +153,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     logging.info(random_tuples1[:10])
     logging.info("random_tuples1[-10:]")
     logging.info(random_tuples1[-10:])
-    random_tuples2 = random_tuples0sort[-int(k_slice/2):]
+    random_tuples2 = random_tuples0sort[-k_slice:]
     logging.info("random_tuples2[:10]")
     logging.info(random_tuples2[:10])
     logging.info("random_tuples2[-10:]")
