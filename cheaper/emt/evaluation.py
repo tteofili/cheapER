@@ -66,17 +66,16 @@ class Evaluation:
                   'f1_score': f1,
                   'report': report}
 
-        if not os.path.exists(self.output_path):
-            os.makedirs(self.output_path)
+        try:
+            with open(self.output_path, "a+") as writer:
+                tqdm.write("***** Eval results after epoch {} *****".format(epoch))
+                writer.write("***** Eval results after epoch {} *****\n".format(epoch))
+                for key in sorted(result.keys()):
+                    tqdm.write("{}: {}".format(key, str(result[key])))
+                    writer.write("{}: {}\n".format(key, str(result[key])))
 
-        with open(self.output_path, "a+") as writer:
-            tqdm.write("***** Eval results after epoch {} *****".format(epoch))
-            writer.write("***** Eval results after epoch {} *****\n".format(epoch))
-            for key in sorted(result.keys()):
-                tqdm.write("{}: {}".format(key, str(result[key])))
-                writer.write("{}: {}\n".format(key, str(result[key])))
-
-            tqdm.write(report)
-            writer.write(report + "\n")
-
+                tqdm.write(report)
+                writer.write(report + "\n")
+        except:
+            pass
         return result
