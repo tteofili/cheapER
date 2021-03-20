@@ -66,6 +66,9 @@ class Evaluation:
                   'f1_score': f1,
                   'report': report}
 
+        if not os.path.exists(self.output_path):
+            os.makedirs(self.output_path)
+
         with open(self.output_path, "a+") as writer:
             tqdm.write("***** Eval results after epoch {} *****".format(epoch))
             writer.write("***** Eval results after epoch {} *****\n".format(epoch))
