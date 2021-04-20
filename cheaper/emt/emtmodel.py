@@ -51,7 +51,7 @@ class EMTERModel:
 
             training_args = TrainingArguments(
                 output_dir='./results',  # output directory
-                num_train_epochs=1,  # total # of training epochs
+                num_train_epochs=3,  # total # of training epochs
                 per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
                 per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
                 logging_dir='./logs',  # directory for storing logs

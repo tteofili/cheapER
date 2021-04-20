@@ -37,7 +37,7 @@ setup_logging()
 
 def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
                 slicing, seq_length, warmup, epochs, lr, compare=False, normalize=True, sim_length=len(simfunctions),
-                models=config.Config.MODEL_CLASSES, pretrain=False):
+                models=config.Config.MODEL_CLASSES, pretrain=False, attribute_shuffle=False):
     results = pd.DataFrame()
 
     tableA = pd.read_csv(t1_file)
@@ -207,7 +207,8 @@ def get_datasets():
 
 
 def cheaper_train(dataset, sigma, kappa, epsilon, slicing, pretrain=False, num_runs=1, compare=False, normalize=True,
-                  sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3, models=config.Config.MODEL_CLASSES):
+                  sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3, models=config.Config.MODEL_CLASSES,
+                  attribute_shuffle=False):
     gt_file = dataset[0]
     t1_file = dataset[1]
     t2_file = dataset[2]
@@ -219,4 +220,4 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, pretrain=False, num_r
     logging.info('---{}---'.format(dataset_name))
     return train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
                 seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length,
-                       models=models, pretrain=pretrain)
+                       models=models, pretrain=pretrain, attribute_shuffle=attribute_shuffle)
