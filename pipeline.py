@@ -4,6 +4,7 @@ import pandas as pd
 import logging
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.data.create_datasets import create_datasets
+from cheaper.data.create_datasets import add_shuffle
 import os
 from cheaper.data.csv2dataset import splitting_dataSet
 from cheaper.emt import config
@@ -90,6 +91,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
                 logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
                 dataDa = vinsim_data_app + train_cut
+
+                if attribute_shuffle:
+                    dataDa = add_shuffle(dataDa)
+
                 logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
                 model = EMTERModel(model_type)
 

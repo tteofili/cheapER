@@ -13,6 +13,21 @@ from cheaper.emt.logging_customized import setup_logging
 
 setup_logging()
 
+
+def add_shuffle(dataDa, mult: int = 4):
+    new_list = dataDa[:]
+    for pair in dataDa:
+        t1 = pair[0][:]
+        t2 = pair[1][:]
+        label = pair[2]
+        new_list.append(pair)
+        for a_idx in range(mult):
+            random.shuffle(t1)
+            random.shuffle(t2)
+            new_list.append((t1, t2, label))
+    return new_list
+
+
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
                     soglia, tot_copy, num_run, cut, valid_file, test_file, adjust_ds_size=True):
     logging.info('Parsing original dataset')
