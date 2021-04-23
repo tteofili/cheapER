@@ -48,8 +48,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
     logging.info("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
     max_sim = soglia + max(min_sim_Match, max_sim_noMatch)
-    if max_sim > 0.9:
-        max_sim = 0.9
+    '''if max_sim > 0.9:
+        max_sim = 0.9'''
     logging.info("!max_sim " + str(max_sim))
     min_sim = min(min_sim_Match, max_sim_noMatch)  # -soglia
     logging.info("!min_sim " + str(min_sim))
