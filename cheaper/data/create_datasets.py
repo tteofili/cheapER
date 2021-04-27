@@ -14,7 +14,7 @@ from cheaper.emt.logging_customized import setup_logging
 setup_logging()
 
 
-def add_shuffle(dataDa, mult: int = 4):
+def add_shuffle(dataDa, mult: int = 1):
     new_list = dataDa[:]
     for pair in dataDa:
         t1 = pair[0][:]
