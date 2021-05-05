@@ -38,7 +38,7 @@ class EMTERModel:
             os.makedirs(model_dir, exist_ok=True)
 
         if os.path.exists(model_dir + '/pytorch_model.bin'):
-            load_model(model_dir)
+            self.model = load_model(model_dir)
         else:
             train_dataset = LineByLineTextDataset(
                 tokenizer=self.tokenizer,
