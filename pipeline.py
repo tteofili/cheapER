@@ -75,7 +75,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
             for model_type in models:
 
                 if compare:
-                    logging.info("------------- Vanilla EMT Training {model_type} ------------------")
+                    logging.info("------------- Vanilla EMT Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     model = EMTERModel(model_type)
 

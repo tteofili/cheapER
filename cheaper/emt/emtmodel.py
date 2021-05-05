@@ -1,5 +1,5 @@
 import os
-
+import logging
 from cheaper.data import deepmatcher_format
 from cheaper.emt.config import Config
 from cheaper.emt.data_loader import load_data, DataType
@@ -9,6 +9,9 @@ from cheaper.emt.model import save_model, load_model
 from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
+from cheaper.emt.logging_customized import setup_logging
+
+setup_logging()
 
 from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling
 from transformers import LineByLineTextDataset
@@ -80,7 +83,9 @@ class EMTERModel:
         device, n_gpu = initialize_gpu_seed(22)
 
         if pretrain:
-            load_model('models/'+dataset_name+"/mlm-"+model_type)
+            pt_model_dir = 'models/' + dataset_name + "/mlm-" + model_type
+            logging.info('loading pretrained model from {}'.format(pt_model_dir))
+            self.model = load_model(pt_model_dir)
 
         self.model = self.model.to(device)
 

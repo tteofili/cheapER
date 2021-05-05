@@ -9,7 +9,9 @@ from transformers import AlbertTokenizer, AlbertForSequenceClassification, Alber
     DebertaForSequenceClassification, DebertaTokenizer, AlbertForMaskedLM, DistilBertForMaskedLM, BertConfig, \
     BertForSequenceClassification, BertTokenizer, RobertaTokenizer, RobertaForSequenceClassification, RobertaConfig, \
     DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer, RobertaForMaskedLM, BertForMaskedLM, \
-    SqueezeBertForMaskedLM, ReformerForMaskedLM, FunnelForMaskedLM, DebertaForMaskedLM
+    SqueezeBertForMaskedLM, ReformerForMaskedLM, FunnelForMaskedLM, DebertaForMaskedLM, BartConfig, \
+    BartForSequenceClassification, BartTokenizer, BartForCausalLM, DebertaV2Config, DebertaV2ForSequenceClassification, \
+    DebertaV2Tokenizer, DebertaV2ForMaskedLM
 
 from cheaper.emt.logging_customized import setup_logging
 
@@ -29,6 +31,8 @@ class Config():
         'google/reformer-crime-and-punishment' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer, ReformerForMaskedLM),
         'funnel-transformer/small-base' : (FunnelConfig, FunnelForSequenceClassification, FunnelTokenizer, FunnelForMaskedLM),
         'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer, DebertaForMaskedLM),
+        'microsoft/deberta-v2-xlarge' : (DebertaV2Config, DebertaV2ForSequenceClassification, DebertaV2Tokenizer, DebertaV2ForMaskedLM),
+        'facebook/bart-large' : (BartConfig, BartForSequenceClassification, BartTokenizer, BartForCausalLM),
     }
 
 
