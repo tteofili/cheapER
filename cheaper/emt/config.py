@@ -11,7 +11,7 @@ from transformers import AlbertTokenizer, AlbertForSequenceClassification, Alber
     DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer, RobertaForMaskedLM, BertForMaskedLM, \
     SqueezeBertForMaskedLM, ReformerForMaskedLM, FunnelForMaskedLM, DebertaForMaskedLM, BartConfig, \
     BartForSequenceClassification, BartTokenizer, BartForCausalLM, DebertaV2Config, DebertaV2ForSequenceClassification, \
-    DebertaV2Tokenizer, DebertaV2ForMaskedLM
+    DebertaV2Tokenizer, DebertaV2ForMaskedLM, IBertConfig, IBertForSequenceClassification, IBertForMaskedLM
 
 from cheaper.emt.logging_customized import setup_logging
 
@@ -33,6 +33,7 @@ class Config():
         'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer, DebertaForMaskedLM),
         'microsoft/deberta-v2-xlarge' : (DebertaV2Config, DebertaV2ForSequenceClassification, DebertaV2Tokenizer, DebertaV2ForMaskedLM),
         'facebook/bart-large' : (BartConfig, BartForSequenceClassification, BartTokenizer, BartForCausalLM),
+        'kssteven/ibert-roberta-base' : (IBertConfig, IBertForSequenceClassification, RobertaTokenizer, IBertForMaskedLM),
     }
 
 
