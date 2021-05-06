@@ -79,8 +79,8 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         Y = np.zeros(len(npdata))
         tc = 0
         logging.info('building training set')
+        ar = np.zeros(len(sim_functions))
         for t in npdata:
-            ar = np.zeros(len(sim_functions))
             arc = 0
             for s in sim_functions:
                 ar[arc] = np.nan_to_num(s(t[0][0], t[1][0])[0])
@@ -140,8 +140,8 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     Y = np.zeros(len(npdata))
     tc = 0
     logging.info('building agg-sim training set')
+    ar = np.zeros(len(fsims))
     for t in npdata:
-        ar = np.zeros(len(fsims))
         arc = 0
         for a in attr_indexes:
             ar[arc] = att_sim(fsims, arc, t[0][a[0] - 1], t[1][a[1] - 1])

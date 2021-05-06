@@ -16,7 +16,7 @@ setup_logging()
 from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling
 from transformers import LineByLineTextDataset
 
-BATCH_SIZE = 16
+BATCH_SIZE = 64
 MAX_SEQ_LENGTH = 128
 
 

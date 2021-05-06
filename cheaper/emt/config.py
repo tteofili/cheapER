@@ -32,8 +32,7 @@ class Config():
         'funnel-transformer/small-base' : (FunnelConfig, FunnelForSequenceClassification, FunnelTokenizer, FunnelForMaskedLM),
         'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer, DebertaForMaskedLM),
         'microsoft/deberta-v2-xlarge' : (DebertaV2Config, DebertaV2ForSequenceClassification, DebertaV2Tokenizer, DebertaV2ForMaskedLM),
-        'facebook/bart-large' : (BartConfig, BartForSequenceClassification, BartTokenizer, BartForCausalLM),
-        'kssteven/ibert-roberta-base' : (IBertConfig, IBertForSequenceClassification, RobertaTokenizer, IBertForMaskedLM),
+        'facebook/bart-base' : (BartConfig, BartForSequenceClassification, BartTokenizer, BartForCausalLM),
     }
 
 
