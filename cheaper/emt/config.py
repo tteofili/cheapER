@@ -33,6 +33,7 @@ class Config():
         'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer, DebertaForMaskedLM),
         'microsoft/deberta-v2-xlarge' : (DebertaV2Config, DebertaV2ForSequenceClassification, DebertaV2Tokenizer, DebertaV2ForMaskedLM),
         'facebook/bart-base' : (BartConfig, BartForSequenceClassification, BartTokenizer, BartForCausalLM),
+        'kssteven/ibert-roberta-base': (IBertConfig, IBertForSequenceClassification, RobertaTokenizer, IBertForMaskedLM),
     }
 
 
