@@ -3,7 +3,7 @@ from __future__ import print_function
 import pandas as pd
 import logging
 from cheaper.emt.logging_customized import setup_logging
-from cheaper.data.create_datasets import create_datasets
+from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
 from cheaper.data.create_datasets import add_shuffle
 import os
 from cheaper.data.csv2dataset import splitting_dataSet
@@ -38,7 +38,8 @@ setup_logging()
 
 def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
                 slicing, seq_length, warmup, epochs, lr, compare=False, normalize=True, sim_length=len(simfunctions),
-                models=config.Config.MODEL_CLASSES, pretrain=False, attribute_shuffle=False):
+                models=config.Config.MODEL_CLASSES, pretrain=False, attribute_shuffle=False, identity=False,
+                symmetry=False):
     results = pd.DataFrame()
 
     tableA = pd.read_csv(t1_file)
@@ -91,6 +92,12 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
                 logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
                 dataDa = vinsim_data_app + train_cut
+
+                if identity:
+                    dataDa = add_identity(dataDa)
+
+                if symmetry:
+                    dataDa = add_symmetry(dataDa)
 
                 if attribute_shuffle:
                     dataDa = add_shuffle(dataDa)
@@ -213,7 +220,7 @@ def get_datasets():
 
 def cheaper_train(dataset, sigma, kappa, epsilon, slicing, pretrain=False, num_runs=1, compare=False, normalize=True,
                   sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3, models=config.Config.MODEL_CLASSES,
-                  attribute_shuffle=False):
+                  attribute_shuffle=False, identity=False, symmetry=False):
     gt_file = dataset[0]
     t1_file = dataset[1]
     t2_file = dataset[2]
@@ -225,4 +232,5 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, pretrain=False, num_r
     logging.info('---{}---'.format(dataset_name))
     return train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
                 seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length,
-                       models=models, pretrain=pretrain, attribute_shuffle=attribute_shuffle)
+                       models=models, pretrain=pretrain, attribute_shuffle=attribute_shuffle, identity=False,
+                       symmetry=False)

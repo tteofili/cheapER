@@ -13,6 +13,27 @@ from cheaper.emt.logging_customized import setup_logging
 
 setup_logging()
 
+def add_symmetry(dataDa):
+    new_list = dataDa[:]
+    for pair in dataDa:
+        t1 = pair[0][:]
+        t2 = pair[1][:]
+        label = pair[2]
+        new_list.append(pair)
+        new_list.append((t2, t1, label))
+    return new_list
+
+
+def add_identity(dataDa):
+    new_list = dataDa[:]
+    for pair in dataDa:
+        t1 = pair[0][:]
+        t2 = pair[1][:]
+        new_list.append(pair)
+        new_list.append((t1, t1, 1))
+        new_list.append((t2, t2, 1))
+    return new_list
+
 
 def add_shuffle(dataDa, mult: int = 1):
     new_list = dataDa[:]
