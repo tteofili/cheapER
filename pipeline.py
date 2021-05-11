@@ -10,6 +10,7 @@ from cheaper.data.csv2dataset import splitting_dataSet
 from cheaper.emt import config
 
 from cheaper.emt.emtmodel import EMTERModel
+from cheaper.params import CheapERParams
 from cheaper.similarity import sim_function
 from cheaper.similarity.similarity_utils import learn_best_aggregate
 from inspect import getsource
@@ -36,10 +37,7 @@ get_lambda_name = lambda l: getsource(l).strip()
 
 setup_logging()
 
-def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, dataset_name, flag_Anhai, num_run,
-                slicing, seq_length, warmup, epochs, lr, compare=False, normalize=True, sim_length=len(simfunctions),
-                models=config.Config.MODEL_CLASSES, pretrain=False, attribute_shuffle=False, identity=False,
-                symmetry=False):
+def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, seq_length, params: CheapERParams):
     results = pd.DataFrame()
 
     tableA = pd.read_csv(t1_file)
@@ -51,10 +49,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
     unlabelled_train = basedir + '/unlabelled_train.txt'
     unlabelled_valid = basedir + '/unlabelled_valid.txt'
 
-    for n in range(num_run):
-        for cut in slicing:
-            simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, sim_length,
-                                        normalize=normalize, lm='ridge')
+    for n in range(params.num_runs):
+        for cut in params.slicing:
+            simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
+                                        normalize=params.normalize, lm='ridge')
 
             logging.info('Generating dataset')
             # create datasets
@@ -63,9 +61,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
             data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file,
                                                                                      t2_file, indexes, simf,
                                                                                      dataset_name,
-                                                                                     tot_pt,
-                                                                                     flag_Anhai, soglia, tot_copy,
-                                                                                     num_run, cut, valid_file,
+                                                                                     params.sigma,
+                                                                                     flag_Anhai, params.epsilon, params.kappa,
+                                                                                     params.num_runs, cut, valid_file,
                                                                                      test_file, adjust_ds_size=False)
             logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
@@ -73,16 +71,16 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
             train_cut = splitting_dataSet(cut, train)
 
-            for model_type in models:
+            for model_type in params.models:
 
-                if compare:
+                if params.compare:
                     logging.info("------------- Vanilla EMT Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     model = EMTERModel(model_type)
 
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                        .train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=warmup,
-                               epochs=epochs, lr=lr)
+                        .train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
+                               epochs=params.epochs, lr=params.lr)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
                         .eval(test, dataset_name, seq_length=seq_length)
                     new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
@@ -93,22 +91,22 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
                 logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
                 dataDa = vinsim_data_app + train_cut
 
-                if identity:
+                if params.identity:
                     dataDa = add_identity(dataDa)
 
-                if symmetry:
+                if params.symmetry:
                     dataDa = add_symmetry(dataDa)
 
-                if attribute_shuffle:
+                if params.attribute_shuffle:
                     dataDa = add_shuffle(dataDa)
 
                 logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
                 model = EMTERModel(model_type)
 
-                if pretrain:
+                if params.pretrain:
                     model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type)
 
-                model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=warmup, epochs=epochs, lr=lr, pretrain=pretrain)
+                model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup, epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
 
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test, dataset_name, seq_length=seq_length)
                 new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
@@ -120,8 +118,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, tot_pt, soglia, tot_copy, da
 
         today = date.today()
         results.to_csv(
-            'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '_' + str(tot_pt) + '_'
-            + str(tot_copy) + '_' + str(soglia) + '.csv')
+            'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '_' + str(params)+ '.csv')
     return results
 
 
@@ -218,9 +215,7 @@ def get_datasets():
     return datasets
 
 
-def cheaper_train(dataset, sigma, kappa, epsilon, slicing, pretrain=False, num_runs=1, compare=False, normalize=True,
-                  sim_length=len(simfunctions), warmup=False, epochs=3, lr=1e-3, models=config.Config.MODEL_CLASSES,
-                  attribute_shuffle=False, identity=False, symmetry=False):
+def cheaper_train(dataset, params: CheapERParams):
     gt_file = dataset[0]
     t1_file = dataset[1]
     t2_file = dataset[2]
@@ -229,8 +224,6 @@ def cheaper_train(dataset, sigma, kappa, epsilon, slicing, pretrain=False, num_r
     datadir = dataset[5]
     flag_Anhai = dataset[6]
     seq_length = dataset[7]
-    logging.info('---{}---'.format(dataset_name))
-    return train_model(gt_file, t1_file, t2_file, indexes, sigma, epsilon, kappa, dataset_name, flag_Anhai, num_runs, slicing,
-                seq_length, warmup, epochs, lr, compare=compare, normalize=normalize, sim_length=sim_length,
-                       models=models, pretrain=pretrain, attribute_shuffle=attribute_shuffle, identity=False,
-                       symmetry=False)
+    logging.info('CheapER: training on dataset "{}" from {}'.format(dataset_name, datadir))
+    return train_model(gt_file, t1_file, t2_file, indexes, dataset_name,
+                       flag_Anhai, seq_length, params)
