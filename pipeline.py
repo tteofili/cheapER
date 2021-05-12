@@ -221,9 +221,8 @@ def cheaper_train(dataset, params: CheapERParams):
     t2_file = dataset[2]
     indexes = dataset[3]
     dataset_name = dataset[4]
-    datadir = dataset[5]
     flag_Anhai = dataset[6]
     seq_length = dataset[7]
-    logging.info('CheapER: training on dataset "{}" from {}'.format(dataset_name, datadir))
+    logging.info('CheapER: training on dataset "{}"'.format(dataset_name))
     return train_model(gt_file, t1_file, t2_file, indexes, dataset_name,
                        flag_Anhai, seq_length, params)
