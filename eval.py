@@ -7,7 +7,7 @@ import pandas as pd
 params = CheapERParams()
 params.sigma = 3000
 params.kappa = 1500
-params.epsilon=0.05
+params.epsilon=0
 params.slicing=[0.05, 0.1, 0.2, 0.33, 0.5, 0.7, 1]
 params.lr=5e-5
 params.epochs=15
