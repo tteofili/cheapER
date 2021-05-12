@@ -2,12 +2,8 @@ import textdistance
 import textdistance as txd
 from strsimpy.metric_lcs import MetricLCS
 from strsimpy.ngram import NGram
-import os
 import re, math
 from collections import Counter
-from transformers import *
-from sentence_transformers import SentenceTransformer
-from sentence_transformers import models
 import numpy
 import torch
 import scipy
