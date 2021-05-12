@@ -20,3 +20,9 @@ class CheapERParams:
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
+
+    def __str__(self):
+        return str(self.sigma) + ' ' + str(self.kappa) + ' ' + str(self.epsilon) + ' ' + str(self.pretrain) + ' ' \
+               + str(self.num_runs) + ' ' + str(self.normalize) + ' ' + str(self.sim_length) + ' ' \
+               + str(self.warmup) + ' ' + str(self.epochs) + ' ' + str(self.lr) + ' ' + str(self.attribute_shuffle) \
+               + ' ' + str(self.identity) + ' ' + str(self.symmetry)
