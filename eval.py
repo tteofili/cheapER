@@ -27,3 +27,4 @@ results = pd.DataFrame()
 for d in datasets:
     results.append(cheaper_train(d, params))
 print(results)
+
