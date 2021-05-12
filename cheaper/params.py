@@ -24,7 +24,7 @@ class CheapERParams:
     def __str__(self):
         return 'sigma='+ str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',pretrain='\
                + str(self.pretrain) + ',num_runs=' + str(self.num_runs) + ',normalize=' + str(self.normalize) \
-               + ',sim_lenght= ' + str(self.sim_length) + ',warmup=' + str(self.warmup) + ',epochs=' + str(self.epochs) \
+               + ',sim_length= ' + str(self.sim_length) + ',warmup=' + str(self.warmup) + ',epochs=' + str(self.epochs) \
                + ',lr=' + str(self.lr) + ',attribute_shuffle=' + str(self.attribute_shuffle) + ',identity=' \
                + str(self.identity) + ',symmetry=' + str(self.symmetry) + ',models=' + str(self.models) + ',slicing=' \
                + str(self.slicing) + ',compare=' + str(self.compare)
