@@ -19,7 +19,6 @@ def add_symmetry(dataDa):
         t1 = pair[0][:]
         t2 = pair[1][:]
         label = pair[2]
-        new_list.append(pair)
         new_list.append((t2, t1, label))
     return new_list
 
@@ -29,7 +28,6 @@ def add_identity(dataDa):
     for pair in dataDa:
         t1 = pair[0][:]
         t2 = pair[1][:]
-        new_list.append(pair)
         new_list.append((t1, t1, 1))
         new_list.append((t2, t2, 1))
     return new_list
@@ -41,7 +39,6 @@ def add_shuffle(dataDa, mult: int = 1):
         t1 = pair[0][:]
         t2 = pair[1][:]
         label = pair[2]
-        new_list.append(pair)
         for a_idx in range(mult):
             random.shuffle(t1)
             random.shuffle(t2)
