@@ -117,8 +117,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 logging.info(results.to_string)
 
         today = date.today()
-        results.to_csv(
-            'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '_' + str(params)+ '.csv')
+        filename = 'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '.csv'
+        with open(filename, 'a') as f:
+            f.write('# '+ str(params)+ '\n')
+        results.to_csv(filename, mode='a')
     return results
 
 
