@@ -7,7 +7,6 @@ from cheaper.data.create_datasets import create_datasets, add_identity, add_symm
 from cheaper.data.create_datasets import add_shuffle
 import os
 from cheaper.data.csv2dataset import splitting_dataSet
-from cheaper.emt import config
 
 from cheaper.emt.emtmodel import EMTERModel
 from cheaper.params import CheapERParams
