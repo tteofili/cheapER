@@ -105,13 +105,13 @@ class EMTERModel:
             warmup_steps = 500
             weight_decay = 0.01
         else:
-            warmup_steps = 0
+            warmup_steps = 1
             weight_decay = 0
         optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
                                                weight_decay)
 
         eval_examples = processor.get_test_examples_file(validF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 4*BATCH_SIZE,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'models/' + dataset_name
@@ -149,7 +149,7 @@ class EMTERModel:
         label_list = processor.get_labels()
 
         eval_examples = processor.get_test_examples_file(testF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 4*BATCH_SIZE,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'models/' + dataset_name

@@ -77,8 +77,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     model = EMTERModel(model_type)
 
-                    classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                        .train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
+                    model.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
                                epochs=params.epochs, lr=params.lr)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
                         .eval(test, dataset_name, seq_length=seq_length)
