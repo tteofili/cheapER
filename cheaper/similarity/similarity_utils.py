@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import logging
-from cheaper.emt.logging_customized import setup_logging
 import operator
 from inspect import getsource
 from random import shuffle
@@ -11,8 +10,9 @@ import numpy as np
 from sklearn import linear_model
 
 from cheaper.data.create_datasets import create_datasets
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter, parsing_anhai_dataOnlyMatch
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE
 from cheaper.data.plot import plot_dataPT
+from cheaper.emt.logging_customized import setup_logging
 
 get_lambda_name = lambda l: getsource(l).split('=')[0].strip()
 

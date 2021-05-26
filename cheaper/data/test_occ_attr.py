@@ -1,11 +1,11 @@
+import logging
 import random
 from collections import Counter
 
 from cheaper.data.csv2dataset import csv_2_datasetALTERNATE
 from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc
-from cheaper.similarity.sim_function import sim4attrFZ
-import logging
 from cheaper.emt.logging_customized import setup_logging
+from cheaper.similarity.sim_function import sim4attrFZ
 
 setup_logging()
 
@@ -42,7 +42,7 @@ def init_dict_lista(lista_tupleMATCH,lista_tupleNO_MATCH,num_index):
 # TEST AREA #
 if __name__ == "__main__":
     
-    from plot import plotting, plot_dataPT, plot_pretrain, plotting_occorrenze
+    from plot import plot_pretrain, plotting_occorrenze
 
     #tableL='beer_exp_data/exp_data/tableA.csv'
     #tableR='beer_exp_data/exp_data/tableB.csv'

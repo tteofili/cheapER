@@ -2,11 +2,11 @@ import logging
 import os
 
 import torch
+from tensorboardX import SummaryWriter
 from tqdm import tqdm, trange
 
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.emt.model import save_model, load_model
-from tensorboardX import SummaryWriter
 
 setup_logging()
 

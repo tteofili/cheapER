@@ -1,18 +1,20 @@
 import csv
+import logging
+#### WARNING
+import math
 import random
-from itertools import islice 
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
+import re
+from collections import Counter
+from itertools import islice
+
 import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from cheaper.data.edit_dna import Sequence
 from cheaper.data.plot import plotting_dizionari
-from cheaper.similarity.sim_function import sim4attrFZ_norm2
-#### WARNING
-import re, math
-from collections import Counter
-import logging
 from cheaper.emt.logging_customized import setup_logging
+from cheaper.similarity.sim_function import sim4attrFZ_norm2
 
 setup_logging()
 '''

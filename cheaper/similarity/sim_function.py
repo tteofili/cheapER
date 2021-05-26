@@ -1,12 +1,14 @@
+import math
+import re
+from collections import Counter
+
+import numpy
+import scipy
 import textdistance
 import textdistance as txd
+import torch
 from strsimpy.metric_lcs import MetricLCS
 from strsimpy.ngram import NGram
-import re, math
-from collections import Counter
-import numpy
-import torch
-import scipy
 
 WORD = re.compile(r'\w+')
 

@@ -1,5 +1,7 @@
 import csv
+
 from datasketch import MinHash, MinHashLSH
+
 
 def concatenate_list_data(list):
     result= ''

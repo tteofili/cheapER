@@ -1,6 +1,6 @@
 import os
-import numpy as np
 
+import numpy as np
 import torch
 from sklearn.metrics import classification_report, f1_score
 from tqdm import tqdm

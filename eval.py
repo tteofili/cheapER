@@ -1,7 +1,8 @@
+import pandas as pd
+
 from cheaper.params import CheapERParams
 from pipeline import cheaper_train
 from pipeline import get_datasets
-import pandas as pd
 
 # cheapER parameters' settings
 params = CheapERParams()

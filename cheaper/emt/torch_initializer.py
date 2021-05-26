@@ -1,7 +1,8 @@
+import logging
 import random
+
 import numpy as np
 import torch
-import logging
 
 from cheaper.emt.logging_customized import setup_logging
 

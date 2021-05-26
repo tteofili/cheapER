@@ -1,7 +1,7 @@
 import logging
 
-from cheaper.emt.logging_customized import setup_logging
 from cheaper.emt.data_representation import InputFeatures
+from cheaper.emt.logging_customized import setup_logging
 
 setup_logging()
 

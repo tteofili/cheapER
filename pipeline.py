@@ -1,19 +1,20 @@
 from __future__ import print_function
 
-import pandas as pd
 import logging
-from cheaper.emt.logging_customized import setup_logging
-from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
-from cheaper.data.create_datasets import add_shuffle
 import os
-from cheaper.data.csv2dataset import splitting_dataSet
+from datetime import date
+from inspect import getsource
 
+import pandas as pd
+
+from cheaper.data.create_datasets import add_shuffle
+from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
+from cheaper.data.csv2dataset import splitting_dataSet
 from cheaper.emt.emtmodel import EMTERModel
+from cheaper.emt.logging_customized import setup_logging
 from cheaper.params import CheapERParams
 from cheaper.similarity import sim_function
 from cheaper.similarity.similarity_utils import learn_best_aggregate
-from inspect import getsource
-from datetime import date
 
 simfunctions = [
     lambda t1, t2: sim_function.jaro(t1, t2),

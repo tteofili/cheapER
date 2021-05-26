@@ -1,11 +1,11 @@
+import logging
 from enum import Enum
 
 import torch
 from torch.utils.data import TensorDataset, RandomSampler, DataLoader, SequentialSampler
 
-from cheaper.emt.logging_customized import setup_logging
 from cheaper.emt.feature_extraction import convert_examples_to_features
-import logging
+from cheaper.emt.logging_customized import setup_logging
 
 setup_logging()
 

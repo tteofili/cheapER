@@ -1,10 +1,10 @@
 import argparse
 import json
-import os
 import logging
+import os
 
 from transformers import AlbertTokenizer, AlbertForSequenceClassification, AlbertConfig, ReformerTokenizer, \
-    ReformerForSequenceClassification, ReformerConfig, T5Tokenizer, T5Config, SqueezeBertConfig, SqueezeBertTokenizer, \
+    ReformerForSequenceClassification, ReformerConfig, SqueezeBertConfig, SqueezeBertTokenizer, \
     SqueezeBertForSequenceClassification, FunnelTokenizer, FunnelConfig, FunnelForSequenceClassification, DebertaConfig, \
     DebertaForSequenceClassification, DebertaTokenizer, AlbertForMaskedLM, DistilBertForMaskedLM, BertConfig, \
     BertForSequenceClassification, BertTokenizer, RobertaTokenizer, RobertaForSequenceClassification, RobertaConfig, \

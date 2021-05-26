@@ -1,15 +1,16 @@
-import os
 import logging
+import os
+
 from cheaper.data import deepmatcher_format
 from cheaper.emt.config import Config
 from cheaper.emt.data_loader import load_data, DataType
 from cheaper.emt.data_representation import DeepMatcherProcessor
 from cheaper.emt.evaluation import Evaluation
+from cheaper.emt.logging_customized import setup_logging
 from cheaper.emt.model import save_model, load_model
 from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
-from cheaper.emt.logging_customized import setup_logging
 
 setup_logging()
 
@@ -26,6 +27,7 @@ class EMTERModel:
         self.model_type = model_type
         config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
         config = config_class.from_pretrained(self.model_type)
+        config.is_decoder = False
         self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
         self.model = model_class.from_pretrained(self.model_type, config=config)
         self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)

@@ -1,15 +1,16 @@
 from __future__ import print_function
+
+import logging
 import random
 from collections import Counter
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_dataOnlyMatch, parsing_anhai_nofilter, \
-    check_anhai_dataset
+from random import shuffle
+
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter
 from cheaper.data.plot import plotting_occorrenze, plot_pretrain, plot_dataPT, plot_graph
 from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc
 from cheaper.data.test_occ_attr import init_dict_lista
-from cheaper.similarity.sim_function import min_cos
-from random import shuffle
-import logging
 from cheaper.emt.logging_customized import setup_logging
+from cheaper.similarity.sim_function import min_cos
 
 setup_logging()
 

@@ -1,20 +1,20 @@
 import csv
-from datasketch import MinHash, MinHashLSH
-
+import logging
+import math
 import random
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
-import pandas as pd
-
-import re, math
+import re
 from collections import Counter
+
+import numpy as np
+import pandas as pd
+from datasketch import MinHash, MinHashLSH
+from scipy.stats import entropy
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from cheaper.data.edit_dna import Sequence
 from cheaper.data.plot import plot_pretrain, plotting_dizionari, plot_dataPT
-import logging
 from cheaper.emt.logging_customized import setup_logging
-import numpy as np
-from scipy.stats import entropy
 
 setup_logging()
 '''

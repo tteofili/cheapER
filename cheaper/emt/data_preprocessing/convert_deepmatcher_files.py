@@ -2,10 +2,10 @@ import argparse
 import csv
 import logging
 import os
-from typing import Callable
 import sys
-import pandas as pd
+from typing import Callable
 
+import pandas as pd
 
 logging.basicConfig(level=logging.INFO,
                         format='%(message)s',
