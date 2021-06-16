@@ -144,7 +144,7 @@ def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vins
             row += str(a) + ' '
         lines.append(row)
 
-    ug = []
+    '''ug = []
     for pair in vinsim_data_app:
         ug.append(pair[0])
         ug.append(pair[1])
@@ -153,7 +153,7 @@ def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vins
         row = ''
         for a in l[1:]:
             row += str(a) + ' '
-        lines.append(row)
+        lines.append(row)'''
 
     split = int(len(lines) * 0.9)
     lines_train = lines[:split]
