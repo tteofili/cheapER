@@ -95,8 +95,8 @@ class EMTERModel:
         trainF, validF = deepmatcher_format.tofiles(label_train, label_valid, dataset_name)
         train_examples = processor.get_train_examples_file(trainF)
         label_list = processor.get_labels()
-        training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE, DataType.TRAINING,
-                                         self.model_type)
+        training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE,
+                                         DataType.TRAINING, self.model_type)
 
         num_epochs = epochs
         num_train_steps = len(training_data_loader) * num_epochs
@@ -119,8 +119,9 @@ class EMTERModel:
         exp_name = 'models/' + dataset_name
         evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
 
-        self.model, result = train(device, training_data_loader, self.model, optimizer, scheduler, evaluation, num_epochs, 1.0,
-                       False, experiment_name=exp_name, output_dir=exp_name, model_type=self.model_type)
+        self.model, result = train(device, training_data_loader, self.model, optimizer, scheduler, evaluation,
+                                   num_epochs, 1.0, False, experiment_name=exp_name, output_dir=exp_name,
+                                   model_type=self.model_type)
 
         save_model(self.model, exp_name, exp_name, tokenizer=self.tokenizer)
 

@@ -106,9 +106,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 model = EMTERModel(model_type)
 
                 if params.pretrain:
-                    model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type)
+                    model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type, seq_length=seq_length)
 
-                model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup, epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
+                model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
+                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
 
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test, dataset_name, seq_length=seq_length)
                 new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
