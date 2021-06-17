@@ -46,11 +46,13 @@ class EMTERModel:
             train_dataset = LineByLineTextDataset(
                 tokenizer=self.tokenizer,
                 file_path=unlabelled_train_file,
+                block_size=seq_length,
             )
 
             valid_dataset = LineByLineTextDataset(
                 tokenizer=self.tokenizer,
                 file_path=unlabelled_valid_file,
+                block_size=seq_length,
             )
 
             training_args = TrainingArguments(
