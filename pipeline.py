@@ -88,10 +88,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     results = results.append(new_row, ignore_index=True)
 
                 logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
-                if params.generated_only:
-                    dataDa = vinsim_data_app
-                else:
-                    dataDa = vinsim_data_app + train_cut
+
+                dataDa = vinsim_data_app
 
                 if params.identity:
                     dataDa = add_identity(dataDa)
@@ -102,14 +100,20 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 if params.attribute_shuffle:
                     dataDa = add_shuffle(dataDa)
 
-                logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
+                #logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
                 model = EMTERModel(model_type)
 
                 if params.pretrain:
                     model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type, seq_length=seq_length)
 
+                # existing data train
+                model.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
+                            epochs=params.epochs, lr=params.lr, pretrain=False)
+
+                # generated data train
                 model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
                             epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
+
 
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test, dataset_name, seq_length=seq_length)
                 new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,

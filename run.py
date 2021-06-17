@@ -4,13 +4,13 @@ from pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams()
-params.sigma = 10
-params.kappa = 0
+params.sigma = 100
+params.kappa = 50
 params.epsilon = 0
 params.slicing = [0.1]
-params.lr = 2e-5
-params.epochs = 3
-params.pretrain = True
+params.lr = 1e-4
+params.epochs = 7
+params.pretrain = False
 params.sim_length = 7
 params.models = ['distilbert-base-uncased']
 params.identity = False
@@ -21,6 +21,6 @@ params.generated_only = False
 
 # get datasets
 datasets = get_datasets()
-results_df = cheaper_train(datasets[9], params)
+results_df = cheaper_train(datasets[5], params)
 print(results_df)
 
