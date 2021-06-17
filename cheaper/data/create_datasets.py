@@ -226,7 +226,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     logging.info(f'using threshold={max_sim} to approximate label')
     vinsim_data_app, ignored = converti_approssima(vinsim_data, min_t=min_sim, max_t=max_sim)
     logging.info('discarded {} elements'.format(len(ignored)))
-    logging.info(vinsim_data_app[:15])
+    logging.debug(vinsim_data_app[:15])
 
     # Filtro.
     vinsim_data_app = shrink_data(vinsim_data_app)
