@@ -88,7 +88,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     results = results.append(new_row, ignore_index=True)
 
                 logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
-                dataDa = vinsim_data_app + train_cut
+                if params.generated_only:
+                    dataDa = vinsim_data_app
+                else:
+                    dataDa = vinsim_data_app + train_cut
 
                 if params.identity:
                     dataDa = add_identity(dataDa)
