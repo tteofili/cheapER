@@ -20,7 +20,7 @@ class CheapERParams:
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
-        self.generated_only = False
+        self.generated_only = True
 
     def __str__(self):
         return 'sigma='+ str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',pretrain='\

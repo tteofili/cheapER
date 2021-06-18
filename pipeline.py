@@ -110,7 +110,16 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
                             epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
 
-                # existing data train
+                if params.generated_only:
+                    da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
+                        test, dataset_name, seq_length=seq_length)
+                    new_row = {'model_type': model_type, 'train': 'da-only', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
+                               'f1M': da_f1,
+                               'pNM': da_precisionNOMATCH,
+                               'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
+                    results = results.append(new_row, ignore_index=True)
+
+                # gt data train
                 model.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
                             epochs=params.epochs, lr=params.lr, pretrain=False)
 

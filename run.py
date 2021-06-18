@@ -17,7 +17,6 @@ params.identity = False
 params.symmetry = False
 params.attribute_shuffle = False
 params.compare = False
-params.generated_only = False
 
 # get datasets
 datasets = get_datasets()
