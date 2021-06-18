@@ -4,23 +4,22 @@ from pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams()
-params.sigma = 100
-params.kappa = 50
-params.epsilon = 0
-params.slicing = [0.05, 0.1, 0.2, 0.33]
+params.sigma = 3000
+params.kappa = 1500
+params.epsilon = 0.15
+params.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 0.7, 1]
 params.lr = 2e-5
-params.epochs = 7
+params.epochs = 15
 params.pretrain = True
-params.sim_length = 10
-params.models = ['distilbert-base-uncased']
+params.sim_length = 5
+params.models = ['distilbert-base-uncased', 'roberta-base']
 params.identity = False
 params.symmetry = False
 params.attribute_shuffle = False
 params.compare = False
-params.generated_only = False
 
 # get datasets
 datasets = get_datasets()
-results_df = cheaper_train(datasets[4], params)
+results_df = cheaper_train(datasets[5], params)
 print(results_df)
 
