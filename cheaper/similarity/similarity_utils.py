@@ -102,10 +102,10 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             score = clf.score(X, Y)
             r += 1
         logging.info(f'score: {score}')
-        if lm == 'perceptron':
-            weights = clf.coef_[0]
-        else:
+        if lm == 'ridge':
             weights = clf.coef_
+        else:
+            weights = clf.coef_[0]
         comb = []
         combprint = []
         normalized_weights = weights
@@ -165,10 +165,10 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         score = clf.score(X, Y)
         r += 1
     logging.info(f'agg-sim score: {score}')
-    if lm == 'perceptron':
-        f_weights = clf.coef_[0]
-    else:
+    if lm == 'ridge':
         f_weights = clf.coef_
+    else:
+        f_weights = clf.coef_[0]
 
     if normalize and min(f_weights) < 0:
         f_weights = f_weights + abs(min(f_weights))
