@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+# plt.switch_backend('agg')
 from itertools import islice 
 import logging
 from cheaper.emt.logging_customized import setup_logging

@@ -37,7 +37,9 @@ get_lambda_name = lambda l: getsource(l).strip()
 
 setup_logging()
 
-def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, seq_length, params: CheapERParams):
+
+def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, seq_length, params: CheapERParams,
+                approx='ridge'):
     results = pd.DataFrame()
 
     tableA = pd.read_csv(t1_file)
@@ -52,7 +54,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
     for n in range(params.num_runs):
         for cut in params.slicing:
             simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
-                                        normalize=params.normalize, lm='perceptron')
+                                        normalize=params.normalize, lm=approx)
 
             logging.info('Generating dataset')
             # create datasets

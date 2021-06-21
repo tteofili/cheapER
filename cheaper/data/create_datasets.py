@@ -180,16 +180,16 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
     logging.info("k_slice : " + str(k_slice))
-    random_tuples1 = random_tuples0sort[:int(k_slice*1.5)]
-    logging.info("random_tuples1[:10]")
-    logging.info(random_tuples1[:10])
-    logging.info("random_tuples1[-10:]")
-    logging.info(random_tuples1[-10:])
-    random_tuples2 = random_tuples0sort[-k_slice:]
-    logging.info("random_tuples2[:10]")
-    logging.info(random_tuples2[:10])
-    logging.info("random_tuples2[-10:]")
-    logging.info(random_tuples2[-10:])
+    random_tuples1 = random_tuples0sort[int(k_slice*1):]
+    # logging.info("random_tuples1[:10]")
+    # logging.info(random_tuples1[:10])
+    # logging.info("random_tuples1[-10:]")
+    # logging.info(random_tuples1[-10:])
+    random_tuples2 = random_tuples0sort[-int(k_slice*1):]
+    # logging.info("random_tuples2[:10]")
+    # logging.info(random_tuples2[:10])
+    # logging.info("random_tuples2[-10:]")
+    # logging.info(random_tuples2[-10:])
 
     random_tuples1 += random_tuples2
 
