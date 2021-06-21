@@ -53,7 +53,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
     for n in range(params.num_runs):
         for cut in params.slicing:
             simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
-                                        normalize=params.normalize, lm=approx)
+                                        normalize=params.normalize, lm=params.approx)
 
             logging.info('Generating dataset')
             # create datasets
