@@ -90,23 +90,22 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             tc += 1
         logging.info('fitting classifier')
         score = 0
-        it = 0
-        while score < 0.9 or it < 50:
-            if lm == 'perceptron':
-                clf = linear_model.SGDClassifier(loss='perceptron')
-            else:
-                clf = linear_model.Ridge(fit_intercept=False)
-            r = 0
-            while score < 0.9 and r < 50:
-                clf.fit(X, Y)
-                score = clf.score(X, Y)
-                r += 1
-            logging.info(f'score: {score}')
-            if lm == 'perceptron':
-                weights = clf.coef_[0]
-            else:
-                weights = clf.coef_
-            it += 1
+        if lm == 'perceptron':
+            clf = linear_model.SGDClassifier(loss='perceptron')
+        elif lm == 'ridge':
+            clf = linear_model.Ridge(fit_intercept=False)
+        elif lm == 'logistic':
+            clf = linear_model.LogisticRegression()
+        r = 0
+        while score < 0.9 and r < 50:
+            clf.fit(X, Y)
+            score = clf.score(X, Y)
+            r += 1
+        logging.info(f'score: {score}')
+        if lm == 'perceptron':
+            weights = clf.coef_[0]
+        else:
+            weights = clf.coef_
         comb = []
         combprint = []
         normalized_weights = weights
@@ -154,23 +153,22 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         tc += 1
     logging.info('fitting agg-sim classifier')
     score = 0
-    it = 0
-    while score < 0.9 or it < 50:
-        if lm == 'perceptron':
-            clf = linear_model.SGDClassifier(loss='perceptron')
-        else:
-            clf = linear_model.Ridge(fit_intercept=False)
-        r = 0
-        while score < 0.9 and r < 50:
-            clf.fit(X, Y)
-            score = clf.score(X, Y)
-            r += 1
-        logging.info(f'agg-sim score: {score}')
-        if lm == 'perceptron':
-            f_weights = clf.coef_[0]
-        else:
-            f_weights = clf.coef_
-        it += 1
+    if lm == 'perceptron':
+        clf = linear_model.SGDClassifier(loss='perceptron')
+    elif lm == 'ridge':
+        clf = linear_model.Ridge(fit_intercept=False)
+    elif lm == 'logistic':
+        clf = linear_model.LogisticRegression()
+    r = 0
+    while score < 0.9 and r < 50:
+        clf.fit(X, Y)
+        score = clf.score(X, Y)
+        r += 1
+    logging.info(f'agg-sim score: {score}')
+    if lm == 'perceptron':
+        f_weights = clf.coef_[0]
+    else:
+        f_weights = clf.coef_
 
     if normalize and min(f_weights) < 0:
         f_weights = f_weights + abs(min(f_weights))
