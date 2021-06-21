@@ -38,8 +38,7 @@ get_lambda_name = lambda l: getsource(l).strip()
 setup_logging()
 
 
-def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, seq_length, params: CheapERParams,
-                approx='ridge'):
+def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, seq_length, params: CheapERParams):
     results = pd.DataFrame()
 
     tableA = pd.read_csv(t1_file)

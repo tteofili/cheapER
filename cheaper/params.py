@@ -21,6 +21,7 @@ class CheapERParams:
         self.identity = False
         self.symmetry = False
         self.generated_only = True
+        self.approx = 'perceptron'
 
     def __str__(self):
         return 'sigma='+ str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',pretrain='\
@@ -28,4 +29,5 @@ class CheapERParams:
                + ',sim_length=' + str(self.sim_length) + ',warmup=' + str(self.warmup) + ',epochs=' + str(self.epochs) \
                + ',lr=' + str(self.lr) + ',attribute_shuffle=' + str(self.attribute_shuffle) + ',identity=' \
                + str(self.identity) + ',symmetry=' + str(self.symmetry) + ',models=' + str(self.models) + ',slicing=' \
-               + str(self.slicing) + ',compare=' + str(self.compare) + ',generated_only=' + str(self.generated_only)
+               + str(self.slicing) + ',compare=' + str(self.compare) + ',generated_only=' + str(self.generated_only) \
+               + ',approx=' + str(self.approx)

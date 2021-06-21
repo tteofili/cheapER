@@ -95,7 +95,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         elif lm == 'ridge':
             clf = linear_model.Ridge(fit_intercept=False)
         elif lm == 'logistic':
-            clf = linear_model.LogisticRegression()
+            clf = linear_model.LogisticRegression(fit_intercept=False)
         r = 0
         while score < 0.9 and r < 50:
             clf.fit(X, Y)
@@ -158,7 +158,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     elif lm == 'ridge':
         clf = linear_model.Ridge(fit_intercept=False)
     elif lm == 'logistic':
-        clf = linear_model.LogisticRegression()
+        clf = linear_model.LogisticRegression(fit_intercept=False)
     r = 0
     while score < 0.9 and r < 50:
         clf.fit(X, Y)
