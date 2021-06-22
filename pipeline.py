@@ -63,9 +63,11 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                      t2_file, indexes, simf,
                                                                                      dataset_name,
                                                                                      params.sigma,
-                                                                                     flag_Anhai, params.epsilon, params.kappa,
+                                                                                     flag_Anhai, params.epsilon,
+                                                                                     params.kappa,
                                                                                      params.num_runs, cut, valid_file,
-                                                                                     test_file, adjust_ds_size=False)
+                                                                                     test_file, params.balance,
+                                                                                     params.adjust_ds_size)
             logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
             generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
@@ -80,10 +82,11 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     model = EMTERModel(model_type)
 
                     model.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
-                               epochs=params.epochs, lr=params.lr)
+                                epochs=params.epochs, lr=params.lr)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
                         .eval(test, dataset_name, seq_length=seq_length)
-                    new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision, 'rM': classic_recall,
+                    new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision,
+                               'rM': classic_recall,
                                'f1M': classic_f1,
                                'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
@@ -101,7 +104,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 if params.attribute_shuffle:
                     dataDa = add_shuffle(dataDa)
 
-                #logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
+                # logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
                 model = EMTERModel(model_type)
 
                 if params.pretrain:
@@ -114,7 +117,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 if params.generated_only:
                     da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
                         test, dataset_name, seq_length=seq_length)
-                    new_row = {'model_type': model_type, 'train': 'da-only', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
+                    new_row = {'model_type': model_type, 'train': 'da-only', 'cut': cut, 'pM': da_precision,
+                               'rM': da_recall,
                                'f1M': da_f1,
                                'pNM': da_precisionNOMATCH,
                                'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
@@ -124,8 +128,11 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 model.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
                             epochs=params.epochs, lr=params.lr, pretrain=False)
 
-                da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test, dataset_name, seq_length=seq_length)
-                new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall, 'f1M': da_f1,
+                da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test,
+                                                                                                                 dataset_name,
+                                                                                                                 seq_length=seq_length)
+                new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
+                           'f1M': da_f1,
                            'pNM': da_precisionNOMATCH,
                            'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
                 results = results.append(new_row, ignore_index=True)
@@ -135,7 +142,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
         today = date.today()
         filename = 'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '.csv'
         with open(filename, 'a') as f:
-            f.write('# '+ str(params)+ '\n')
+            f.write('# ' + str(params) + '\n')
         results.to_csv(filename, mode='a')
     return results
 
@@ -189,10 +196,12 @@ def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vins
 
 base_dir = 'datasets' + os.sep
 
+
 def get_datasets():
     datasets = [
         [('%sdirty_walmart_amazon/train.csv' % base_dir), ('%sdirty_walmart_amazon/tableA.csv' % base_dir),
-         ('%sdirty_walmart_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)], 'dirty_walmart_amazon',
+         ('%sdirty_walmart_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)],
+         'dirty_walmart_amazon',
          ('%stemporary/' % base_dir), True, 150],
         [('%sdirty_amazon_itunes/train.csv' % base_dir), ('%sdirty_amazon_itunes/tableA.csv' % base_dir),
          ('%sdirty_amazon_itunes/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'dirty_amazon_itunes',

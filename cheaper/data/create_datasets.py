@@ -14,6 +14,7 @@ from cheaper.similarity.sim_function import min_cos
 
 setup_logging()
 
+
 def add_symmetry(dataDa):
     new_list = dataDa[:]
     for pair in dataDa:
@@ -48,7 +49,7 @@ def add_shuffle(dataDa, mult: int = 1):
 
 
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
-                    soglia, tot_copy, num_run, cut, valid_file, test_file, adjust_ds_size=True):
+                    soglia, tot_copy, num_run, cut, valid_file, test_file, balance, adjust_ds_size):
     logging.info('Parsing original dataset')
     if flag_Anhai == False:
         data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
@@ -135,7 +136,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
                                                                              max_sim, ATT_INDEXES,
                                                                              min_cos_sim, tot_copy, max_occ, simf)
 
-    #result_list_noMatch = result_list_noMatch[:len(result_list_match)]
+    # result_list_noMatch = result_list_noMatch[:len(result_list_match)]
     # test per il count dei valori degli attributi
     lista_attrMATCH, lista_attrNO_MATCH = init_dict_lista(result_list_match, result_list_noMatch, len(ATT_INDEXES))
     logging.info("dizionari occorrenze degli attributi del dataset di pt")
@@ -159,15 +160,13 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # unione in una sola lista random_tuples0= insieme dei candidati per il pt
     random_tuples0 = result_list_noMatch + result_list_match
 
-    logging.info("tot_pt: " + str(tot_pt))
-    # print("len(datapt_hash) " +str(len(datapt_hash)))
-    logging.info("len(random_tuples0) " + str(len(random_tuples0)))
-    logging.info("len(result_list_noMatch) " + str(len(result_list_noMatch)))
-    logging.info("len(result_list_match) " + str(len(result_list_match)))
+    logging.debug("tot_pt: " + str(tot_pt))
+    logging.debug("len(random_tuples0) " + str(len(random_tuples0)))
+    logging.debug("len(result_list_noMatch) " + str(len(result_list_noMatch)))
+    logging.debug("len(result_list_match) " + str(len(result_list_match)))
 
     random.shuffle(random_tuples0)
     random_tuples0sort = sorted(random_tuples0, key=lambda tup: (tup[2][0]))
-    logging.info("---------------- CANDIDATES RANDOM TUPLES -------------------------")
     plot_pretrain(random_tuples0sort)
 
     # SERVE per controllare che i match e i non match siano di egual numero
@@ -175,25 +174,16 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # si suppone che sia riuscito a trovare meno match del k_slice=tot_pt/2
     if len(result_list_match) <= tot_pt / 2:
         k_slice = int(len(result_list_match))
-
-        logging.info("riduco k")
+        logging.debug("riduco k")
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
-    logging.info("k_slice : " + str(k_slice))
-    random_tuples1 = random_tuples0sort[int(k_slice*1):]
-    # logging.info("random_tuples1[:10]")
-    # logging.info(random_tuples1[:10])
-    # logging.info("random_tuples1[-10:]")
-    # logging.info(random_tuples1[-10:])
-    random_tuples2 = random_tuples0sort[-int(k_slice*1):]
-    # logging.info("random_tuples2[:10]")
-    # logging.info(random_tuples2[:10])
-    # logging.info("random_tuples2[-10:]")
-    # logging.info(random_tuples2[-10:])
+    logging.debug("k_slice : " + str(k_slice))
+    random_tuples1 = random_tuples0sort[int(k_slice * (0.5 + balance[0])):]  # likely non matches
+    random_tuples2 = random_tuples0sort[-int(k_slice * (0.5 + balance[1])):]  # likely matches
 
     random_tuples1 += random_tuples2
 
-    logging.info(len(random_tuples1))
+    logging.debug(len(random_tuples1))
     # Concatenazione.
     vinsim_data += random_tuples1
 
