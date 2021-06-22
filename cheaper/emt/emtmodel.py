@@ -60,7 +60,8 @@ class EMTERModel:
                 per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
                 logging_dir='./logs',  # directory for storing logs
                 save_total_limit=2,
-                do_eval=True
+                do_eval=True,
+                num_train_epochs=epochs
             )
 
             data_collator = DataCollatorForLanguageModeling(
@@ -68,7 +69,6 @@ class EMTERModel:
             )
 
             trainer = Trainer(
-                epochs=epochs,
                 model=self.mlm_model,  # the instantiated 🤗 Transformers model to be trained
                 args=training_args,  # training arguments, defined above
                 data_collator=data_collator,
