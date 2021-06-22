@@ -18,7 +18,7 @@ params.symmetry = False
 params.attribute_shuffle = False
 params.compare = False
 params.approx = 'logistic'
-params.balance = [0.3, 0.7]
+params.balance = [0.5, 0.5]
 
 # get datasets
 datasets = get_datasets()
