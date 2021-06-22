@@ -15,6 +15,7 @@ class CheapERParams:
         self.sim_length = 10
         self.warmup = False
         self.epochs = 3
+        self.batch_size = 8
         self.lr = 1e-3
         self.models = config.Config.MODEL_CLASSES
         self.attribute_shuffle = False
@@ -33,4 +34,4 @@ class CheapERParams:
                + str(self.identity) + ',symmetry=' + str(self.symmetry) + ',models=' + str(self.models) + ',slicing=' \
                + str(self.slicing) + ',compare=' + str(self.compare) + ',generated_only=' + str(self.generated_only) \
                + ',approx=' + str(self.approx) + ',balance=' + str(self.balance) + ',adjust_ds_size=' \
-               + str(self.adjust_ds_size)
+               + str(self.adjust_ds_size) + ',batch_size=' + str(self.batch_size)
