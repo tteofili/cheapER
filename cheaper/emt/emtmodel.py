@@ -54,6 +54,7 @@ class EMTERModel:
             )
 
             training_args = TrainingArguments(
+                learning_rate=lr,
                 output_dir='./results',  # output directory
                 per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
                 per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
@@ -67,7 +68,6 @@ class EMTERModel:
             )
 
             trainer = Trainer(
-                learning_rate=lr,
                 epochs=epochs,
                 model=self.mlm_model,  # the instantiated 🤗 Transformers model to be trained
                 args=training_args,  # training arguments, defined above
