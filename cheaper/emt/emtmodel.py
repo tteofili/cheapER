@@ -27,14 +27,12 @@ class EMTERModel:
         self.model_type = model_type
         config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
         config = config_class.from_pretrained(self.model_type)
-        config.is_decoder = False
         self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
         self.model = model_class.from_pretrained(self.model_type, config=config)
         self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
 
     def pretrain(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
-                 seq_length=MAX_SEQ_LENGTH, warmup=False,
-                 epochs=3, lr=1e-3):
+                 seq_length=MAX_SEQ_LENGTH, epochs=3, lr=1e-3):
 
         model_dir = 'models/' + dataset_name + "/mlm-" + model_type
         if not os.path.exists(model_dir):
@@ -69,6 +67,8 @@ class EMTERModel:
             )
 
             trainer = Trainer(
+                learning_rate=lr,
+                epochs=epochs,
                 model=self.mlm_model,  # the instantiated 🤗 Transformers model to be trained
                 args=training_args,  # training arguments, defined above
                 data_collator=data_collator,

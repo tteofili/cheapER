@@ -108,7 +108,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 model = EMTERModel(model_type)
 
                 if params.pretrain:
-                    model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type, seq_length=seq_length)
+                    model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type, seq_length=seq_length,
+                                   epochs=params.epochs, lr=params.lr)
 
                 # generated data train only
                 if params.generated_only:
