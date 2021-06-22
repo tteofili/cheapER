@@ -17,7 +17,7 @@ params.identity = False
 params.symmetry = False
 params.attribute_shuffle = False
 params.compare = False
-params.approx = 'logistic'
+params.approx = 'perceptron'
 params.balance = [0.5, 0.5]
 
 # get datasets

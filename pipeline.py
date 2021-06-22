@@ -110,7 +110,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 if params.pretrain:
                     model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type, seq_length=seq_length)
 
-                # generated data train
+                # generated data train only
                 if params.generated_only:
                     model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
                             epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
@@ -125,7 +125,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
 
-                # gt data train
+                # gt+generated data train
+                model = EMTERModel(model_type)
                 model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
                             epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
 
