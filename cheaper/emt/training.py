@@ -32,7 +32,7 @@ def train(device,
     model.zero_grad()
 
     # we are interested in 0 shot learning, therefore we already evaluate before training.
-    eval_results = evaluation.evaluate(model, device, -1)
+    eval_results = evaluation.evaluate(model, device, -1, silent)
     # for key, value in eval_results.items():
     #     tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
 
