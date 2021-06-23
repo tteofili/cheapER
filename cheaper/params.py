@@ -23,7 +23,7 @@ class CheapERParams:
         self.symmetry = False
         self.generated_only = True
         self.adjust_ds_size = False
-        self.silent = False
+        self.silent = True
         self.approx = 'perceptron'
         self.balance = [0.5, 0.5]
 
