@@ -39,7 +39,7 @@ def train(device,
     f1_top = 0
     best_model_location = None
     best_eval = None
-    for epoch in trange(int(num_epocs), desc="Epoch"):
+    for epoch in trange(int(num_epocs), desc="Epoch", disable=silent):
         for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration", disable=silent)):
             model.train()
 
