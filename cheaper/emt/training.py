@@ -69,7 +69,7 @@ def train(device,
             tb_writer.add_scalar('loss', (tr_loss - logging_loss), global_step)
             logging_loss = tr_loss
 
-        eval_results = evaluation.evaluate(model, device, epoch)
+        eval_results = evaluation.evaluate(model, device, epoch, silent)
         # for key, value in eval_results.items():
         #     tb_writer.add_scalar('eval_{}'.format(key), value, global_step)
 
