@@ -104,7 +104,6 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 if params.attribute_shuffle:
                     dataDa = add_shuffle(dataDa)
 
-                # logging.info('Training with {} record pairs (generated dataset {} + {}% GT)'.format(len(dataDa), len(vinsim_data_app), 100 * cut))
                 model = EMTERModel(model_type)
 
                 if params.pretrain:
