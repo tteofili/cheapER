@@ -5,12 +5,12 @@ from sklearn.metrics import f1_score, classification_report
 from tqdm import tqdm
 
 
-def predict(model, device, test_data_loader):
+def predict(model, device, test_data_loader, silent):
     nb_prediction_steps = 0
     predictions = None
     labels = None
 
-    for batch in tqdm(test_data_loader, desc="Test"):
+    for batch in tqdm(test_data_loader, desc="Test", disable=silent):
         model.eval()
         batch = tuple(t.to(device) for t in batch)
 

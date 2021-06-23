@@ -18,13 +18,13 @@ class Evaluation:
         self.n_labels = n_labels
         self.output_path = os.path.join(model_output_dir, experiment_name, "eval_results.txt")
 
-    def evaluate(self, model, device, epoch):
+    def evaluate(self, model, device, epoch, silent):
         nb_eval_steps = 0
         eval_loss = 0.0
         predictions = None
         labels = None
 
-        for batch in tqdm(self.evaluation_data_loader, desc="Evaluating"):
+        for batch in tqdm(self.evaluation_data_loader, desc="Evaluating", disable=silent):
             model.eval()
             batch = tuple(t.to(device) for t in batch)
 

@@ -114,7 +114,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 # generated data train only
                 if params.generated_only:
                     model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
+                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain, silent=params.silent)
 
 
                     da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
@@ -129,7 +129,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 # gt+generated data train
                 model = EMTERModel(model_type)
                 model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain)
+                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain, silent=params.silent)
 
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test,
                                                                                                                  dataset_name,

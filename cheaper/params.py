@@ -23,6 +23,7 @@ class CheapERParams:
         self.symmetry = False
         self.generated_only = True
         self.adjust_ds_size = False
+        self.silent = False
         self.approx = 'perceptron'
         self.balance = [0.5, 0.5]
 
@@ -34,4 +35,4 @@ class CheapERParams:
                + str(self.identity) + ',symmetry=' + str(self.symmetry) + ',models=' + str(self.models) + ',slicing=' \
                + str(self.slicing) + ',compare=' + str(self.compare) + ',generated_only=' + str(self.generated_only) \
                + ',approx=' + str(self.approx) + ',balance=' + str(self.balance) + ',adjust_ds_size=' \
-               + str(self.adjust_ds_size) + ',batch_size=' + str(self.batch_size)
+               + str(self.adjust_ds_size) + ',batch_size=' + str(self.batch_size) + ',silent=' + str(self.silent)

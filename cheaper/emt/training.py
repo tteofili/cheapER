@@ -22,7 +22,8 @@ def train(device,
           save_model_after_epoch,
           experiment_name,
           output_dir,
-          model_type):
+          model_type,
+          silent):
     logging.info("***** Run training *****")
     tb_writer = SummaryWriter(os.path.join(output_dir, experiment_name))
 
@@ -39,7 +40,7 @@ def train(device,
     best_model_location = None
     best_eval = None
     for epoch in trange(int(num_epocs), desc="Epoch"):
-        for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
+        for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration", disable=silent)):
             model.train()
 
             batch = tuple(t.to(device) for t in batch)

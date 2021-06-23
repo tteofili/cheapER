@@ -81,7 +81,7 @@ class EMTERModel:
 
 
     def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
-              epochs=3, lr=1e-5, pretrain=False):
+              epochs=3, lr=1e-5, pretrain=False, silent=False):
         device, n_gpu = initialize_gpu_seed(22)
 
         if pretrain:
@@ -120,8 +120,7 @@ class EMTERModel:
         evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
 
         self.model, result = train(device, training_data_loader, self.model, optimizer, scheduler, evaluation,
-                                   num_epochs, 1.0, False, experiment_name=exp_name, output_dir=exp_name,
-                                   model_type=self.model_type)
+                                   num_epochs, 1.0, False, exp_name, exp_name, self.model_type, silent)
 
         save_model(self.model, exp_name, exp_name, tokenizer=self.tokenizer)
 
@@ -142,7 +141,7 @@ class EMTERModel:
     def save(self, path):
         save_model(self.model, path, path, tokenizer=self.tokenizer)
 
-    def eval(self, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH):
+    def eval(self, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH, silent=False):
         device, n_gpu = initialize_gpu_seed(22)
 
         self.model = self.model.to(device)
@@ -157,7 +156,7 @@ class EMTERModel:
 
         exp_name = 'models/' + dataset_name
         evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
-        result = evaluation.evaluate(self.model, device, -1)
+        result = evaluation.evaluate(self.model, device, -1, silent)
 
         l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
         l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
