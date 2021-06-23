@@ -81,7 +81,7 @@ class EMTERModel:
 
 
     def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
-              epochs=3, lr=1e-5, pretrain=False, silent=False):
+              epochs=3, lr=1e-5, pretrain=False, silent=False, batch_size=BATCH_SIZE):
         device, n_gpu = initialize_gpu_seed(22)
 
         if pretrain:
@@ -95,7 +95,7 @@ class EMTERModel:
         trainF, validF = deepmatcher_format.tofiles(label_train, label_valid, dataset_name)
         train_examples = processor.get_train_examples_file(trainF)
         label_list = processor.get_labels()
-        training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, BATCH_SIZE,
+        training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, batch_size,
                                          DataType.TRAINING, self.model_type)
 
         num_epochs = epochs
@@ -113,7 +113,7 @@ class EMTERModel:
                                                weight_decay)
 
         eval_examples = processor.get_test_examples_file(validF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 2 * BATCH_SIZE,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 2 * batch_size,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'models/' + dataset_name
@@ -141,7 +141,7 @@ class EMTERModel:
     def save(self, path):
         save_model(self.model, path, path, tokenizer=self.tokenizer)
 
-    def eval(self, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH, silent=False):
+    def eval(self, label_test, dataset_name, seq_length=MAX_SEQ_LENGTH, silent=False, batch_size=BATCH_SIZE):
         device, n_gpu = initialize_gpu_seed(22)
 
         self.model = self.model.to(device)
@@ -151,7 +151,7 @@ class EMTERModel:
         label_list = processor.get_labels()
 
         eval_examples = processor.get_test_examples_file(testF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 2 * BATCH_SIZE,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 2 * batch_size,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'models/' + dataset_name

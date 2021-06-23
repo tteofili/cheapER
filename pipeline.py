@@ -82,9 +82,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     model = EMTERModel(model_type)
 
                     model.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
-                                epochs=params.epochs, lr=params.lr)
+                                epochs=params.epochs, lr=params.lr, batch_size=params.batch_size)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                        .eval(test, dataset_name, seq_length=seq_length)
+                        .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
                     new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision,
                                'rM': classic_recall,
                                'f1M': classic_f1,
@@ -114,11 +114,12 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 # generated data train only
                 if params.generated_only:
                     model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain, silent=params.silent)
+                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain, silent=params.silent,
+                                batch_size=params.batch_size)
 
 
                     da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
-                        test, dataset_name, seq_length=seq_length)
+                        test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
                     new_row = {'model_type': model_type, 'train': 'da-only', 'cut': cut, 'pM': da_precision,
                                'rM': da_recall,
                                'f1M': da_f1,
@@ -129,11 +130,13 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 # gt+generated data train
                 model = EMTERModel(model_type)
                 model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain, silent=params.silent)
+                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain, silent=params.silent,
+                            batch_size=params.batch_size)
 
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test,
                                                                                                                  dataset_name,
-                                                                                                                 seq_length=seq_length)
+                                                                                                                 seq_length=seq_length,
+                                                                                                                 batch_size=params.batch_size)
                 new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
                            'f1M': da_f1,
                            'pNM': da_precisionNOMATCH,
