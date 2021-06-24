@@ -53,7 +53,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
     for n in range(params.num_runs):
         for cut in params.slicing:
             simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
-                                        normalize=params.normalize, lm=params.approx)
+                                        normalize=params.normalize, lm=params.approx, deeper_trick=params.deeper_trick)
 
             logging.info('Generating dataset')
             # create datasets
@@ -67,7 +67,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                      params.kappa,
                                                                                      params.num_runs, cut, valid_file,
                                                                                      test_file, params.balance,
-                                                                                     params.adjust_ds_size)
+                                                                                     params.adjust_ds_size,
+                                                                                     params.deeper_trick)
             logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
             generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
@@ -106,14 +107,14 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                 model = EMTERModel(model_type)
 
-                if params.pretrain:
-                    model.pretrain(unlabelled_train, unlabelled_valid, dataset_name, model_type, seq_length=seq_length,
-                                   epochs=params.epochs, lr=params.lr)
+                if params.adaptive_ft:
+                    model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type, seq_length=seq_length,
+                                      epochs=params.epochs, lr=params.lr)
 
                 # generated data train only
                 if params.generated_only:
                     model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain, silent=params.silent,
+                                epochs=params.epochs, lr=params.lr, pretrain=params.adaptive_ft, silent=params.silent,
                                 batch_size=params.batch_size)
 
 
@@ -129,7 +130,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 # gt+generated data train
                 model = EMTERModel(model_type)
                 model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                            epochs=params.epochs, lr=params.lr, pretrain=params.pretrain, silent=params.silent,
+                            epochs=params.epochs, lr=params.lr, pretrain=params.adaptive_ft, silent=params.silent,
                             batch_size=params.batch_size)
 
                 da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test,

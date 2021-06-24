@@ -10,7 +10,7 @@ import numpy as np
 from sklearn import linear_model
 
 from cheaper.data.create_datasets import create_datasets
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, check_anhai_dataset
 from cheaper.data.plot import plot_dataPT
 from cheaper.emt.logging_customized import setup_logging
 
@@ -68,11 +68,15 @@ def create_single_sim(bf_fun):
 
 
 def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions, cut, num_funcs, check=False,
-                         normalize=True, lm='perceptron'):
+                         normalize=True, lm='perceptron', deeper_trick=False):
     best = []
     for k in attr_indexes:
         logging.info('getting attribute values')
-        data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], cut=cut)
+        if deeper_trick:
+            data = check_anhai_dataset(gt_file, t1_file, t2_file, [k], sim_functions[2])
+            data = data[:int(len(data)*cut)]
+        else:
+            data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], cut=cut)
 
         npdata = np.array(data, dtype=object)
         X = np.zeros([len(npdata), len(sim_functions)])

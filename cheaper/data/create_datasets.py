@@ -5,7 +5,7 @@ import random
 from collections import Counter
 from random import shuffle
 
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter, check_anhai_dataset
 from cheaper.data.plot import plotting_occorrenze, plot_pretrain, plot_dataPT, plot_graph
 from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc
 from cheaper.data.test_occ_attr import init_dict_lista
@@ -49,15 +49,17 @@ def add_shuffle(dataDa, mult: int = 1):
 
 
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
-                    soglia, tot_copy, num_run, cut, valid_file, test_file, balance, adjust_ds_size):
+                    soglia, tot_copy, num_run, cut, valid_file, test_file, balance, adjust_ds_size, deeper_trick):
     logging.info('Parsing original dataset')
     if flag_Anhai == False:
         data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
     else:
-        # data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        if deeper_trick:
+            data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        else:
+            data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
         test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
@@ -178,7 +180,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
     logging.debug("k_slice : " + str(k_slice))
-    random_tuples1 = random_tuples0sort[int(k_slice * (0.5 + balance[0])):]  # likely non matches
+    random_tuples1 = random_tuples0sort[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
     random_tuples2 = random_tuples0sort[-int(k_slice * (0.5 + balance[1])):]  # likely matches
 
     random_tuples1 += random_tuples2
