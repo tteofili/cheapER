@@ -6,7 +6,7 @@ from pipeline import get_datasets
 params = CheapERParams()
 params.sigma = 100
 params.kappa = 10
-params.epsilon = 0.01
+params.epsilon = 0.05
 params.slicing = [0.05]
 params.lr = 2e-5
 params.epochs = 3
@@ -24,6 +24,6 @@ params.batch_size = 8
 
 # get datasets
 datasets = get_datasets()
-results_df = cheaper_train(datasets[1], params)
+results_df = cheaper_train(datasets[5], params)
 print(results_df)
 

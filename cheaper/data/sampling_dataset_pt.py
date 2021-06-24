@@ -527,7 +527,7 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
     stop = False
     match = len(result_list_match)
     no_match = len(result_list_noMatch)
-    pair_max_visit = 10 * (totale - match)
+    pair_max_visit = 3 * totale
     logging.info(f'max pair visit: {pair_max_visit}')
     while count_i < pair_max_visit and (match < totale or no_match < totale) and not stop:
         x = random.randint(1, len(tableLlist) - 1)

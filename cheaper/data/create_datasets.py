@@ -134,11 +134,11 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # tot_pt = max(1000, bound * 2)
     # tot_copy = tot_pt * 0.1
     result_list_noMatch, result_list_match, consistency_list = create_lists(TABLE1_FILE, TABLE2_FILE, tot_pt,
-                                                                             min_sim,
-                                                                             max_sim, ATT_INDEXES,
-                                                                             min_cos_sim, tot_copy, max_occ, simf)
-    logging.info("{} matches, {} non-matches, {} consistency pairs", len(result_list_noMatch),
-                 len(result_list_noMatch), len(consistency_list))
+                                                                            min_sim,
+                                                                            max_sim, ATT_INDEXES,
+                                                                            min_cos_sim, tot_copy, max_occ, simf)
+    logging.info("{} matches, {} non-matches, {} consistency pairs".format(len(result_list_noMatch),
+                                                                           len(result_list_noMatch), len(consistency_list)))
 
     # result_list_noMatch = result_list_noMatch[:len(result_list_match)]
     # test per il count dei valori degli attributi
@@ -184,11 +184,16 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     logging.debug("k_slice : " + str(k_slice))
     neg_slice = int(k_slice * (0.5 + balance[0]))
     random_tuples1 = random_tuples0sort[:neg_slice]  # likely non matches
+    logging.info("num of non-matches {}".format(len(random_tuples1)))
+
     pos_slice = int(k_slice * (0.5 + balance[1]))
     random_tuples2 = random_tuples0sort[-pos_slice:]  # likely matches
+    logging.info("num of matches {}".format(len(random_tuples2)))
 
-    if len(random_tuples1) < pos_slice:
-        random_tuples1 += consistency_list[:pos_slice]
+    if len(random_tuples2) < pos_slice:
+        consistency_slice = pos_slice - len(random_tuples2)
+        logging.info("adding {} consistency pairs".format(consistency_slice))
+        random_tuples2 += consistency_list[:consistency_slice]
 
     random_tuples1 += random_tuples2
 
