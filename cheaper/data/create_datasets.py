@@ -7,7 +7,7 @@ from random import shuffle
 
 from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter, check_anhai_dataset
 from cheaper.data.plot import plotting_occorrenze, plot_pretrain, plot_dataPT, plot_graph
-from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc
+from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc, create_lists
 from cheaper.data.test_occ_attr import init_dict_lista
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.similarity.sim_function import min_cos
@@ -133,10 +133,12 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # costruisce i dataset di pt con un max di occurrenza di una tuple di max_occ volte   csvTable2datasetRANDOM_NOOcc
     # tot_pt = max(1000, bound * 2)
     # tot_copy = tot_pt * 0.1
-    result_list_noMatch, result_list_match = csvTable2datasetRANDOM_countOcc(TABLE1_FILE, TABLE2_FILE, tot_pt,
+    result_list_noMatch, result_list_match, consistency_list = create_lists(TABLE1_FILE, TABLE2_FILE, tot_pt,
                                                                              min_sim,
                                                                              max_sim, ATT_INDEXES,
                                                                              min_cos_sim, tot_copy, max_occ, simf)
+    logging.info("{} matches, {} non-matches, {} consistency pairs", len(result_list_noMatch),
+                 len(result_list_noMatch), len(consistency_list))
 
     # result_list_noMatch = result_list_noMatch[:len(result_list_match)]
     # test per il count dei valori degli attributi
@@ -180,17 +182,19 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
     logging.debug("k_slice : " + str(k_slice))
-    random_tuples1 = random_tuples0sort[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
-    random_tuples2 = random_tuples0sort[-int(k_slice * (0.5 + balance[1])):]  # likely matches
+    neg_slice = int(k_slice * (0.5 + balance[0]))
+    random_tuples1 = random_tuples0sort[:neg_slice]  # likely non matches
+    pos_slice = int(k_slice * (0.5 + balance[1]))
+    random_tuples2 = random_tuples0sort[-pos_slice:]  # likely matches
+
+    if len(random_tuples1) < pos_slice:
+        random_tuples1 += consistency_list[:pos_slice]
 
     random_tuples1 += random_tuples2
 
     logging.debug(len(random_tuples1))
     # Concatenazione.
     vinsim_data += random_tuples1
-
-    # vinsim_data +=random_tuples0
-    # vinsim_data += random_tuples
     # Shuffle.
     shuffle(vinsim_data)
 

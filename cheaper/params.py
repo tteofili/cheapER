@@ -15,18 +15,18 @@ class CheapERParams:
         self.sim_length = 10
         self.warmup = False
         self.epochs = 3
-        self.batch_size = 8
         self.lr = 1e-3
         self.models = config.Config.MODEL_CLASSES
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
-        self.generated_only = True
         self.adjust_ds_size = False
-        self.silent = True
-        self.deeper_trick = False
         self.approx = 'perceptron'
+        self.generated_only = True
+        self.silent = True
+        self.batch_size = 8
         self.balance = [0.5, 0.5]
+        self.deeper_trick = False
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
