@@ -27,6 +27,7 @@ class CheapERParams:
         self.batch_size = 8
         self.balance = [0.5, 0.5]
         self.deeper_trick = False
+        self.consistency = True
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
@@ -37,4 +38,4 @@ class CheapERParams:
                + str(self.slicing) + ',compare=' + str(self.compare) + ',generated_only=' + str(self.generated_only) \
                + ',approx=' + str(self.approx) + ',balance=' + str(self.balance) + ',adjust_ds_size=' \
                + str(self.adjust_ds_size) + ',batch_size=' + str(self.batch_size) + ',silent=' + str(self.silent) \
-               + ',deeper_trick=' + str(self.deeper_trick)
+               + ',deeper_trick=' + str(self.deeper_trick) + ',consistency=' + str(self.consistency)

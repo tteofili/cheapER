@@ -49,7 +49,8 @@ def add_shuffle(dataDa, mult: int = 1):
 
 
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
-                    soglia, tot_copy, num_run, cut, valid_file, test_file, balance, adjust_ds_size, deeper_trick):
+                    soglia, tot_copy, num_run, cut, valid_file, test_file, balance, adjust_ds_size, deeper_trick,
+                    consistency):
     logging.info('Parsing original dataset')
     if flag_Anhai == False:
         data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
@@ -190,7 +191,10 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     random_tuples2 = random_tuples0sort[-pos_slice:]  # likely matches
     logging.info("num of matches {}".format(len(random_tuples2)))
 
-    if len(random_tuples2) < pos_slice:
+    if consistency:
+        logging.info("adding {} consistency pairs".format(len(consistency_list)))
+        random_tuples2 += consistency_list
+    elif len(random_tuples2) < pos_slice:
         consistency_slice = pos_slice - len(random_tuples2)
         logging.info("adding {} consistency pairs".format(consistency_slice))
         random_tuples2 += consistency_list[:consistency_slice]

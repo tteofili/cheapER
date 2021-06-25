@@ -19,8 +19,8 @@ params.attribute_shuffle = False
 params.compare = False
 params.silent = False
 params.approx = 'perceptron'
-params.balance = [0.5, 0.5]
-params.batch_size = 8
+params.balance = [0.6, 0.4]
+params.batch_size = 4
 
 # get datasets
 datasets = get_datasets()
