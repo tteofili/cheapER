@@ -81,13 +81,13 @@ class EMTERModel:
 
 
     def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
-              epochs=3, lr=1e-5, pretrain=False, silent=False, batch_size=BATCH_SIZE):
+              epochs=3, lr=1e-5, adaptive_ft=False, silent=False, batch_size=BATCH_SIZE):
         device, n_gpu = initialize_gpu_seed(22)
 
-        if pretrain:
-            pt_model_dir = 'models/' + dataset_name + "/mlm-" + model_type
-            logging.info('loading pretrained model from {}'.format(pt_model_dir))
-            self.model = load_model(pt_model_dir)
+        if adaptive_ft:
+            adaptive_ft_model_dir = 'models/' + dataset_name + "/mlm-" + model_type
+            logging.info('loading adaptive_ft model from {}'.format(adaptive_ft_model_dir))
+            self.model = load_model(adaptive_ft_model_dir)
 
         self.model = self.model.to(device)
 

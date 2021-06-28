@@ -122,7 +122,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             vinsim_data.append((r[0], r[1], r[2]))
 
     # Taglio della porzione desiderata.
-    bound = int(len(vinsim_data) * cut)
+    bound = int(len(data) * cut)
     vinsim_data = vinsim_data[:bound]
 
     min_cos_sim = min_cos(vinsim_data)

@@ -109,15 +109,15 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 model = EMTERModel(model_type)
 
                 if params.adaptive_ft:
-                    model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type, seq_length=seq_length,
+                    model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
+                                      seq_length=seq_length,
                                       epochs=params.epochs, lr=params.lr)
 
                 # generated data train only
                 if params.generated_only:
                     model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                                epochs=params.epochs, lr=params.lr, pretrain=params.adaptive_ft, silent=params.silent,
+                                epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft, silent=params.silent,
                                 batch_size=params.batch_size)
-
 
                     da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
                         test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
@@ -130,14 +130,13 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                 # gt+generated data train
                 model = EMTERModel(model_type)
-                model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                            epochs=params.epochs, lr=params.lr, pretrain=params.adaptive_ft, silent=params.silent,
+                model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
+                            warmup=params.warmup,
+                            epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft, silent=params.silent,
                             batch_size=params.batch_size)
 
-                da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(test,
-                                                                                                                 dataset_name,
-                                                                                                                 seq_length=seq_length,
-                                                                                                                 batch_size=params.batch_size)
+                da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
+                    test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
                 new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
                            'f1M': da_f1,
                            'pNM': da_precisionNOMATCH,
