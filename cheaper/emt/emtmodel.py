@@ -113,7 +113,7 @@ class EMTERModel:
                                                weight_decay)
 
         eval_examples = processor.get_test_examples_file(validF)
-        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, 2 * batch_size,
+        evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, batch_size,
                                            DataType.EVALUATION, self.model_type)
 
         exp_name = 'models/' + dataset_name

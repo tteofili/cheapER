@@ -120,7 +120,7 @@ def sampling_table(table_list, indici):
     return result_list1, data
 
 
-def minHash_LSH(data, threshold, num_perm=128, weights=(0.5, 0.5)):
+def minHash_LSH(data, threshold=0.65, num_perm=256, weights=(0.5, 0.5)):
     # Create an MinHashLSH index optimized for Jaccard threshold 0.5,
     # that accepts MinHash objects with 128 permutations functions
     # Create LSH index
@@ -220,9 +220,8 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match, dictR_mat
     indiciL, indiciR = split_indici(indici)
     data4hash, dataL, dataR, tableLlist, tableRlist = create_data(tableL, tableR, indiciL, indiciR)
     res = []
-    for perms in [32, 64, 128]:
-        res += minHash_LSH(data4hash, max_sim, num_perm=perms, weights=(0.1, 0.9))
-        res += minHash_LSH(data4hash, min_sim, num_perm=perms, weights=(0.1, 0.9))
+    for perms in [256]:
+        res += minHash_LSH(data4hash)
     dataset_pt = create_dataset_pt(res, dataL, dataR, tableLlist, tableRlist, min_sim, max_sim, dictL_match,
                                    dictR_match, dictL_NOmatch, dictR_NOmatch, sim_function)
     logging.info("LSH blocking done")
@@ -507,12 +506,11 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
     logging.info(f'{len(result_list_noMatch)} negative pairs found via LSH blocking and high similarity check')
 
     count_i = 0
-    stop = False
     match = len(result_list_match)
     no_match = len(result_list_noMatch)
-    pair_max_visit = 3 * totale
-    logging.info(f'max pair visit: {pair_max_visit}')
-    while count_i < pair_max_visit and (match < totale or no_match < totale) and not stop:
+    bigger_size = 3 * totale
+    logging.info(f'max pair visit: {bigger_size}')
+    while loop_i<120000 and (match<bigger_size or no_match<bigger_size):
         x = random.randint(1, len(tableLlist) - 1)
         y = random.randint(1, len(tableRlist) - 1)
         tableL_el = []
@@ -541,10 +539,7 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
                         # count_occurrence(dictR_match, tableR_ELEM)
 
                         result_list_match.append((tableL_el, tableR_el, sim_vector))
-                        marginal_entropy = (entropy1(concatenate_list_data(tableL_el).split(' ')) + entropy1(
-                            concatenate_list_data(tableR_el).split(' '))) / (1 + len(result_list_match))
-                        if marginal_entropy < 1e-4:
-                            stop = True
+
                         match = match + 1
 
                         # logging.info("lista random match: " +str(match)+" loop_i: "+str(loop_i))
@@ -560,10 +555,7 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
                         # NO_match
                         # count_occurrence(dictL_NOmatch, tableL_ELEM)
                         # count_occurrence(dictR_NOmatch, tableR_ELEM)
-                        marginal_entropy = (entropy1(concatenate_list_data(tableL_el).split(' ')) + entropy1(
-                            concatenate_list_data(tableR_el).split(' '))) / (1 + len(result_list_noMatch))
-                        if marginal_entropy < 1e-4:
-                            stop = True
+
                         result_list_noMatch.append((tableL_el, tableR_el, sim_vector))
                         no_match = no_match + 1
                         loop_i = 0
