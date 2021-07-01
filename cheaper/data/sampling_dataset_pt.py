@@ -220,12 +220,8 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match, dictR_mat
     indiciL, indiciR = split_indici(indici)
     data4hash, dataL, dataR, tableLlist, tableRlist = create_data(tableL, tableR, indiciL, indiciR)
     res = []
-    for perms in [32, 64, 128, 256]:
-        res += minHash_LSH(data4hash, max_sim, num_perm=perms, weights=(0.9, 0.1))
+    for perms in [32, 64, 128]:
         res += minHash_LSH(data4hash, max_sim, num_perm=perms, weights=(0.1, 0.9))
-        res += minHash_LSH(data4hash, max_sim, num_perm=perms, weights=(0.5, 0.5))
-        res += minHash_LSH(data4hash, min_sim, num_perm=perms, weights=(0.5, 0.5))
-        res += minHash_LSH(data4hash, min_sim, num_perm=perms, weights=(0.9, 0.1))
         res += minHash_LSH(data4hash, min_sim, num_perm=perms, weights=(0.1, 0.9))
     dataset_pt = create_dataset_pt(res, dataL, dataR, tableLlist, tableRlist, min_sim, max_sim, dictL_match,
                                    dictR_match, dictL_NOmatch, dictR_NOmatch, sim_function)
