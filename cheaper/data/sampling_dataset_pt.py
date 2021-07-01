@@ -219,26 +219,14 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match, dictR_mat
                 sim_function):
     indiciL, indiciR = split_indici(indici)
     data4hash, dataL, dataR, tableLlist, tableRlist = create_data(tableL, tableR, indiciL, indiciR)
-    # res = minHash_LSH(data4hash, min(max_sim-0.1, 0.99), num_perm=256)
-    # res += minHash_LSH(data4hash, min(max_sim-0.1, 0.99), num_perm=128)
-    # res += minHash_LSH(data4hash, min(max_sim-0.1, 0.99), num_perm=64)
-    # res += minHash_LSH(data4hash, min(max_sim-0.1, 0.99), num_perm=32)
-    # res += minHash_LSH(data4hash, min(max_sim, 0.99), num_perm=256)
-    # res += minHash_LSH(data4hash, min(max_sim, 0.99), num_perm=128)
-    # res += minHash_LSH(data4hash, min(max_sim, 0.99), num_perm=64)
-    # res += minHash_LSH(data4hash, min(max_sim, 0.99), num_perm=32)
-    # res += minHash_LSH(data4hash, min(max_sim+0.1, 0.99), num_perm=256)
-    # res += minHash_LSH(data4hash, min(max_sim+0.1, 0.99), num_perm=128)
-    # res += minHash_LSH(data4hash, min(max_sim+0.1, 0.99), num_perm=64)
-    # res += minHash_LSH(data4hash, min(max_sim+0.1, 0.99), num_perm=32)
-    # res += minHash_LSH(data4hash, 0.9, num_perm=256)
-    # res += minHash_LSH(data4hash, 0.9, num_perm=128)
-    # res += minHash_LSH(data4hash, 0.9, num_perm=64)
-    # res += minHash_LSH(data4hash, 0.9, num_perm=32)
-    res = minHash_LSH(data4hash, max_sim, num_perm=64, weights=(0.9, 0.1))
-    res += minHash_LSH(data4hash, max_sim, num_perm=64, weights=(0.1, 0.9))
-    res += minHash_LSH(data4hash, min_sim, num_perm=64, weights=(0.9, 0.1))
-    res += minHash_LSH(data4hash, min_sim, num_perm=64, weights=(0.1, 0.9))
+    res = []
+    for perms in [32, 64, 128, 256]:
+        res += minHash_LSH(data4hash, max_sim, num_perm=perms, weights=(0.9, 0.1))
+        res += minHash_LSH(data4hash, max_sim, num_perm=perms, weights=(0.1, 0.9))
+        res += minHash_LSH(data4hash, max_sim, num_perm=perms, weights=(0.5, 0.5))
+        res += minHash_LSH(data4hash, min_sim, num_perm=perms, weights=(0.5, 0.5))
+        res += minHash_LSH(data4hash, min_sim, num_perm=perms, weights=(0.9, 0.1))
+        res += minHash_LSH(data4hash, min_sim, num_perm=perms, weights=(0.1, 0.9))
     dataset_pt = create_dataset_pt(res, dataL, dataR, tableLlist, tableRlist, min_sim, max_sim, dictL_match,
                                    dictR_match, dictL_NOmatch, dictR_NOmatch, sim_function)
     logging.info("LSH blocking done")
@@ -254,7 +242,6 @@ def copy_EDIT_match(tupla):
         change_attr = random.randint(0, 2)
         attr = Sequence(tupla[i])
         if len(tupla[i]) > 1 and change_attr == 1:
-            # logging.info(attr)
             d = 3  # max edit distance
             n = 3  # number of strings in result
             try:
