@@ -220,8 +220,9 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match, dictR_mat
     indiciL, indiciR = split_indici(indici)
     data4hash, dataL, dataR, tableLlist, tableRlist = create_data(tableL, tableR, indiciL, indiciR)
     res = []
-    for perms in [256]:
-        res += minHash_LSH(data4hash)
+    weights = [0.5, 0.5]
+    for threshold, num_perm in [(0.65, 128), (max_sim, 128)]:
+        res += minHash_LSH(data4hash, threshold=threshold, num_perm=num_perm, weights=weights)
     dataset_pt = create_dataset_pt(res, dataL, dataR, tableLlist, tableRlist, min_sim, max_sim, dictL_match,
                                    dictR_match, dictL_NOmatch, dictR_NOmatch, sim_function)
     logging.info("LSH blocking done")
@@ -341,7 +342,7 @@ def csvTable2datasetRANDOM_countOcc(tableL, tableR, totale, min_sim, max_sim, in
     no_match = len(result_list_noMatch)
     pair_max_visit = 10 * (totale - match)
     logging.info(f'max pair visit: {pair_max_visit}')
-    while count_i < pair_max_visit and (match < totale or no_match < totale) and not stop:
+    while loop_i < pair_max_visit and (match < totale or no_match < totale) and not stop:
         x = random.randint(1, len(tableLlist) - 1)
         y = random.randint(1, len(tableRlist) - 1)
         tableL_el = []
@@ -506,11 +507,9 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
     logging.info(f'{len(result_list_noMatch)} negative pairs found via LSH blocking and high similarity check')
 
     count_i = 0
-    match = len(result_list_match)
-    no_match = len(result_list_noMatch)
     bigger_size = 3 * totale
     logging.info(f'max pair visit: {bigger_size}')
-    while loop_i<120000 and (match<bigger_size or no_match<bigger_size):
+    while loop_i<120000 and count_i < bigger_size and (match<totale or no_match<totale):
         x = random.randint(1, len(tableLlist) - 1)
         y = random.randint(1, len(tableRlist) - 1)
         tableL_el = []
@@ -528,7 +527,7 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
         tableR_ELEM = concatenate_list_data(tableRlist[y])  # [ item for elem in tableRlist[y] for item in elem]
 
         # controlla che la tupla che sto aggiungendo abbia una cos_similarity maggiore del min_cos_sim definito sopra
-        if cos_sim > min_cos_sim:
+        if cos_sim > 0:
             sim_vector = sim_function(tableL_el, tableR_el)
             if sim_vector[0] > max_sim and match < totale:
                 if (tableL_el, tableR_el, sim_vector) not in result_list_match:

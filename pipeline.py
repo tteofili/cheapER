@@ -70,7 +70,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                      params.adjust_ds_size,
                                                                                      params.deeper_trick,
                                                                                      params.consistency,
-                                                                                     params.sim_edges)
+                                                                                     params.sim_edges,
+                                                                                     params.simple_slicing)
             logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
             generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)

@@ -50,7 +50,7 @@ def add_shuffle(dataDa, mult: int = 1):
 
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
                     soglia, tot_copy, num_run, cut, valid_file, test_file, balance, adjust_ds_size, deeper_trick,
-                    consistency, sim_edges):
+                    consistency, sim_edges, simple_slicing):
     logging.info('Parsing original dataset')
     if flag_Anhai == False:
         data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
@@ -137,7 +137,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     result_list_noMatch, result_list_match, consistency_list = create_lists(TABLE1_FILE, TABLE2_FILE, tot_pt,
                                                                             min_sim,
                                                                             max_sim, ATT_INDEXES,
-                                                                            min_cos_sim, tot_copy, max_occ, simf)
+                                                                            min_cos_sim, tot_copy, max_occ,
+                                                                            sim_function=simf)
     logging.info("{} matches, {} non-matches, {} consistency pairs".format(len(result_list_match),
                                                                            len(result_list_noMatch), len(consistency_list)))
 
@@ -183,27 +184,32 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
     logging.debug("k_slice : " + str(k_slice))
-    neg_slice = int(k_slice * (0.5 + balance[0]))
-    if sim_edges:
-        random_tuples1 = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]))[:neg_slice]  # likely non matches
-    else:
-        random_tuples1 = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]))[-neg_slice:]  # likely non matches
-    logging.info("num of non-matches {}".format(len(random_tuples1)))
 
-    pos_slice = int(k_slice * (0.5 + balance[1]))
-    if sim_edges:
-        random_tuples2 = sorted(result_list_match, key=lambda tup: (tup[2][0]))[-pos_slice:]  # likely matches
+    if simple_slicing:
+        random_tuples1 = random_tuples0sort[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
+        random_tuples2 = random_tuples0sort[-int(k_slice * (0.5 + balance[1])):]  # likely matches
     else:
-        random_tuples2 = sorted(result_list_match, key=lambda tup: (tup[2][0]))[:pos_slice]  # likely matches
-    logging.info("num of matches {}".format(len(random_tuples2)))
+        neg_slice = int(k_slice * (0.5 + balance[0]))
+        if sim_edges:
+            random_tuples1 = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]))[:neg_slice]  # likely non matches
+        else:
+            random_tuples1 = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]))[-neg_slice:]  # likely non matches
+        logging.info("num of non-matches {}".format(len(random_tuples1)))
 
-    if consistency:
-        logging.info("adding {} consistency pairs".format(len(consistency_list)))
-        random_tuples2 += consistency_list
-    elif len(random_tuples2) < pos_slice:
-        consistency_slice = pos_slice - len(random_tuples2)
-        logging.info("adding {} consistency pairs".format(consistency_slice))
-        random_tuples2 += consistency_list[:consistency_slice]
+        pos_slice = int(k_slice * (0.5 + balance[1]))
+        if sim_edges:
+            random_tuples2 = sorted(result_list_match, key=lambda tup: (tup[2][0]))[-pos_slice:]  # likely matches
+        else:
+            random_tuples2 = sorted(result_list_match, key=lambda tup: (tup[2][0]))[:pos_slice]  # likely matches
+        logging.info("num of matches {}".format(len(random_tuples2)))
+
+        if consistency:
+            logging.info("adding {} consistency pairs".format(len(consistency_list)))
+            random_tuples2 += consistency_list
+        elif len(random_tuples2) < pos_slice:
+            consistency_slice = pos_slice - len(random_tuples2)
+            logging.info("adding {} consistency pairs".format(consistency_slice))
+            random_tuples2 += consistency_list[:consistency_slice]
 
     random_tuples1 += random_tuples2
 
