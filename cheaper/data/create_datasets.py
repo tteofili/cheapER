@@ -175,15 +175,19 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     random_tuples0sort = sorted(random_tuples0, key=lambda tup: (tup[2][0]))
     plot_pretrain(random_tuples0sort)
 
+    if consistency:
+        logging.info("adding {} consistency pairs".format(len(consistency_list)))
+        random_tuples0 += consistency_list
+
     # SERVE per controllare che i match e i non match siano di egual numero
     # altrimenti si riduce il taglio di k
     # si suppone che sia riuscito a trovare meno match del k_slice=tot_pt/2
-    if len(result_list_match) <= tot_pt / 2:
-        k_slice = int(len(result_list_match))
+    if len(random_tuples0) <= tot_pt / 2:
+        k_slice = int(len(random_tuples0) / 2)
         logging.debug("riduco k")
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
-    logging.debug("k_slice : " + str(k_slice))
+    logging.info("k_slice {}".format(str(k_slice)))
 
     if simple_slicing:
         random_tuples1 = random_tuples0sort[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
@@ -203,15 +207,12 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             random_tuples2 = sorted(result_list_match, key=lambda tup: (tup[2][0]))[:pos_slice]  # likely matches
         logging.info("num of matches {}".format(len(random_tuples2)))
 
-        if consistency:
-            logging.info("adding {} consistency pairs".format(len(consistency_list)))
-            random_tuples2 += consistency_list
-        elif len(random_tuples2) < pos_slice:
-            consistency_slice = pos_slice - len(random_tuples2)
-            logging.info("adding {} consistency pairs".format(consistency_slice))
-            random_tuples2 += consistency_list[:consistency_slice]
-
     random_tuples1 += random_tuples2
+
+    if not consistency and len(random_tuples1) < tot_pt:
+        consistency_slice = tot_pt - len(random_tuples1)
+        logging.info("adding {} consistency pairs".format(consistency_slice))
+        random_tuples1 += consistency_list[:consistency_slice]
 
     logging.debug(len(random_tuples1))
     # Concatenazione.

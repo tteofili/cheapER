@@ -10,7 +10,7 @@ import numpy as np
 from sklearn import linear_model
 
 from cheaper.data.create_datasets import create_datasets
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, check_anhai_dataset
+from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, check_anhai_dataset, parsing_anhai_nofilter
 from cheaper.data.plot import plot_dataPT
 from cheaper.emt.logging_customized import setup_logging
 
@@ -74,9 +74,10 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         logging.info('getting attribute values')
         if deeper_trick:
             data = check_anhai_dataset(gt_file, t1_file, t2_file, [k], sim_functions[2])
-            data = data[:int(len(data)*cut)]
         else:
-            data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2], cut=cut)
+            data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, [k], sim_functions[2])
+        bound = int(len(data) * cut)
+        data = data[:bound]
 
         npdata = np.array(data, dtype=object)
         X = np.zeros([len(npdata), len(sim_functions)])
@@ -100,13 +101,15 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
             clf = linear_model.Ridge(fit_intercept=False)
         elif lm == 'logistic':
             clf = linear_model.LogisticRegression(fit_intercept=False)
+        elif lm == 'linear':
+            clf = linear_model.LinearRegression(fit_intercept=False)
         r = 0
         while score < 0.9 and r < 50:
             clf.fit(X, Y)
             score = clf.score(X, Y)
             r += 1
         logging.info(f'score: {score}')
-        if lm == 'ridge':
+        if lm == 'ridge' or lm == 'linear':
             weights = clf.coef_
         else:
             weights = clf.coef_[0]
@@ -163,13 +166,15 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         clf = linear_model.Ridge(fit_intercept=False)
     elif lm == 'logistic':
         clf = linear_model.LogisticRegression(fit_intercept=False)
+    elif lm == 'linear':
+        clf = linear_model.LinearRegression(fit_intercept=False)
     r = 0
     while score < 0.9 and r < 50:
         clf.fit(X, Y)
         score = clf.score(X, Y)
         r += 1
     logging.info(f'agg-sim score: {score}')
-    if lm == 'ridge':
+    if lm == 'ridge' or lm == 'linear':
         f_weights = clf.coef_
     else:
         f_weights = clf.coef_[0]

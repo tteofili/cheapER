@@ -6,17 +6,17 @@ class CheapERParams:
     def __init__(self):
         self.sigma = 3000
         self.kappa = 1500
-        self.epsilon = 0.15
-        self.slicing = []
+        self.epsilon = 0
+        self.slicing = [0.33]
         self.adaptive_ft = False
         self.num_runs = 1
         self.compare = False
         self.normalize = True
-        self.sim_length = 10
+        self.sim_length = 7
         self.warmup = False
-        self.epochs = 7
+        self.epochs = 15
         self.lr = 2e-5
-        self.models = config.Config.MODEL_CLASSES
+        self.models = ['microsoft/deberta-base']
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
@@ -27,7 +27,7 @@ class CheapERParams:
         self.batch_size = 8
         self.balance = [0.5, 0.5]
         self.deeper_trick = False
-        self.consistency = False
+        self.consistency = True
         self.sim_edges = True
         self.simple_slicing = True
 

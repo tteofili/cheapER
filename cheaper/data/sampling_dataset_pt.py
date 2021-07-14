@@ -220,9 +220,10 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match, dictR_mat
     indiciL, indiciR = split_indici(indici)
     data4hash, dataL, dataR, tableLlist, tableRlist = create_data(tableL, tableR, indiciL, indiciR)
     res = []
-    weights = [0.5, 0.5]
-    for threshold, num_perm in [(0.65, 128), (max_sim, 128)]:
+    weights = [0.4, 0.6]
+    for threshold, num_perm in [(0.65, 256)]:
         res += minHash_LSH(data4hash, threshold=threshold, num_perm=num_perm, weights=weights)
+        logging.info("{} pairs found".format(len(res)))
     dataset_pt = create_dataset_pt(res, dataL, dataR, tableLlist, tableRlist, min_sim, max_sim, dictL_match,
                                    dictR_match, dictL_NOmatch, dictR_NOmatch, sim_function)
     logging.info("LSH blocking done")
@@ -504,7 +505,7 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
             result_list_noMatch.append(el)
 
     logging.info(f'{len(result_list_match)} positive pairs found via LSH blocking and high similarity check')
-    logging.info(f'{len(result_list_noMatch)} negative pairs found via LSH blocking and high similarity check')
+    logging.info(f'{len(result_list_noMatch)} negative pairs found via LSH blocking and low similarity check')
 
     count_i = 0
     bigger_size = 3 * totale
