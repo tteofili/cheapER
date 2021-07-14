@@ -4,16 +4,16 @@ from cheaper.emt import config
 class CheapERParams:
 
     def __init__(self):
-        self.sigma = 3000
-        self.kappa = 1500
-        self.epsilon = 0
+        self.sigma = 1000
+        self.kappa = 100
+        self.epsilon = 0.1
         self.slicing = [0.33]
         self.adaptive_ft = False
         self.num_runs = 1
         self.compare = False
         self.normalize = True
         self.sim_length = 7
-        self.warmup = False
+        self.warmup = True
         self.epochs = 15
         self.lr = 2e-5
         self.models = ['microsoft/deberta-base']
