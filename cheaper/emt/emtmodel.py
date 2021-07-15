@@ -61,7 +61,7 @@ class EMTERModel:
                 logging_dir='./logs',  # directory for storing logs
                 save_total_limit=2,
                 do_eval=True,
-                num_train_epochs=epochs
+                num_train_epochs=3
             )
 
             data_collator = DataCollatorForLanguageModeling(

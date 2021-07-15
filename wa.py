@@ -29,6 +29,6 @@ params.silent = False
 
 # get datasets
 datasets = get_datasets()
-results_df = cheaper_train(datasets[9], params)
+results_df = cheaper_train(datasets[8], params)
 print(results_df)
 
