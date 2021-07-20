@@ -193,6 +193,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         random_tuples1 = random_tuples0sort[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
         random_tuples2 = random_tuples0sort[-int(k_slice * (0.5 + balance[1])):]  # likely matches
     else:
+        k_slice = min(len(result_list_match), len(result_list_match))
         neg_slice = int(k_slice * (0.5 + balance[0]))
         if sim_edges:
             random_tuples1 = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]))[:neg_slice]  # likely non matches
