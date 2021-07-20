@@ -6,26 +6,25 @@ from pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams()
-params.sigma = 3000
-params.kappa = 1500
-params.epsilon = 0.15
-params.slicing = [0.05, 0.1, 0.33, 0.5, 0.7, 1]
-params.adaptive_ft = True
+params.sigma = 1000
+params.kappa = 250
+params.epsilon = 0
+params.slicing = [0.33]
+params.adaptive_ft = False
 params.sim_length = 5
-params.models = ['distilbert-base-uncased', 'microsoft/deberta-base', 'roberta-base']
-params.identity = False
-params.symmetry = False
-params.attribute_shuffle = False
+params.epochs = 3
+params.models = ['distilbert-base-uncased', 'microsoft/deberta-base']
 params.compare = True
-params.deeper_trick = False
+params.deeper_trick = True
 params.consistency = True
-params.warmup = True
+params.warmup = False
 params.approx = 'perceptron'
 params.balance = [0.5, 0.5]
-params.batch_size = 16
+params.batch_size = 8
 params.sim_edges = True
 params.adjust_ds_size = False
 params.silent = False
+params.simple_slicing = False
 
 # get datasets
 datasets = get_datasets()
