@@ -27,7 +27,7 @@ class CheapERParams:
         self.batch_size = 8
         self.balance = [0.5, 0.5]
         self.deeper_trick = False
-        self.consistency = True
+        self.consistency = False
         self.sim_edges = True
         self.simple_slicing = True
 

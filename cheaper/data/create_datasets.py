@@ -190,8 +190,10 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     logging.info("k_slice {}".format(str(k_slice)))
 
     if simple_slicing:
-        random_tuples1 = random_tuples0sort[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
-        random_tuples2 = random_tuples0sort[-int(k_slice * (0.5 + balance[1])):]  # likely matches
+        matches_list = result_list_match + consistency_list
+        nonmatches_list = result_list_noMatch
+        random_tuples1 = matches_list[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
+        random_tuples2 = nonmatches_list[-int(k_slice * (0.5 + balance[1])):]  # likely matches
     else:
         k_slice = min(len(result_list_match), len(result_list_match))
         neg_slice = int(k_slice * (0.5 + balance[0]))
@@ -207,13 +209,13 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         else:
             random_tuples2 = sorted(result_list_match, key=lambda tup: (tup[2][0]))[:pos_slice]  # likely matches
         logging.info("num of matches {}".format(len(random_tuples2)))
+        if not consistency and len(random_tuples1) < tot_pt:
+            consistency_slice = tot_pt - len(random_tuples1)
+            logging.info("adding {} consistency pairs".format(consistency_slice))
+            random_tuples1 += consistency_list[:consistency_slice]
 
     random_tuples1 += random_tuples2
 
-    if not consistency and len(random_tuples1) < tot_pt:
-        consistency_slice = tot_pt - len(random_tuples1)
-        logging.info("adding {} consistency pairs".format(consistency_slice))
-        random_tuples1 += consistency_list[:consistency_slice]
 
     logging.debug(len(random_tuples1))
     # Concatenazione.
