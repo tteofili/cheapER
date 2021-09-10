@@ -4,8 +4,8 @@ import logging
 import os
 from datetime import date
 from inspect import getsource
-
 import pandas as pd
+import warnings
 
 from cheaper.data.create_datasets import add_shuffle, parse_original
 from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
@@ -379,5 +379,7 @@ def cheaper_train(dataset, params: CheapERParams):
     seq_length = dataset[7]
     logging.info('CheapER: training on dataset "{}"'.format(dataset_name))
     logging.info('CheapER: using params "{}"'.format(params))
+    if params.silent:
+        warnings.filterwarnings("ignore")
     return train_model(gt_file, t1_file, t2_file, indexes, dataset_name,
                        flag_Anhai, seq_length, params)
