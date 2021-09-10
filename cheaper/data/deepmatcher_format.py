@@ -30,6 +30,9 @@ def tofiles(pt_train, pt_valid, name):
                        subset=None, )
         df.columns = names
     trainName = datadir + name + '_trainSim'+str(len(pt_train))+'.csv'
+    if not os.path.exists(trainName):
+        os.mknod(trainName)
+
     tr = df.to_csv(trainName, index=False)
 
     df = pd.DataFrame(pt_valid)
@@ -44,6 +47,9 @@ def tofiles(pt_train, pt_valid, name):
                        subset=None, )
         df.columns = names
     validName = datadir + name + '_validSim'+str(len(pt_train))+'.csv'
+    if not os.path.exists(validName):
+        os.mknod(validName)
+
     vd = df.to_csv(validName, index=False)
 
     return trainName, validName

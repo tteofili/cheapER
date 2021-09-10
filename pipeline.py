@@ -73,6 +73,11 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     model = EMTERModel(model_type)
 
+                    if params.adaptive_ft:
+                        model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
+                                          seq_length=seq_length,
+                                          epochs=params.epochs, lr=params.lr)
+
                     model.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
                                 epochs=params.epochs, lr=params.lr, batch_size=params.batch_size)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
@@ -108,12 +113,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                     generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
 
-
-
-                    if params.adaptive_ft:
-                        model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
-                                          seq_length=seq_length,
-                                          epochs=params.epochs, lr=params.lr)
+                    model = EMTERModel(model_type)
 
                     logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
 

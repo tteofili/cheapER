@@ -10,7 +10,7 @@ def predict(model, device, test_data_loader, silent):
     predictions = None
     labels = None
 
-    for batch in tqdm(test_data_loader, desc="Test"):
+    for batch in tqdm(test_data_loader, desc="Test", disable=silent):
         model.eval()
         batch = tuple(t.to(device) for t in batch)
         with torch.no_grad():
