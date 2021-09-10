@@ -47,6 +47,25 @@ def add_shuffle(dataDa, mult: int = 1):
             new_list.append((t1, t2, label))
     return new_list
 
+def parse_original(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, flag_Anhai, valid_file, test_file, deeper_trick):
+    logging.info('Parsing original dataset')
+    if flag_Anhai == False:
+        data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+    else:
+        if deeper_trick:
+            data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        else:
+            data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+        test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+
+    data = list(map(lambda q: (q[0], q[1], q[3]), data))
+    valid_data = list(map(lambda q: (q[0], q[1], q[3]), valid_data))
+    test_data = list(map(lambda q: (q[0], q[1], q[3]), test_data))
+    return data, test_data, valid_data
+
 
 def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
                     soglia, tot_copy, num_run, cut, valid_file, test_file, balance, adjust_ds_size, deeper_trick,

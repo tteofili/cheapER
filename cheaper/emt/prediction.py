@@ -10,26 +10,28 @@ def predict(model, device, test_data_loader, silent):
     predictions = None
     labels = None
 
-    for batch in tqdm(test_data_loader, desc="Test", disable=silent):
+    for batch in tqdm(test_data_loader, desc="Test"):
         model.eval()
         batch = tuple(t.to(device) for t in batch)
-
         with torch.no_grad():
             inputs = {'input_ids': batch[0],
                       'attention_mask': batch[1],
-                      'token_type_ids': batch[2],
+                      # 'token_type_ids': batch[2],
                       'labels': batch[3]}
 
             outputs = model(**inputs)
-            _, logits = outputs[:2]
+            logits = outputs[1]
 
+        m = torch.nn.Softmax(dim=1)
+        proba = m(logits)
+        # proba = F.softmax(logits, dim=1)
         nb_prediction_steps += 1
 
         if predictions is None:
-            predictions = logits.detach().cpu().numpy()
+            predictions = proba.detach().cpu().numpy()
             labels = inputs['labels'].detach().cpu().numpy()
         else:
-            predictions = np.append(predictions, logits.detach().cpu().numpy(), axis=0)
+            predictions = np.append(predictions, proba.detach().cpu().numpy(), axis=0)
             labels = np.append(labels, inputs['labels'].detach().cpu().numpy(), axis=0)
 
     # remember, the logits are simply the output from the last layer, without applying an activation function (e.g. sigmoid).
@@ -40,4 +42,5 @@ def predict(model, device, test_data_loader, silent):
     f1 = f1_score(y_true=labels, y_pred=predicted_class)
     report = classification_report(labels, predicted_class)
 
-    return simple_accuracy, f1, report, pd.DataFrame({'predictions': predicted_class, 'labels': labels})
+    return simple_accuracy, f1, report, pd.DataFrame({'predictions': predicted_class, 'labels': labels,
+                                                      'scores': predictions[0][1]})

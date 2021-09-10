@@ -5,7 +5,9 @@ from pipeline import get_datasets
 # cheapER parameters' settings
 params = CheapERParams()
 params.models = ['distilbert-base-uncased']
-
+params.use_model = True
+params.epochs = 3
+params.slicing = [0.05]
 # get datasets
 datasets = get_datasets()
 results_df = cheaper_train(datasets[1], params)

@@ -7,7 +7,7 @@ from inspect import getsource
 
 import pandas as pd
 
-from cheaper.data.create_datasets import add_shuffle
+from cheaper.data.create_datasets import add_shuffle, parse_original
 from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
 from cheaper.data.csv2dataset import splitting_dataSet
 from cheaper.emt.emtmodel import EMTERModel
@@ -52,35 +52,23 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
     for n in range(params.num_runs):
         for cut in params.slicing:
-            simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
-                                        normalize=params.normalize, lm=params.approx, deeper_trick=params.deeper_trick)
 
-            logging.info('Generating dataset')
-            # create datasets
-            test_file = base_dir + dataset_name + os.sep + 'test.csv'
-            valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
-            data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file,
-                                                                                     t2_file, indexes, simf,
-                                                                                     dataset_name,
-                                                                                     params.sigma,
-                                                                                     flag_Anhai, params.epsilon,
-                                                                                     params.kappa,
-                                                                                     params.num_runs, cut, valid_file,
-                                                                                     test_file, params.balance,
-                                                                                     params.adjust_ds_size,
-                                                                                     params.deeper_trick,
-                                                                                     params.consistency,
-                                                                                     params.sim_edges,
-                                                                                     params.simple_slicing)
-            logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
+            if params.use_model:
 
-            generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
+                logging.info('Generating dataset')
+                # create datasets
+                test_file = base_dir + dataset_name + os.sep + 'test.csv'
+                valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
-            train_cut = splitting_dataSet(cut, train)
 
-            for model_type in params.models:
+                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
+                                                                                         valid_file, test_file, params.deeper_trick)
 
-                if params.compare:
+
+                train_cut = splitting_dataSet(cut, train)
+
+                for model_type in params.models:
+
                     logging.info("------------- Vanilla EMT Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     model = EMTERModel(model_type)
@@ -92,60 +80,183 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision,
                                'rM': classic_recall,
                                'f1M': classic_f1,
-                               'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
+                               'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH,
+                               'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
 
-                logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
+                    simf = lambda t1, t2: [model.predict(t1, t2)['scores'].values[0]]
 
-                dataDa = vinsim_data_app
+                    logging.info('Generating dataset')
+                    # create datasets
+                    test_file = base_dir + dataset_name + os.sep + 'test.csv'
+                    valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
+                    data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file,
+                                                                                             t2_file, indexes, simf,
+                                                                                             dataset_name,
+                                                                                             params.sigma,
+                                                                                             flag_Anhai, params.epsilon,
+                                                                                             params.kappa,
+                                                                                             params.num_runs, cut,
+                                                                                             valid_file,
+                                                                                             test_file, params.balance,
+                                                                                             params.adjust_ds_size,
+                                                                                             params.deeper_trick,
+                                                                                             params.consistency,
+                                                                                             params.sim_edges,
+                                                                                             params.simple_slicing)
+                    logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
-                if params.identity:
-                    dataDa = add_identity(dataDa)
+                    generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
 
-                if params.symmetry:
-                    dataDa = add_symmetry(dataDa)
 
-                if params.attribute_shuffle:
-                    dataDa = add_shuffle(dataDa)
 
-                model = EMTERModel(model_type)
+                    if params.adaptive_ft:
+                        model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
+                                          seq_length=seq_length,
+                                          epochs=params.epochs, lr=params.lr)
 
-                if params.adaptive_ft:
-                    model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
-                                      seq_length=seq_length,
-                                      epochs=params.epochs, lr=params.lr)
+                    logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
 
-                # generated data train only
-                if params.generated_only:
-                    model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                                epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft, silent=params.silent,
+                    dataDa = vinsim_data_app
+
+                    if params.identity:
+                        dataDa = add_identity(dataDa)
+
+                    if params.symmetry:
+                        dataDa = add_symmetry(dataDa)
+
+                    if params.attribute_shuffle:
+                        dataDa = add_shuffle(dataDa)
+
+                    # generated data train only
+                    if params.generated_only:
+                        model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length,
+                                    warmup=params.warmup,
+                                    epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft,
+                                    silent=params.silent,
+                                    batch_size=params.batch_size)
+
+                        da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
+                            test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
+                        new_row = {'model_type': model_type, 'train': 'da-only', 'cut': cut, 'pM': da_precision,
+                                   'rM': da_recall,
+                                   'f1M': da_f1,
+                                   'pNM': da_precisionNOMATCH,
+                                   'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
+                        results = results.append(new_row, ignore_index=True)
+
+                    # gt+generated data train
+                    model = EMTERModel(model_type)
+                    model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
+                                warmup=params.warmup,
+                                epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft,
+                                silent=params.silent,
                                 batch_size=params.batch_size)
 
                     da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
                         test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
-                    new_row = {'model_type': model_type, 'train': 'da-only', 'cut': cut, 'pM': da_precision,
-                               'rM': da_recall,
+                    new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
                                'f1M': da_f1,
                                'pNM': da_precisionNOMATCH,
                                'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
 
-                # gt+generated data train
-                model = EMTERModel(model_type)
-                model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
-                            warmup=params.warmup,
-                            epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft, silent=params.silent,
-                            batch_size=params.batch_size)
+                    logging.info(results.to_string)
+            else:
+                simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
+                                            normalize=params.normalize, lm=params.approx, deeper_trick=params.deeper_trick)
 
-                da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
-                    test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
-                new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
-                           'f1M': da_f1,
-                           'pNM': da_precisionNOMATCH,
-                           'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
-                results = results.append(new_row, ignore_index=True)
+                logging.info('Generating dataset')
+                # create datasets
+                test_file = base_dir + dataset_name + os.sep + 'test.csv'
+                valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
+                data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file,
+                                                                                         t2_file, indexes, simf,
+                                                                                         dataset_name,
+                                                                                         params.sigma,
+                                                                                         flag_Anhai, params.epsilon,
+                                                                                         params.kappa,
+                                                                                         params.num_runs, cut, valid_file,
+                                                                                         test_file, params.balance,
+                                                                                         params.adjust_ds_size,
+                                                                                         params.deeper_trick,
+                                                                                         params.consistency,
+                                                                                         params.sim_edges,
+                                                                                         params.simple_slicing)
+                logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
-                logging.info(results.to_string)
+                generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
+
+                train_cut = splitting_dataSet(cut, train)
+
+                for model_type in params.models:
+
+                    if params.compare:
+                        logging.info("------------- Vanilla EMT Training {} ------------------".format(model_type))
+                        logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
+                        model = EMTERModel(model_type)
+
+                        model.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
+                                    epochs=params.epochs, lr=params.lr, batch_size=params.batch_size)
+                        classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
+                            .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
+                        new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision,
+                                   'rM': classic_recall,
+                                   'f1M': classic_f1,
+                                   'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
+                        results = results.append(new_row, ignore_index=True)
+
+                    logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
+
+                    dataDa = vinsim_data_app
+
+                    if params.identity:
+                        dataDa = add_identity(dataDa)
+
+                    if params.symmetry:
+                        dataDa = add_symmetry(dataDa)
+
+                    if params.attribute_shuffle:
+                        dataDa = add_shuffle(dataDa)
+
+                    model = EMTERModel(model_type)
+
+                    if params.adaptive_ft:
+                        model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
+                                          seq_length=seq_length,
+                                          epochs=params.epochs, lr=params.lr)
+
+                    # generated data train only
+                    if params.generated_only:
+                        model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
+                                    epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft, silent=params.silent,
+                                    batch_size=params.batch_size)
+
+                        da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
+                            test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
+                        new_row = {'model_type': model_type, 'train': 'da-only', 'cut': cut, 'pM': da_precision,
+                                   'rM': da_recall,
+                                   'f1M': da_f1,
+                                   'pNM': da_precisionNOMATCH,
+                                   'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
+                        results = results.append(new_row, ignore_index=True)
+
+                    # gt+generated data train
+                    model = EMTERModel(model_type)
+                    model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
+                                warmup=params.warmup,
+                                epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft, silent=params.silent,
+                                batch_size=params.batch_size)
+
+                    da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
+                        test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
+                    new_row = {'model_type': model_type, 'train': 'da', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
+                               'f1M': da_f1,
+                               'pNM': da_precisionNOMATCH,
+                               'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
+                    results = results.append(new_row, ignore_index=True)
+
+                    logging.info(results.to_string)
 
         today = date.today()
         filename = 'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '.csv'
@@ -154,6 +265,14 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
         results.to_csv(filename, mode='a')
     return results
 
+
+def get_row(r1, r2, lprefix = 'ltable_', rprefix = 'rtable_'):
+    r1_df = pd.DataFrame(data=[r1.values], columns=r1.index)
+    r2_df = pd.DataFrame(data=[r2.values], columns=r2.index)
+    r1_df.columns = list(map(lambda col: lprefix + col, r1_df.columns))
+    r2_df.columns = list(map(lambda col: rprefix + col, r2_df.columns))
+    r1r2 = pd.concat([r1_df, r2_df], axis=1)
+    return r1r2
 
 def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app):
     if os.path.exists(unlabelled_train):

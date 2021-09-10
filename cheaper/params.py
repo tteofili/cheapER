@@ -30,6 +30,7 @@ class CheapERParams:
         self.consistency = False
         self.sim_edges = True
         self.simple_slicing = True
+        self.use_model = False
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
@@ -41,4 +42,4 @@ class CheapERParams:
                + ',approx=' + str(self.approx) + ',balance=' + str(self.balance) + ',adjust_ds_size=' \
                + str(self.adjust_ds_size) + ',batch_size=' + str(self.batch_size) + ',silent=' + str(self.silent) \
                + ',deeper_trick=' + str(self.deeper_trick) + ',consistency=' + str(self.consistency) + ',sim_edges=' \
-               + str(self.sim_edges) + ',simple_slicing=' + str(self.simple_slicing)
+               + str(self.sim_edges) + ',simple_slicing=' + str(self.simple_slicing) + ',use_model=' + str(self.use_model)

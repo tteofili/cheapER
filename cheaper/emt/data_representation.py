@@ -114,13 +114,18 @@ class DeepMatcherProcessor(DataProcessor):
             if i == 0:
                 continue
             vals = line[0].split(',')
-            guid = vals[0]
-            lv = (len(vals) - 2)/2
+            guid = "%s-%s" % (set_type, vals[0])
+            lv = (len(vals) - 2) / 2
             try:
-                end = 2 + lv
-                text_a = ' '.join(vals[2:int(end)])
-                text_b = ' '.join(vals[-int(lv):])
                 label = vals[1]
+                start = 2
+                if label not in ['1', '0']:
+                    label = '0'
+                    start = 1
+
+                end = 2 + lv
+                text_a = ' '.join(vals[start:int(end)])
+                text_b = ' '.join(vals[-int(lv):])
             except IndexError:
                 continue
             examples.append(

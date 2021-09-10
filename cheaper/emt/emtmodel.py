@@ -1,7 +1,12 @@
 import logging
 import os
+import string
+import random
+
+import pandas as pd
 
 from cheaper.data import deepmatcher_format
+from cheaper.emt import prediction
 from cheaper.emt.config import Config
 from cheaper.emt.data_loader import load_data, DataType
 from cheaper.emt.data_representation import DeepMatcherProcessor
@@ -78,7 +83,6 @@ class EMTERModel:
 
             trainer.train()
             trainer.save_model(model_dir)
-
 
     def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
               epochs=3, lr=1e-5, adaptive_ft=False, silent=False, batch_size=BATCH_SIZE):
@@ -167,3 +171,22 @@ class EMTERModel:
         rnm = l0[1]
         f1nm = l0[2]
         return p, r, f1, pnm, rnm, f1nm
+
+    def predict(self, t1, t2):
+        x = pd.DataFrame(t1 + t2).T
+
+        device, n_gpu = initialize_gpu_seed(22)
+        processor = DeepMatcherProcessor()
+        tmpf = "./{}.csv".format("".join([random.choice(string.ascii_lowercase) for _ in range(10)]))
+        x.to_csv(tmpf)
+        examples = processor.get_test_examples_file(tmpf)
+        test_data_loader = load_data(examples, processor.get_labels(),
+                                     self.tokenizer,
+                                     MAX_SEQ_LENGTH,
+                                     BATCH_SIZE,
+                                     DataType.TEST, self.model_type)
+
+        simple_accuracy, f1, classification_report, predictions = prediction.predict(self.model, device,
+                                                                                     test_data_loader, True)
+        os.remove(tmpf)
+        return predictions
