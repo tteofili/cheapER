@@ -60,6 +60,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
+                generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
 
                 train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
                                                                                          valid_file, test_file, params.deeper_trick)
@@ -110,8 +111,6 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                              params.sim_edges,
                                                                                              params.simple_slicing)
                     logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
-
-                    generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
 
                     model = EMTERModel(model_type)
 
