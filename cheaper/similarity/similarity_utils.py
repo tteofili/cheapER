@@ -70,6 +70,7 @@ def create_single_sim(bf_fun):
 def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions, cut, num_funcs, check=False,
                          normalize=True, lm='perceptron', deeper_trick=False):
     best = []
+    i = 1
     for k in attr_indexes:
         logging.info('getting attribute values')
         if deeper_trick:
@@ -104,7 +105,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         elif lm == 'linear':
             clf = linear_model.LinearRegression(fit_intercept=False)
         r = 0
-        while score < 0.9 and r < 50:
+        while score < 0.9 and r < i:
             clf.fit(X, Y)
             score = clf.score(X, Y)
             r += 1
@@ -169,7 +170,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     elif lm == 'linear':
         clf = linear_model.LinearRegression(fit_intercept=False)
     r = 0
-    while score < 0.9 and r < 50:
+    while score < 0.9 and r < i:
         clf.fit(X, Y)
         score = clf.score(X, Y)
         r += 1
@@ -189,7 +190,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
     if check:
         final_sim = \
         find_best_simfunction(gt_file, t1_file, t2_file, attr_indexes, True, sim_functions + [generated_sim],
-                              0, 100, 50, 1)[0]
+                              0, 100, i, 1)[0]
         return final_sim
     else:
         return generated_sim

@@ -7,9 +7,12 @@ from inspect import getsource
 import pandas as pd
 import warnings
 
+from sklearn.metrics import classification_report
+
 from cheaper.data.create_datasets import add_shuffle, parse_original
 from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
-from cheaper.data.csv2dataset import splitting_dataSet
+from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter
+from cheaper.data.plot import plot_graph
 from cheaper.emt.emtmodel import EMTERModel
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.params import CheapERParams
@@ -38,6 +41,37 @@ get_lambda_name = lambda l: getsource(l).strip()
 setup_logging()
 
 
+def sim_eval(simf, theta_min, theta_max, test):
+    labels = []
+    predicted_class = []
+    for line in test:
+        label = line[3]
+        labels.append(label)
+        #prediction = simf(line[0], line[1])[0]
+        prediction = line[2]
+        if prediction > theta_max:
+            prediction = 1
+        elif prediction < theta_min:
+            prediction = 0
+        else:
+            if abs(prediction - theta_max) > abs(prediction - theta_min):
+                prediction = 0
+            else:
+                prediction = 1
+        predicted_class.append(prediction)
+    result = classification_report(labels, predicted_class)
+
+    l0 = result.split('\n')[2].split('       ')[2].split('      ')
+    l1 = result.split('\n')[3].split('       ')[2].split('      ')
+    p = l1[0]
+    r = l1[1]
+    f1 = l1[2]
+    pnm = l0[0]
+    rnm = l0[1]
+    f1nm = l0[2]
+    return p, r, f1, pnm, rnm, f1nm
+
+
 def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, seq_length, params: CheapERParams):
     results = pd.DataFrame()
 
@@ -53,7 +87,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
     for n in range(params.num_runs):
         for cut in params.slicing:
 
-            if params.use_model:
+            if params.model_type == 'bert':
 
                 logging.info('Generating dataset')
                 # create datasets
@@ -162,7 +196,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     results = results.append(new_row, ignore_index=True)
 
                     logging.info(results.to_string)
-            else:
+            elif params.model_type == 'hybrid':
                 simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
                                             normalize=params.normalize, lm=params.approx, deeper_trick=params.deeper_trick)
 
@@ -257,6 +291,25 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     results = results.append(new_row, ignore_index=True)
 
                     logging.info(results.to_string)
+
+            elif params.model_type == 'sims':
+                simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
+                                            normalize=params.normalize, lm=params.approx,
+                                            deeper_trick=params.deeper_trick)
+                train_data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, indexes, simf)
+                theta_max, theta_min = plot_graph(train_data, cut)
+
+                test_file = base_dir + dataset_name + os.sep + 'test.csv'
+                test_data = parsing_anhai_nofilter(test_file, t1_file, t2_file, indexes, simf)
+                sim_precision, sim_recall, sim_f1, sim_precisionNOMATCH, sim_recallNOMATCH, sim_f1NOMATCH = sim_eval(simf, theta_min, theta_max, test_data)
+
+                new_row = {'model_type': 'sims', 'train': params.approx, 'cut': cut, 'pM': sim_precision, 'rM': sim_recall,
+                           'f1M': sim_f1,
+                           'pNM': sim_precisionNOMATCH,
+                           'rNM': sim_recallNOMATCH, 'f1NM': sim_f1NOMATCH}
+                results = results.append(new_row, ignore_index=True)
+
+                logging.info(results.to_string)
 
         today = date.today()
         filename = 'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '.csv'
