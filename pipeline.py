@@ -94,8 +94,6 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
-                generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
-
                 train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
                                                                                          valid_file, test_file, params.deeper_trick)
 
@@ -109,6 +107,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     model = EMTERModel(model_type)
 
                     if params.adaptive_ft:
+                        generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
                         model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
                                           seq_length=seq_length,
                                           epochs=params.epochs, lr=params.lr)
