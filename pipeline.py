@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report
 
 from cheaper.data.create_datasets import add_shuffle, parse_original
 from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
-from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter
+from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter, check_anhai_dataset
 from cheaper.data.plot import plot_graph
 from cheaper.emt.emtmodel import EMTERModel
 from cheaper.emt.logging_customized import setup_logging
@@ -295,8 +295,16 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
                                             normalize=params.normalize, lm=params.approx,
                                             deeper_trick=params.deeper_trick)
-                train_data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, indexes, simf)
-                theta_max, theta_min = plot_graph(train_data, cut)
+                if params.deeper_trick:
+                    train_data = check_anhai_dataset(gt_file, t1_file, t2_file, indexes, simf)
+                else:
+                    train_data = parsing_anhai_nofilter(gt_file, t1_file, t2_file, indexes, simf)
+                tplus, tmin = plot_graph(train_data, cut)
+
+                theta_min = min(tplus, tmin)
+                theta_max = max(tplus, tmin)
+
+                theta_max = min(theta_max + params.epsilon, 0.95)
 
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 test_data = parsing_anhai_nofilter(test_file, t1_file, t2_file, indexes, simf)

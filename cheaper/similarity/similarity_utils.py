@@ -70,7 +70,7 @@ def create_single_sim(bf_fun):
 def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions, cut, num_funcs, check=False,
                          normalize=True, lm='perceptron', deeper_trick=False):
     best = []
-    i = 1
+    i = 50
     for k in attr_indexes:
         logging.info('getting attribute values')
         if deeper_trick:
@@ -143,7 +143,9 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
         fsims.append(top_sims_k)
         ind += 1
 
-    c_data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, attr_indexes, sim_functions[2], cut=cut)
+    generated_sim = lambda t1, t2: agg_sim(fsims, t1, t2)
+
+    c_data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, attr_indexes, generated_sim, cut=cut)
 
     npdata = np.array(c_data, dtype=object)
     X = np.zeros([len(npdata), len(fsims)])
