@@ -15,6 +15,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from cheaper.data.edit_dna import Sequence
 from cheaper.data.plot import plot_pretrain, plotting_dizionari, plot_dataPT
 from cheaper.emt.logging_customized import setup_logging
+import traceback
 
 setup_logging()
 '''
@@ -511,104 +512,108 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
     bigger_size = 3 * totale
     logging.info(f'max pair visit: {bigger_size}')
     while loop_i<120000 and count_i < bigger_size and (match<totale or no_match<totale):
-        random.seed(count_i)
-        x = random.randint(1, len(tableLlist) - 1)
-        y = random.randint(1, len(tableRlist) - 1)
-        tableL_el = []
-        tableR_el = []
-        for i1, i2 in indici:
-            tableL_el.append(tableLlist[x][i1])
-            tableR_el.append(tableRlist[y][i2])
-        # serve per calcolare la cos_sim tra i due elementi della tupla, è necessario concatenare tutta la riga
-        stringa1 = concatenate_list_data(tableL_el)
-        stringa2 = concatenate_list_data(tableR_el)
-        cos_sim = get_cosine(text_to_vector(stringa1), text_to_vector(stringa2))
+        try:
+            random.seed(count_i)
+            x = random.randint(1, len(tableLlist) - 1)
+            y = random.randint(1, len(tableRlist) - 1)
+            tableL_el = []
+            tableR_el = []
+            for i1, i2 in indici:
+                tableL_el.append(tableLlist[x][i1])
+                tableR_el.append(tableRlist[y][i2])
+            # serve per calcolare la cos_sim tra i due elementi della tupla, è necessario concatenare tutta la riga
+            stringa1 = concatenate_list_data(tableL_el)
+            stringa2 = concatenate_list_data(tableR_el)
+            cos_sim = get_cosine(text_to_vector(stringa1), text_to_vector(stringa2))
 
-        # serve per il conta occorrenza
-        tableL_ELEM = concatenate_list_data(tableLlist[x])  # [ item for elem in tableLlist[x] for item in elem]
-        tableR_ELEM = concatenate_list_data(tableRlist[y])  # [ item for elem in tableRlist[y] for item in elem]
+            # serve per il conta occorrenza
+            tableL_ELEM = concatenate_list_data(tableLlist[x])  # [ item for elem in tableLlist[x] for item in elem]
+            tableR_ELEM = concatenate_list_data(tableRlist[y])  # [ item for elem in tableRlist[y] for item in elem]
 
-        # controlla che la tupla che sto aggiungendo abbia una cos_similarity maggiore del min_cos_sim definito sopra
-        if cos_sim > 0:
-            sim_vector = sim_function(tableL_el, tableR_el)
-            if sim_vector[0] > max_sim and match < totale:
-                if (tableL_el, tableR_el, sim_vector) not in result_list_match:
+            # controlla che la tupla che sto aggiungendo abbia una cos_similarity maggiore del min_cos_sim definito sopra
+            if cos_sim > 0:
+                sim_vector = sim_function(tableL_el, tableR_el)
+                if sim_vector[0] > max_sim and match < totale:
+                    if (tableL_el, tableR_el, sim_vector) not in result_list_match:
+                        # match
+                        if count_occurrence(dictL_match, tableL_ELEM) and count_occurrence(dictR_match, tableR_ELEM):
+
+                            # count_occurrence(dictL_match, tableL_ELEM)
+                            # count_occurrence(dictR_match, tableR_ELEM)
+
+                            result_list_match.append((tableL_el, tableR_el, sim_vector))
+
+                            match = match + 1
+
+                            # logging.info("lista random match: " +str(match)+" loop_i: "+str(loop_i))
+                            loop_i = 0
+                        else:
+                            loop_i = loop_i + 1
+                elif sim_vector[0] < min_sim and no_match < (totale + tot_copy_match):
+                    if (tableL_el, tableR_el, sim_vector) not in result_list_noMatch:
+                        # NO_match
+                        if count_occurrence(dictL_NOmatch, tableL_ELEM, limit=max_occ) and count_occurrence(dictR_NOmatch,
+                                                                                                            tableR_ELEM,
+                                                                                                            limit=max_occ):
+                            # NO_match
+                            # count_occurrence(dictL_NOmatch, tableL_ELEM)
+                            # count_occurrence(dictR_NOmatch, tableR_ELEM)
+
+                            result_list_noMatch.append((tableL_el, tableR_el, sim_vector))
+                            no_match = no_match + 1
+                            loop_i = 0
+                            # logging.info("lista random no match: " +str(no_match)+" loop_i: "+str(loop_i))
+                        else:
+                            loop_i = loop_i + 1
+
+            elif copies < tot_copy_match:
+                tableL_el2 = copy_EDIT_match(tableL_el)
+                sim_vector = sim_function(tableL_el, tableL_el2)
+                if (tableL_el, tableL_el2, sim_vector) not in result_list_match and (sim_vector[0] > max_sim or sim_vector[0] < min_sim):
                     # match
-                    if count_occurrence(dictL_match, tableL_ELEM) and count_occurrence(dictR_match, tableR_ELEM):
-
+                    if count_occurrence(dictL_match, tableL_ELEM):
                         # count_occurrence(dictL_match, tableL_ELEM)
-                        # count_occurrence(dictR_match, tableR_ELEM)
+                        copies_list.append((tableL_el, tableL_el2, sim_vector))
+                        copies = copies + 1
 
-                        result_list_match.append((tableL_el, tableR_el, sim_vector))
-
-                        match = match + 1
-
-                        # logging.info("lista random match: " +str(match)+" loop_i: "+str(loop_i))
+                        # logging.info("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
+                        # logging.info(tableL_el,tableL_el2,sim_vector)
                         loop_i = 0
-                    else:
-                        loop_i = loop_i + 1
-            elif sim_vector[0] < min_sim and no_match < (totale + tot_copy_match):
-                if (tableL_el, tableR_el, sim_vector) not in result_list_noMatch:
+
+                tableR_el2 = copy_EDIT_match(tableR_el)
+                sim_vector = sim_function(tableR_el, tableR_el2)
+                if (tableR_el, tableR_el2, sim_vector) not in result_list_match and (sim_vector[0] > max_sim or sim_vector[0] < min_sim):
+                    # match
+                    if count_occurrence(dictR_match, tableR_ELEM, limit=max_occ):
+                        # count_occurrence(dictR_match, tableR_ELEM)
+                        copies_list.append((tableR_el, tableR_el2, sim_vector))
+                        copies = copies + 1
+
+                        # logging.info("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
+                        # logging.info(tableR_el,tableR_el2,sim_vector)
+                        loop_i = 0
+
+            elif no_match < (totale + tot_copy_match):
+                sim_vector = sim_function(tableL_el, tableR_el)
+                if sim_vector[0] < min_sim and (tableL_el, tableR_el, sim_vector) not in result_list_noMatch:
                     # NO_match
                     if count_occurrence(dictL_NOmatch, tableL_ELEM, limit=max_occ) and count_occurrence(dictR_NOmatch,
                                                                                                         tableR_ELEM,
                                                                                                         limit=max_occ):
-                        # NO_match
                         # count_occurrence(dictL_NOmatch, tableL_ELEM)
                         # count_occurrence(dictR_NOmatch, tableR_ELEM)
-
                         result_list_noMatch.append((tableL_el, tableR_el, sim_vector))
                         no_match = no_match + 1
                         loop_i = 0
-                        # logging.info("lista random no match: " +str(no_match)+" loop_i: "+str(loop_i))
-                    else:
-                        loop_i = loop_i + 1
-
-        elif copies < tot_copy_match:
-            tableL_el2 = copy_EDIT_match(tableL_el)
-            sim_vector = sim_function(tableL_el, tableL_el2)
-            if (tableL_el, tableL_el2, sim_vector) not in result_list_match and (sim_vector[0] > max_sim or sim_vector[0] < min_sim):
-                # match
-                if count_occurrence(dictL_match, tableL_ELEM):
-                    # count_occurrence(dictL_match, tableL_ELEM)
-                    copies_list.append((tableL_el, tableL_el2, sim_vector))
-                    copies = copies + 1
-
-                    # logging.info("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
-                    # logging.info(tableL_el,tableL_el2,sim_vector)
-                    loop_i = 0
-
-            tableR_el2 = copy_EDIT_match(tableR_el)
-            sim_vector = sim_function(tableR_el, tableR_el2)
-            if (tableR_el, tableR_el2, sim_vector) not in result_list_match and (sim_vector[0] > max_sim or sim_vector[0] < min_sim):
-                # match
-                if count_occurrence(dictR_match, tableR_ELEM, limit=max_occ):
-                    # count_occurrence(dictR_match, tableR_ELEM)
-                    copies_list.append((tableR_el, tableR_el2, sim_vector))
-                    copies = copies + 1
-
-                    # logging.info("lista copy_match match: " +str(copy_match)+" loop_i: "+str(loop_i))
-                    # logging.info(tableR_el,tableR_el2,sim_vector)
-                    loop_i = 0
-
-        elif no_match < (totale + tot_copy_match):
-            sim_vector = sim_function(tableL_el, tableR_el)
-            if sim_vector[0] < min_sim and (tableL_el, tableR_el, sim_vector) not in result_list_noMatch:
-                # NO_match
-                if count_occurrence(dictL_NOmatch, tableL_ELEM, limit=max_occ) and count_occurrence(dictR_NOmatch,
-                                                                                                    tableR_ELEM,
-                                                                                                    limit=max_occ):
-                    # count_occurrence(dictL_NOmatch, tableL_ELEM)
-                    # count_occurrence(dictR_NOmatch, tableR_ELEM)
-                    result_list_noMatch.append((tableL_el, tableR_el, sim_vector))
-                    no_match = no_match + 1
-                    loop_i = 0
-                # logging.info("lista random no match wo cos_sim: " +str(no_match)+" loop_i: "+str(loop_i))
+                    # logging.info("lista random no match wo cos_sim: " +str(no_match)+" loop_i: "+str(loop_i))
+                else:
+                    loop_i = loop_i + 1
             else:
                 loop_i = loop_i + 1
-        else:
-            loop_i = loop_i + 1
-        count_i += 1
+            count_i += 1
+        except Exception as e:
+            print(traceback.format_exc())
+            print(f'skipped item {str(count_i)}')
 
     logging.info("dizionari")
     plotting_dizionari(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch)
