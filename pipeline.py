@@ -174,9 +174,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                    'pNM': da_precisionNOMATCH,
                                    'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
                         results = results.append(new_row, ignore_index=True)
+                        logging.info(results.to_string)
                         teacher = student
-
-                    logging.info(results.to_string)
 
             if params.model_type == 'bert':
 
