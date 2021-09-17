@@ -128,8 +128,13 @@ class EMTERModel:
 
         save_model(self.model, exp_name, exp_name, tokenizer=self.tokenizer)
 
-        l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
-        l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
+        try:
+            l0 = result.split('\n')[2].split('       ')[2].split('      ')
+            l1 = result.split('\n')[3].split('       ')[2].split('      ')
+        except:
+            l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
+            l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
+
         p = l1[0]
         r = l1[1]
         f1 = l1[2]
@@ -162,8 +167,13 @@ class EMTERModel:
         evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
         result = evaluation.evaluate(self.model, device, -1, silent)
 
-        l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
-        l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
+        try:
+            l0 = result.split('\n')[2].split('       ')[2].split('      ')
+            l1 = result.split('\n')[3].split('       ')[2].split('      ')
+        except:
+            l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
+            l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
+
         p = l1[0]
         r = l1[1]
         f1 = l1[2]
