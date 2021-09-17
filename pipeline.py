@@ -131,7 +131,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file,
                                                                                                  t2_file, indexes, simf,
                                                                                                  dataset_name,
-                                                                                                 params.sigma,
+                                                                                                 params.sigma * (1 + i),
                                                                                                  flag_Anhai, params.epsilon,
                                                                                                  params.kappa,
                                                                                                  params.num_runs, cut,
