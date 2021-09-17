@@ -8,9 +8,6 @@ from pipeline import get_datasets
 params = CheapERParams()
 params.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 0.7, 1]
 params.models = ['distilbert-base-uncased', 'microsoft/deberta-base', 'roberta-base']
-params.model_type = 'sims'
-params.approx = 'perceptron'
-params.sim_length = 2
 
 # get datasets
 datasets = get_datasets()
