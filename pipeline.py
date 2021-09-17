@@ -87,6 +87,97 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
     for n in range(params.num_runs):
         for cut in params.slicing:
 
+            if params.model_type == 'noisy-student':
+                logging.info('Generating dataset')
+                # create datasets
+                test_file = base_dir + dataset_name + os.sep + 'test.csv'
+                valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
+
+                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
+                                                    valid_file, test_file, params.deeper_trick)
+
+                train_cut = splitting_dataSet(cut, train)
+
+                for model_type in params.models:
+
+                    teacher = EMTERModel(model_type)
+
+                    if params.adaptive_ft:
+                        generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
+                        teacher.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
+                                          seq_length=seq_length,
+                                          epochs=params.epochs, lr=params.lr)
+                        logging.info("------------- Teacher Training {} ------------------".format(model_type))
+                        logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
+                        teacher.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
+                                      epochs=params.epochs, lr=params.lr, batch_size=params.batch_size,
+                                      silent=params.silent)
+                        classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = teacher \
+                            .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
+                                  silent=params.silent)
+                        new_row = {'model_type': model_type, 'train': 'teacher', 'cut': cut, 'pM': classic_precision,
+                                   'rM': classic_recall,
+                                   'f1M': classic_f1,
+                                   'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH,
+                                   'f1NM': classic_f1NOMATCH}
+                        results = results.append(new_row, ignore_index=True)
+                    for i in range(3):
+                        simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
+
+                        logging.info('Generating dataset')
+                        # create datasets
+                        test_file = base_dir + dataset_name + os.sep + 'test.csv'
+                        valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
+                        data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file,
+                                                                                                 t2_file, indexes, simf,
+                                                                                                 dataset_name,
+                                                                                                 params.sigma,
+                                                                                                 flag_Anhai, params.epsilon,
+                                                                                                 params.kappa,
+                                                                                                 params.num_runs, cut,
+                                                                                                 valid_file,
+                                                                                                 test_file, params.balance,
+                                                                                                 params.adjust_ds_size,
+                                                                                                 params.deeper_trick,
+                                                                                                 params.consistency,
+                                                                                                 params.sim_edges,
+                                                                                                 params.simple_slicing,
+                                                                                                 margin_score=.5)
+                        logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
+
+                        student = EMTERModel(model_type)
+
+                        logging.info("------------- Student Training {} -----------------".format(model_type))
+
+                        dataDa = vinsim_data_app
+
+                        if params.identity:
+                            dataDa = add_identity(dataDa)
+
+                        if params.symmetry:
+                            dataDa = add_symmetry(dataDa)
+
+                        if params.attribute_shuffle:
+                            dataDa = add_shuffle(dataDa)
+
+                        # gt+generated data train
+                        student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
+                                    warmup=params.warmup,
+                                    epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft,
+                                    silent=params.silent,
+                                    batch_size=params.batch_size)
+
+                        da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = student.eval(
+                            test, dataset_name, seq_length=seq_length, batch_size=params.batch_size, silent=params.silent)
+                        new_row = {'model_type': model_type, 'train': 'student', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
+                                   'f1M': da_f1,
+                                   'pNM': da_precisionNOMATCH,
+                                   'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
+                        results = results.append(new_row, ignore_index=True)
+                        teacher = student
+
+                    logging.info(results.to_string)
+
             if params.model_type == 'bert':
 
                 logging.info('Generating dataset')
