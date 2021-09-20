@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import itertools
 import logging
 import os
 from datetime import date
@@ -121,6 +122,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH,
                                'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
+                    vinsim_data_app = []
                     for i in range(3):
                         simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
 
@@ -128,7 +130,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         # create datasets
                         test_file = base_dir + dataset_name + os.sep + 'test.csv'
                         valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
-                        data, train, valid, test, vinsim_data, vinsim_data_app = create_datasets(gt_file, t1_file,
+                        data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c = create_datasets(gt_file, t1_file,
                                                                                                  t2_file, indexes, simf,
                                                                                                  dataset_name,
                                                                                                  params.sigma * (1 + i),
@@ -143,6 +145,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                                  params.sim_edges,
                                                                                                  params.simple_slicing,
                                                                                                  margin_score=.5)
+
+                        vinsim_data_app = vinsim_data_app + vinsim_data_app_c
+
                         logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
                         student = EMTERModel(model_type)
@@ -177,7 +182,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         logging.info(results.to_string)
                         teacher = student
 
-            if params.model_type == 'bert':
+            elif params.model_type == 'bert':
 
                 logging.info('Generating dataset')
                 # create datasets
