@@ -329,7 +329,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         model.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
                                     epochs=params.epochs, lr=params.lr, batch_size=params.batch_size, silent=params.silent)
                         classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                            .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size)
+                            .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size, silent=params.silent)
                         new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision,
                                    'rM': classic_recall,
                                    'f1M': classic_f1,
