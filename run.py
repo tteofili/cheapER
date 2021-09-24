@@ -9,8 +9,11 @@ params.model_type = 'noisy-student'
 params.adaptive_ft = False
 params.epochs = 3
 params.epsilon = 0.015
+params.kappa = 0
+params.sigma = 100
+params.epsilon = 0
 params.sim_length = 5
-params.slicing = [0.05, 0.1, 0.33]
+params.slicing = [0.05, 0.1, 0.33, 0.5]
 # get datasets
 datasets = get_datasets()
 results_df = cheaper_train(datasets[5], params)

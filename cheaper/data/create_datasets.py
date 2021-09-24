@@ -205,8 +205,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # SERVE per controllare che i match e i non match siano di egual numero
     # altrimenti si riduce il taglio di k
     # si suppone che sia riuscito a trovare meno match del k_slice=tot_pt/2
-    if len(random_tuples0) <= tot_pt / 2:
-        k_slice = int(len(random_tuples0) / 2)
+    if len(result_list_match) <= tot_pt / 2:
+        k_slice = len(result_list_match)
         logging.debug("riduco k")
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt

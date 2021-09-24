@@ -7,7 +7,7 @@ class CheapERParams:
         self.sigma = 1000
         self.kappa = 100
         self.epsilon = 0.015
-        self.slicing = [0.33]
+        self.slicing = [0.05, 0.1, 0.33, 0.5]
         self.adaptive_ft = False
         self.num_runs = 1
         self.compare = False
