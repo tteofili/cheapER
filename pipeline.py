@@ -5,6 +5,8 @@ import logging
 import os
 from datetime import date
 from inspect import getsource
+from random import random
+
 import pandas as pd
 import warnings
 
@@ -12,7 +14,7 @@ from sklearn.metrics import classification_report
 
 from cheaper.data.create_datasets import add_shuffle, parse_original
 from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
-from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter, check_anhai_dataset
+from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter, check_anhai_dataset, copy_EDIT_match
 from cheaper.data.plot import plot_graph
 from cheaper.emt.emtmodel import EMTERModel
 from cheaper.emt.logging_customized import setup_logging
@@ -166,6 +168,14 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                         if params.attribute_shuffle:
                             dataDa = add_shuffle(dataDa)
+
+                        # add noise
+                        for i in range(int(len(dataDa) / 3)):
+                            random_index = random.randint(0, len(dataDa) - 1)
+                            line = dataDa[random_index]
+                            rec_idx = random.randint(0, 1)
+                            line[rec_idx] = copy_EDIT_match(line[rec_idx])
+                            dataDa[random_index] = line
 
                         # gt+generated data train
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
