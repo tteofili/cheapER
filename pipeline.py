@@ -5,7 +5,7 @@ import logging
 import os
 from datetime import date
 from inspect import getsource
-from random import random
+import random
 
 import pandas as pd
 import warnings
