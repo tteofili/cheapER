@@ -174,8 +174,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                             random_index = random.randint(0, len(dataDa) - 1)
                             line = dataDa[random_index]
                             rec_idx = random.randint(0, 1)
-                            line[rec_idx] = copy_EDIT_match(line[rec_idx])
-                            dataDa[random_index] = line
+                            if rec_idx == 0:
+                                dataDa[random_index] = (copy_EDIT_match(line[rec_idx]), line[1], line[2])
+                            else:
+                                dataDa[random_index] = (line[0], copy_EDIT_match(line[rec_idx]), line[2])
 
                         # gt+generated data train
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
