@@ -125,7 +125,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
                     vinsim_data_app = []
-                    for i in range(3):
+                    for i in range(params.teaching_iterations):
                         simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
 
                         logging.info('Generating dataset')

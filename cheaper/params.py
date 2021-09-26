@@ -31,6 +31,7 @@ class CheapERParams:
         self.sim_edges = True
         self.simple_slicing = True
         self.model_type = 'hybrid'
+        self.teaching_iterations = 5
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
@@ -43,4 +44,4 @@ class CheapERParams:
                + str(self.adjust_ds_size) + ',batch_size=' + str(self.batch_size) + ',silent=' + str(self.silent) \
                + ',deeper_trick=' + str(self.deeper_trick) + ',consistency=' + str(self.consistency) + ',sim_edges=' \
                + str(self.sim_edges) + ',simple_slicing=' + str(self.simple_slicing) + ',use_model=' \
-               + str(self.model_type)
+               + str(self.model_type) + ',teaching_iterations=' + str(self.teaching_iterations)
