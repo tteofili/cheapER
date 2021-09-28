@@ -50,7 +50,7 @@ def sim_eval(simf, theta_min, theta_max, test):
     for line in test:
         label = line[3]
         labels.append(label)
-        #prediction = simf(line[0], line[1])[0]
+        # prediction = simf(line[0], line[1])[0]
         prediction = line[2]
         if prediction > theta_max:
             prediction = 1
@@ -108,8 +108,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     if params.adaptive_ft:
                         generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
                         teacher.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
-                                          seq_length=seq_length,
-                                          epochs=params.epochs, lr=params.lr)
+                                            seq_length=seq_length,
+                                            epochs=params.epochs, lr=params.lr)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     teacher.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
@@ -132,21 +132,27 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         # create datasets
                         test_file = base_dir + dataset_name + os.sep + 'test.csv'
                         valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
-                        data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c = create_datasets(gt_file, t1_file,
-                                                                                                 t2_file, indexes, simf,
-                                                                                                 dataset_name,
-                                                                                                 params.sigma * (1 + i),
-                                                                                                 flag_Anhai, params.epsilon,
-                                                                                                 params.kappa,
-                                                                                                 params.num_runs, cut,
-                                                                                                 valid_file,
-                                                                                                 test_file, params.balance,
-                                                                                                 params.adjust_ds_size,
-                                                                                                 params.deeper_trick,
-                                                                                                 params.consistency,
-                                                                                                 params.sim_edges,
-                                                                                                 params.simple_slicing,
-                                                                                                 margin_score=.5)
+                        data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c = create_datasets(gt_file,
+                                                                                                         t1_file,
+                                                                                                         t2_file,
+                                                                                                         indexes, simf,
+                                                                                                         dataset_name,
+                                                                                                         params.sigma * (
+                                                                                                                     1 + i),
+                                                                                                         flag_Anhai,
+                                                                                                         params.epsilon,
+                                                                                                         params.kappa,
+                                                                                                         params.num_runs,
+                                                                                                         cut,
+                                                                                                         valid_file,
+                                                                                                         test_file,
+                                                                                                         params.balance,
+                                                                                                         params.adjust_ds_size,
+                                                                                                         params.deeper_trick,
+                                                                                                         params.consistency,
+                                                                                                         params.sim_edges,
+                                                                                                         params.simple_slicing,
+                                                                                                         margin_score=.5)
 
                         for line in vinsim_data_app_c:
                             if line not in vinsim_data_app:
@@ -181,14 +187,17 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                         # gt+generated data train
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
-                                    warmup=params.warmup,
-                                    epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft,
-                                    silent=params.silent,
-                                    batch_size=params.batch_size)
+                                      warmup=params.warmup,
+                                      epochs=params.epochs, lr=params.lr * params.lr_multiplier,
+                                      adaptive_ft=params.adaptive_ft,
+                                      silent=params.silent,
+                                      batch_size=params.batch_size)
 
                         da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = student.eval(
-                            test, dataset_name, seq_length=seq_length, batch_size=params.batch_size, silent=params.silent)
-                        new_row = {'model_type': model_type, 'train': 'student', 'cut': cut, 'pM': da_precision, 'rM': da_recall,
+                            test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
+                            silent=params.silent)
+                        new_row = {'model_type': model_type, 'train': 'student', 'cut': cut, 'pM': da_precision,
+                                   'rM': da_recall,
                                    'f1M': da_f1,
                                    'pNM': da_precisionNOMATCH,
                                    'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
@@ -204,8 +213,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
                 train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
-                                                                                         valid_file, test_file, params.deeper_trick)
-
+                                                    valid_file, test_file, params.deeper_trick)
 
                 train_cut = splitting_dataSet(cut, train)
 
@@ -306,7 +314,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     logging.info(results.to_string)
             elif params.model_type == 'hybrid':
                 simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
-                                            normalize=params.normalize, lm=params.approx, deeper_trick=params.deeper_trick)
+                                            normalize=params.normalize, lm=params.approx,
+                                            deeper_trick=params.deeper_trick)
 
                 logging.info('Generating dataset')
                 # create datasets
@@ -318,7 +327,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                          params.sigma,
                                                                                          flag_Anhai, params.epsilon,
                                                                                          params.kappa,
-                                                                                         params.num_runs, cut, valid_file,
+                                                                                         params.num_runs, cut,
+                                                                                         valid_file,
                                                                                          test_file, params.balance,
                                                                                          params.adjust_ds_size,
                                                                                          params.deeper_trick,
@@ -339,13 +349,16 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         model = EMTERModel(model_type)
 
                         model.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
-                                    epochs=params.epochs, lr=params.lr, batch_size=params.batch_size, silent=params.silent)
+                                    epochs=params.epochs, lr=params.lr, batch_size=params.batch_size,
+                                    silent=params.silent)
                         classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = model \
-                            .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size, silent=params.silent)
+                            .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
+                                  silent=params.silent)
                         new_row = {'model_type': model_type, 'train': 'cl', 'cut': cut, 'pM': classic_precision,
                                    'rM': classic_recall,
                                    'f1M': classic_f1,
-                                   'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH, 'f1NM': classic_f1NOMATCH}
+                                   'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH,
+                                   'f1NM': classic_f1NOMATCH}
                         results = results.append(new_row, ignore_index=True)
 
                     logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
@@ -370,8 +383,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                     # generated data train only
                     if params.generated_only:
-                        model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
-                                    epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft, silent=params.silent,
+                        model.train(dataDa, valid, model_type, dataset_name, seq_length=seq_length,
+                                    warmup=params.warmup,
+                                    epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft,
+                                    silent=params.silent,
                                     batch_size=params.batch_size)
 
                         da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
@@ -387,7 +402,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     model = EMTERModel(model_type)
                     model.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
                                 warmup=params.warmup,
-                                epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft, silent=params.silent,
+                                epochs=params.epochs, lr=params.lr, adaptive_ft=params.adaptive_ft,
+                                silent=params.silent,
                                 batch_size=params.batch_size)
 
                     da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = model.eval(
@@ -417,9 +433,11 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 test_data = parsing_anhai_nofilter(test_file, t1_file, t2_file, indexes, simf)
-                sim_precision, sim_recall, sim_f1, sim_precisionNOMATCH, sim_recallNOMATCH, sim_f1NOMATCH = sim_eval(simf, theta_min, theta_max, test_data)
+                sim_precision, sim_recall, sim_f1, sim_precisionNOMATCH, sim_recallNOMATCH, sim_f1NOMATCH = sim_eval(
+                    simf, theta_min, theta_max, test_data)
 
-                new_row = {'model_type': 'sims', 'train': params.approx, 'cut': cut, 'pM': sim_precision, 'rM': sim_recall,
+                new_row = {'model_type': 'sims', 'train': params.approx, 'cut': cut, 'pM': sim_precision,
+                           'rM': sim_recall,
                            'f1M': sim_f1,
                            'pNM': sim_precisionNOMATCH,
                            'rNM': sim_recallNOMATCH, 'f1NM': sim_f1NOMATCH}
@@ -435,13 +453,14 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
     return results
 
 
-def get_row(r1, r2, lprefix = 'ltable_', rprefix = 'rtable_'):
+def get_row(r1, r2, lprefix='ltable_', rprefix='rtable_'):
     r1_df = pd.DataFrame(data=[r1.values], columns=r1.index)
     r2_df = pd.DataFrame(data=[r2.values], columns=r2.index)
     r1_df.columns = list(map(lambda col: lprefix + col, r1_df.columns))
     r2_df.columns = list(map(lambda col: rprefix + col, r2_df.columns))
     r1r2 = pd.concat([r1_df, r2_df], axis=1)
     return r1r2
+
 
 def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app):
     if os.path.exists(unlabelled_train):

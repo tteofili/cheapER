@@ -16,6 +16,7 @@ class CheapERParams:
         self.warmup = True
         self.epochs = 15
         self.lr = 2e-5
+        self.lr_multiplier = 2
         self.models = ['microsoft/deberta-base']
         self.attribute_shuffle = False
         self.identity = False
@@ -44,4 +45,5 @@ class CheapERParams:
                + str(self.adjust_ds_size) + ',batch_size=' + str(self.batch_size) + ',silent=' + str(self.silent) \
                + ',deeper_trick=' + str(self.deeper_trick) + ',consistency=' + str(self.consistency) + ',sim_edges=' \
                + str(self.sim_edges) + ',simple_slicing=' + str(self.simple_slicing) + ',use_model=' \
-               + str(self.model_type) + ',teaching_iterations=' + str(self.teaching_iterations)
+               + str(self.model_type) + ',teaching_iterations=' + str(self.teaching_iterations) + ',lr_multiplier=' +\
+               str(self.lr_multiplier)
