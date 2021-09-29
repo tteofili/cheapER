@@ -139,7 +139,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                                          indexes, simf,
                                                                                                          dataset_name,
                                                                                                          params.sigma * (
-                                                                                                                 1 + i),
+                                                                                                                 1 + t_i),
                                                                                                          flag_Anhai,
                                                                                                          params.epsilon,
                                                                                                          params.kappa,
