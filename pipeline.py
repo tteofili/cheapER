@@ -125,8 +125,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
                     vinsim_data_app = []
-                    t_i = 0
-                    while t_i < params.teaching_iterations:
+                    for t_i in range(params.teaching_iterations):
                         simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
 
                         logging.info('Generating dataset')
@@ -138,8 +137,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                                          t2_file,
                                                                                                          indexes, simf,
                                                                                                          dataset_name,
-                                                                                                         params.sigma * (
-                                                                                                                 1 + t_i),
+                                                                                                         params.sigma * (1 + t_i),
                                                                                                          flag_Anhai,
                                                                                                          params.epsilon,
                                                                                                          params.kappa,
@@ -206,7 +204,6 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         results = results.append(new_row, ignore_index=True)
                         logging.info(results.to_string)
                         teacher = student
-                        t_i += 1
 
             elif params.model_type == 'bert':
 
