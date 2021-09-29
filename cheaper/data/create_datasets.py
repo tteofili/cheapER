@@ -173,14 +173,14 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     for dictionario in lista_attrMATCH:
         j = j + 1
         plotting_occorrenze(list(dictionario.values()), f'lista_attrMATCH{j}')
-        d = Counter(dictionario)
+        #d = Counter(dictionario)
         # for k, v in d.most_common(5):
         #     logging.info('%s: %i' % (k, v))
     j = 0
     for dictionario in lista_attrNO_MATCH:
         j = j + 1
         plotting_occorrenze(list(dictionario.values()), f'lista_attrNO_MATCH{j}')
-        d = Counter(dictionario)
+        #d = Counter(dictionario)
         # for k, v in d.most_common(5):
         #     logging.info('%s: %i' % (k, v))
 

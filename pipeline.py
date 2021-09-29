@@ -125,7 +125,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
                     vinsim_data_app = []
-                    for i in range(params.teaching_iterations):
+                    t_i = 0
+                    while t_i < params.teaching_iterations:
                         simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
 
                         logging.info('Generating dataset')
@@ -138,7 +139,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                                          indexes, simf,
                                                                                                          dataset_name,
                                                                                                          params.sigma * (
-                                                                                                                     1 + i),
+                                                                                                                 1 + i),
                                                                                                          flag_Anhai,
                                                                                                          params.epsilon,
                                                                                                          params.kappa,
@@ -175,15 +176,16 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         if params.attribute_shuffle:
                             dataDa = add_shuffle(dataDa)
 
-                        # add noise
-                        for i in range(int(len(dataDa) / 3)):
-                            random_index = random.randint(0, len(dataDa) - 1)
-                            line = dataDa[random_index]
-                            rec_idx = random.randint(0, 1)
-                            if rec_idx == 0:
-                                dataDa[random_index] = (copy_EDIT_match(line[rec_idx]), line[1], line[2])
-                            else:
-                                dataDa[random_index] = (line[0], copy_EDIT_match(line[rec_idx]), line[2])
+                        if params.data_noise:
+                            # add noise
+                            for i in range(int(len(dataDa) / 3)):
+                                random_index = random.randint(0, len(dataDa) - 1)
+                                line = dataDa[random_index]
+                                rec_idx = random.randint(0, 1)
+                                if rec_idx == 0:
+                                    dataDa[random_index] = (copy_EDIT_match(line[rec_idx]), line[1], line[2])
+                                else:
+                                    dataDa[random_index] = (line[0], copy_EDIT_match(line[rec_idx]), line[2])
 
                         # gt+generated data train
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
@@ -204,6 +206,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         results = results.append(new_row, ignore_index=True)
                         logging.info(results.to_string)
                         teacher = student
+                        t_i += 1
 
             elif params.model_type == 'bert':
 
