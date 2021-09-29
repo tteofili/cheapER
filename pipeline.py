@@ -96,7 +96,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
-                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
+                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], False,
                                                     valid_file, test_file, params.deeper_trick)
 
                 train_cut = splitting_dataSet(cut, train)
@@ -186,6 +186,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                     dataDa[random_index] = (line[0], copy_EDIT_match(line[rec_idx]), line[2])
 
                         # gt+generated data train
+                        logging.info('Training with {} record pairs ({} generated, {} GT)'.format(len(train_cut) + len(dataDa),
+                                                                                         len(dataDa), len(train_cut)))
+
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
                                       warmup=params.warmup,
                                       epochs=params.epochs, lr=params.lr * params.lr_multiplier,
