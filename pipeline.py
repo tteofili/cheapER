@@ -96,10 +96,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
-                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], False,
-                                                    valid_file, test_file, params.deeper_trick)
+                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
+                                                    valid_file, test_file, params.deeper_trick, cut=cut)
 
-                train_cut = splitting_dataSet(cut, train)
+                train_cut = train.copy()
 
                 for model_type in params.models:
 

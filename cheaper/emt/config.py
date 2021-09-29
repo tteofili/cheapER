@@ -29,6 +29,7 @@ class Config():
         'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer, AlbertForMaskedLM),
         'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer, SqueezeBertForMaskedLM),
         'google/reformer-crime-and-punishment' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer, ReformerForMaskedLM),
+        'google/reformer-enwik8' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer, ReformerForMaskedLM),
         'funnel-transformer/small-base' : (FunnelConfig, FunnelForSequenceClassification, FunnelTokenizer, FunnelForMaskedLM),
         'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer, DebertaForMaskedLM),
         'microsoft/deberta-v2-xlarge' : (DebertaV2Config, DebertaV2ForSequenceClassification, DebertaV2Tokenizer, DebertaV2ForMaskedLM),
