@@ -151,7 +151,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                                          params.consistency,
                                                                                                          params.sim_edges,
                                                                                                          params.simple_slicing,
-                                                                                                         margin_score=.5)
+                                                                                                         margin_score=0)
 
                         for line in vinsim_data_app_c:
                             if line not in vinsim_data_app:
