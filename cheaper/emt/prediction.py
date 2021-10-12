@@ -5,7 +5,7 @@ from sklearn.metrics import f1_score, classification_report
 from tqdm import tqdm
 
 
-def predict(model, device, test_data_loader, silent):
+def predict(model, device, test_data_loader, silent, t=1.0):
     nb_prediction_steps = 0
     predictions = None
     labels = None
@@ -22,8 +22,8 @@ def predict(model, device, test_data_loader, silent):
             outputs = model(**inputs)
             logits = outputs[1]
 
-        m = torch.nn.Softmax(dim=1)
-        proba = m(logits)
+        # m = torch.nn.Softmax(dim=1)
+        proba = softmax_t(logits, t=t)
         # proba = F.softmax(logits, dim=1)
         nb_prediction_steps += 1
 
@@ -44,3 +44,9 @@ def predict(model, device, test_data_loader, silent):
 
     return simple_accuracy, f1, report, pd.DataFrame({'predictions': predicted_class, 'labels': labels,
                                                       'scores': predictions[0][1]})
+
+
+def softmax_t(input, t=1.0):
+  ex = torch.exp(input/t)
+  sum = torch.sum(ex)
+  return ex / sum

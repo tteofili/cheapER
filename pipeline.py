@@ -126,7 +126,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     results = results.append(new_row, ignore_index=True)
                     vinsim_data_app = []
                     for t_i in range(params.teaching_iterations):
-                        simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
+                        if params.temperature:
+                            simf = lambda t1, t2: [teacher.predict(t1, t2, t=float(1 + t_i/10))['scores'].values[0]]
+                        else:
+                            simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
 
                         logging.info('Generating dataset')
                         # create datasets

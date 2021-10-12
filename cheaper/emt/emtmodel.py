@@ -182,7 +182,7 @@ class EMTERModel:
         f1nm = l0[2]
         return p, r, f1, pnm, rnm, f1nm
 
-    def predict(self, t1, t2):
+    def predict(self, t1, t2, **kwargs):
         x = pd.DataFrame(t1 + t2).T
 
         device, n_gpu = initialize_gpu_seed(22)
@@ -197,6 +197,6 @@ class EMTERModel:
                                      DataType.TEST, self.model_type)
 
         simple_accuracy, f1, classification_report, predictions = prediction.predict(self.model, device,
-                                                                                     test_data_loader, True)
+                                                                                     test_data_loader, True, **kwargs)
         os.remove(tmpf)
         return predictions
