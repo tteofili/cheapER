@@ -126,8 +126,16 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     results = results.append(new_row, ignore_index=True)
                     vinsim_data_app = []
                     for t_i in range(params.teaching_iterations):
-                        if params.temperature:
-                            simf = lambda t1, t2: [teacher.predict(t1, t2, t=float(1 + t_i/10))['scores'].values[0]]
+                        if params.discard_old_data:
+                            vinsim_data_app = []
+                        if params.temperature is not None:
+                            if params.temperature == 'asc':
+                                temperature = float(1 + t_i / 10)
+                            elif params.temperature == 'desc':
+                                temperature = float(1 - t_i / 10)
+                            elif params.temperature == 'linear':
+                                temperature = 1 + t_i
+                            simf = lambda t1, t2: [teacher.predict(t1, t2, t=temperature)['scores'].values[0]]
                         else:
                             simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
 
