@@ -164,9 +164,14 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                                          params.simple_slicing,
                                                                                                          margin_score=0)
 
-                        for line in vinsim_data_app_c:
-                            if line not in vinsim_data_app:
-                                vinsim_data_app += [line]
+                        if params.use_scores:
+                            for line in vinsim_data_c:
+                                if line not in vinsim_data_app:
+                                    vinsim_data_app += [line]
+                        else:
+                            for line in vinsim_data_app_c:
+                                if line not in vinsim_data_app:
+                                    vinsim_data_app += [line]
 
                         logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
