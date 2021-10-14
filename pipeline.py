@@ -162,7 +162,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                                          params.consistency,
                                                                                                          params.sim_edges,
                                                                                                          params.simple_slicing,
-                                                                                                         margin_score=0)
+                                                                                                         margin_score=params.threshold)
 
                         if params.use_scores:
                             for line in vinsim_data_c:

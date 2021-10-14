@@ -37,6 +37,7 @@ class CheapERParams:
         self.temperature = None
         self.discard_old_data = False
         self.use_scores = False
+        self.threshold = 0
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
@@ -52,4 +53,4 @@ class CheapERParams:
                + str(self.model_type) + ',teaching_iterations=' + str(self.teaching_iterations) + ',lr_multiplier=' +\
                str(self.lr_multiplier) + ',data_noise=' + str(self.data_noise) + ',temperature=' \
                + str(self.temperature) + ',discard_old_data=' + str(self.discard_old_data) + ',use_scores=' +\
-               str(self.use_scores)
+               str(self.use_scores) + ',threshold=' + str(self.threshold)
