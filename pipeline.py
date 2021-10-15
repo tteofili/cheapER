@@ -135,6 +135,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 temperature = float(1 - t_i / 10)
                             elif params.temperature == 'linear':
                                 temperature = 1 + t_i
+                            elif isinstance(params.temperature, float):
+                                temperature = params.temperature
                             simf = lambda t1, t2: [teacher.predict(t1, t2, t=temperature)['scores'].values[0]]
                         else:
                             simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
