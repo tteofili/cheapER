@@ -4,20 +4,20 @@ from cheaper.emt import config
 class CheapERParams:
 
     def __init__(self):
-        self.sigma = 1000
-        self.kappa = 100
-        self.epsilon = 0.015
-        self.slicing = [0.05, 0.1, 0.33, 0.5]
-        self.adaptive_ft = False
+        self.sigma = 100
+        self.kappa = 10
+        self.epsilon = 0
+        self.slicing = [0.05, 0.1, 0.33, 0.4, 0.5]
+        self.adaptive_ft = True
         self.num_runs = 1
         self.compare = False
         self.normalize = True
         self.sim_length = 5
         self.warmup = True
         self.epochs = 15
-        self.lr = 2e-5
-        self.lr_multiplier = 2
-        self.models = ['microsoft/deberta-base']
+        self.lr = 1e-7
+        self.lr_multiplier = 200
+        self.models = ['distilbert-base-uncased', 'roberta-base']
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
@@ -27,12 +27,12 @@ class CheapERParams:
         self.silent = True
         self.batch_size = 8
         self.balance = [0.5, 0.5]
-        self.deeper_trick = False
+        self.deeper_trick = True
         self.consistency = True
         self.sim_edges = True
         self.simple_slicing = True
-        self.model_type = 'hybrid'
-        self.teaching_iterations = 5
+        self.model_type = 'noisy-student'
+        self.teaching_iterations = 3
         self.data_noise = True
         self.temperature = None
         self.discard_old_data = False
