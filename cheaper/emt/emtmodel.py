@@ -37,13 +37,13 @@ class EMTERModel:
         self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
-                    seq_length=MAX_SEQ_LENGTH, epochs=3, lr=1e-3):
+                    seq_length=MAX_SEQ_LENGTH, epochs=3, lr=1e-3, ow=False):
 
         model_dir = 'models/' + dataset_name + "/mlm-" + model_type
         if not os.path.exists(model_dir):
             os.makedirs(model_dir, exist_ok=True)
 
-        if os.path.exists(model_dir + '/pytorch_model.bin'):
+        if os.path.exists(model_dir + '/pytorch_model.bin') and not ow:
             self.model = load_model(model_dir)
         else:
             train_dataset = LineByLineTextDataset(
@@ -196,7 +196,6 @@ class EMTERModel:
                                      BATCH_SIZE,
                                      DataType.TEST, self.model_type)
 
-        simple_accuracy, f1, classification_report, predictions = prediction.predict(self.model, device,
-                                                                                     test_data_loader, True, **kwargs)
+        _, _, _, predictions = prediction.predict(self.model, device, test_data_loader, True, **kwargs)
         os.remove(tmpf)
         return predictions
