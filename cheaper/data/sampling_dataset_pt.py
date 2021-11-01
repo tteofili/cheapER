@@ -509,7 +509,7 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
     logging.info(f'{len(result_list_noMatch)} negative pairs found via LSH blocking and low similarity check')
 
     count_i = 0
-    bigger_size = 3 * totale
+    bigger_size = 5 * totale
     logging.info(f'max pair visit: {bigger_size}')
     while loop_i<120000 and count_i < bigger_size and (match<totale or no_match<totale):
         try:

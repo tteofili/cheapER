@@ -180,11 +180,6 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         logging.info('New generated dataset size: {}'.format(len(vinsim_data_app)))
 
                         student = EMTERModel(model_type)
-                        if params.adaptive_ft:
-                            generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
-                            student.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
-                                                seq_length=seq_length,
-                                                epochs=params.epochs, lr=params.lr, ow=True)
 
                         logging.info("------------- Student Training {} -----------------".format(model_type))
 
