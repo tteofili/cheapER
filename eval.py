@@ -6,9 +6,6 @@ from pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams()
-params.threshold = 0.5
-params.lr = 1e-5
-params.lr_multiplier = 2
 
 # get datasets
 datasets = get_datasets()

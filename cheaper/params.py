@@ -7,7 +7,7 @@ class CheapERParams:
         self.sigma = 100
         self.kappa = 10
         self.epsilon = 0
-        self.slicing = [0.05, 0.1, 0.33, 0.4, 0.5]
+        self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 0.7, 1]
         self.adaptive_ft = True
         self.num_runs = 1
         self.compare = False
@@ -37,7 +37,7 @@ class CheapERParams:
         self.temperature = None
         self.discard_old_data = False
         self.use_scores = False
-        self.threshold = 0
+        self.threshold = 0.5
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
