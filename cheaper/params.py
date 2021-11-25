@@ -15,13 +15,13 @@ class CheapERParams:
         self.sim_length = 5
         self.warmup = True
         self.epochs = 10
-        self.lr = 1e-6
-        self.lr_multiplier = 50
+        self.lr = 1e-7
+        self.lr_multiplier = 500
         self.models = ['distilroberta-base']
-        self.attribute_shuffle = False
+        self.attribute_shuffle = True
         self.identity = False
         self.symmetry = False
-        self.adjust_ds_size = False
+        self.adjust_ds_size = True
         self.approx = 'perceptron'
         self.generated_only = True
         self.silent = True
@@ -32,7 +32,7 @@ class CheapERParams:
         self.sim_edges = True
         self.simple_slicing = True
         self.model_type = 'noisy-student'
-        self.teaching_iterations = 5
+        self.teaching_iterations = 3
         self.data_noise = False
         self.temperature = None
         self.discard_old_data = True
