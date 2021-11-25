@@ -8,7 +8,7 @@ class CheapERParams:
         self.kappa = 100
         self.epsilon = 0.015
         self.slicing = [0.1, 0.33, 0.5, 1]
-        self.adaptive_ft = False
+        self.adaptive_ft = True
         self.num_runs = 1
         self.compare = False
         self.normalize = True
@@ -17,7 +17,7 @@ class CheapERParams:
         self.epochs = 7
         self.lr = 1e-5
         self.lr_multiplier = 5
-        self.models = ['distilbert-base-uncased']
+        self.models = ['distilroberta-base']
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
@@ -35,7 +35,7 @@ class CheapERParams:
         self.teaching_iterations = 5
         self.data_noise = True
         self.temperature = None
-        self.discard_old_data = False
+        self.discard_old_data = True
         self.use_scores = False
         self.threshold = 0.5
 

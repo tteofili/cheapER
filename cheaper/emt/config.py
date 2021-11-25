@@ -25,6 +25,7 @@ class Config():
     MODEL_CLASSES = {
         'bert-base-uncased': (BertConfig, BertForSequenceClassification, BertTokenizer, BertForMaskedLM),
         'roberta-base': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer, RobertaForMaskedLM),
+        'distilroberta-base': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer, RobertaForMaskedLM),
         'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer, DistilBertForMaskedLM),
         'albert-base-v2': (AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer, AlbertForMaskedLM),
         'squeezebert/squeezebert-mnli-headless' : (SqueezeBertConfig, SqueezeBertForSequenceClassification, SqueezeBertTokenizer, SqueezeBertForMaskedLM),
