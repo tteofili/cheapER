@@ -37,7 +37,7 @@ class EMTERModel:
         self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
-                    seq_length=MAX_SEQ_LENGTH, epochs=3, lr=1e-3, ow=False):
+                    seq_length=MAX_SEQ_LENGTH, epochs=3, lr=5e-5, ow=False):
 
         model_dir = 'models/' + dataset_name + "/mlm-" + model_type
         if not os.path.exists(model_dir):
@@ -66,7 +66,7 @@ class EMTERModel:
                 logging_dir='./logs',  # directory for storing logs
                 save_total_limit=2,
                 do_eval=True,
-                num_train_epochs=3
+                num_train_epochs=epochs
             )
 
             data_collator = DataCollatorForLanguageModeling(
@@ -106,12 +106,12 @@ class EMTERModel:
         num_train_steps = len(training_data_loader) * num_epochs
 
         learning_rate = lr
-        adam_eps = 1e-8
+        adam_eps = 1e-6
         if warmup:
             warmup_steps = int(len(training_data_loader) * 0.1)
             weight_decay = 0.01
         else:
-            warmup_steps = 1
+            warmup_steps = 0
             weight_decay = 0
         optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
                                                weight_decay)

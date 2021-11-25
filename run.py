@@ -5,7 +5,7 @@ from pipeline import get_datasets
 # cheapER parameters' settings
 params = CheapERParams()
 params.epochs = 5
-params.adaptive_ft = False
+params.adaptive_ft = True
 params.models = ['distilbert-base-uncased']
 
 # get datasets

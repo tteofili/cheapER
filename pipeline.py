@@ -109,7 +109,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
                         teacher.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
                                             seq_length=seq_length,
-                                            epochs=params.epochs, lr=params.lr)
+                                            epochs=3, lr=5e-5)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     teacher.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,

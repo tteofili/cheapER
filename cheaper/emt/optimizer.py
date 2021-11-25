@@ -13,7 +13,7 @@ def build_optimizer(model, num_train_steps, learning_rate, adam_eps, warmup_step
     #     {'params': model.classifier.parameters(), 'lr': 1e-3}
     # ], lr=1e-2, momentum=0.9))
 
-    optimizer = AdamW(optimizer_grouped_parameters, lr=learning_rate, eps=adam_eps)
+    optimizer = AdamW(optimizer_grouped_parameters, lr=learning_rate, eps=adam_eps, betas=[0.9, 0.98])
     scheduler = get_linear_schedule_with_warmup(optimizer, warmup_steps, num_train_steps)
 
     return optimizer, scheduler
