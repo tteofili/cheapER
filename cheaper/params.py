@@ -8,13 +8,13 @@ class CheapERParams:
         self.kappa = 100
         self.epsilon = 0.015
         self.slicing = [0.1, 0.33, 0.5, 1]
-        self.adaptive_ft = True
+        self.adaptive_ft = False
         self.num_runs = 1
         self.compare = False
         self.normalize = True
         self.sim_length = 5
         self.warmup = True
-        self.epochs = 5
+        self.epochs = 7
         self.lr = 1e-5
         self.lr_multiplier = 5
         self.models = ['distilbert-base-uncased']
@@ -25,7 +25,7 @@ class CheapERParams:
         self.approx = 'perceptron'
         self.generated_only = True
         self.silent = True
-        self.batch_size = 8
+        self.batch_size = 16
         self.balance = [0.5, 0.5]
         self.deeper_trick = True
         self.consistency = True

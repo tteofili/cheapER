@@ -211,7 +211,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
                                       warmup=params.warmup,
-                                      epochs=params.epochs, lr=params.lr * params.lr_multiplier,
+                                      epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
                                       adaptive_ft=params.adaptive_ft,
                                       silent=params.silent,
                                       batch_size=params.batch_size)
