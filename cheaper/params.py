@@ -8,7 +8,7 @@ class CheapERParams:
         self.kappa = 100
         self.epsilon = 0
         self.slicing = [0.1, 0.33, 0.5, 1]
-        self.adaptive_ft = False
+        self.adaptive_ft = True
         self.num_runs = 1
         self.compare = False
         self.normalize = True
@@ -16,7 +16,7 @@ class CheapERParams:
         self.warmup = False
         self.epochs = 10
         self.lr = 1e-7
-        self.lr_multiplier = 500
+        self.lr_multiplier = 200
         self.models = ['roberta-base']
         self.attribute_shuffle = False
         self.identity = False
@@ -37,7 +37,7 @@ class CheapERParams:
         self.temperature = None
         self.discard_old_data = False
         self.use_scores = False
-        self.threshold = 0
+        self.threshold = 0.5
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
