@@ -4,9 +4,9 @@ from cheaper.emt import config
 class CheapERParams:
 
     def __init__(self):
-        self.sigma = 3000
-        self.kappa = 1200
-        self.epsilon = 0.015
+        self.sigma = 500
+        self.kappa = 100
+        self.epsilon = 0
         self.slicing = [0.1, 0.33, 0.5, 1]
         self.adaptive_ft = False
         self.num_runs = 1
@@ -21,7 +21,7 @@ class CheapERParams:
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
-        self.adjust_ds_size = True
+        self.adjust_ds_size = False
         self.approx = 'perceptron'
         self.generated_only = True
         self.silent = True
