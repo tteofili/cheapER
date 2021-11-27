@@ -6,6 +6,9 @@ from pipeline import get_datasets
 params = CheapERParams()
 params.epochs = 3
 params.adaptive_ft = False
+params.models = ['distilbert-base-uncased']
+params.lr = 2e-5
+params.lr_multiplier = 1
 
 # get datasets
 datasets = get_datasets()
