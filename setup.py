@@ -21,6 +21,7 @@ setuptools.setup(
           'tqdm',
           'transformers',
           'torch',
+          'datasets',
       ],
     classifiers=[
         "Programming Language :: Python :: 3",

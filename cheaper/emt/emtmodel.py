@@ -140,6 +140,7 @@ class EMTERModel:
             adam_beta1=0.99,
             adam_beta2=0.98,
             weight_decay=0.01,
+            logging_strategy="epoch",
         )
 
         trainer = Trainer(
