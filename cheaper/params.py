@@ -15,8 +15,8 @@ class CheapERParams:
         self.sim_length = 5
         self.warmup = False
         self.epochs = 10
-        self.lr = 1e-7
-        self.lr_multiplier = 200
+        self.lr = 1e-6
+        self.lr_multiplier = 20
         self.models = ['roberta-base']
         self.attribute_shuffle = False
         self.identity = False

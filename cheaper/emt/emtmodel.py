@@ -143,7 +143,6 @@ class EMTERModel:
             weight_decay=0.01,
             logging_strategy="epoch",
             load_best_model_at_end=True,
-            greater_is_better=True,
         )
 
         trainer = Trainer(
