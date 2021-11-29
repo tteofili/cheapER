@@ -108,8 +108,8 @@ class EMTERModel:
         valid_dataset = load_dataset('csv', data_files=validF, split='train')
 
         def tokenize_function(example):
-            text_a = ' '.join({k: v for k, v in example.items() if k.startswith('left_')}.values())
-            text_b = ' '.join({k: v for k, v in example.items() if k.startswith('right_')}.values())
+            text_a = ' '.join({k: str(v) for k, v in example.items() if k.startswith('left_')}.values())
+            text_b = ' '.join({k: str(v) for k, v in example.items() if k.startswith('right_')}.values())
             return self.tokenizer(
                 text_a, text_b, padding="max_length", truncation=True, max_length=seq_length
             )
@@ -135,12 +135,15 @@ class EMTERModel:
             do_eval=True,
             num_train_epochs=epochs,
             evaluation_strategy="epoch",
+            save_strategy="epoch",
             warmup_ratio=warmup_ratio,
             adam_epsilon=1e-6,
             adam_beta1=0.99,
             adam_beta2=0.98,
             weight_decay=0.01,
             logging_strategy="epoch",
+            load_best_model_at_end=True,
+            greater_is_better=True,
         )
 
         trainer = Trainer(

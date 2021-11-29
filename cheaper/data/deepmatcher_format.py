@@ -32,7 +32,7 @@ def tofiles(pt_train, pt_valid, name):
     trainName = datadir + name + '_trainSim'+str(len(pt_train))+'.csv'
     os.makedirs(trainName[:trainName.rfind('/')], exist_ok=True)
 
-    tr = df.to_csv(trainName, index=False)
+    tr = df.astype(str).to_csv(trainName, index=False)
 
     df = pd.DataFrame(pt_valid)
     if len(pt_valid) > 0:
@@ -48,7 +48,7 @@ def tofiles(pt_train, pt_valid, name):
     validName = datadir + name + '_validSim'+str(len(pt_train))+'.csv'
     os.makedirs(validName[:validName.rfind('/')], exist_ok=True)
 
-    vd = df.to_csv(validName, index=False)
+    vd = df.astype(str).to_csv(validName, index=False)
 
     return trainName, validName
 

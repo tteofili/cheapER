@@ -12,5 +12,5 @@ params.lr_multiplier = 1
 
 # get datasets
 datasets = get_datasets()
-results_df = cheaper_train(datasets[5], params)
+results_df = cheaper_train(datasets[0], params)
 print(results_df)
