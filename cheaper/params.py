@@ -4,7 +4,7 @@ from cheaper.emt import config
 class CheapERParams:
 
     def __init__(self):
-        self.sigma = 500
+        self.sigma = 1000
         self.kappa = 100
         self.epsilon = 0.015
         self.slicing = [0.1, 0.33, 0.5, 1]
@@ -13,8 +13,8 @@ class CheapERParams:
         self.compare = False
         self.normalize = True
         self.sim_length = 5
-        self.warmup = False
-        self.epochs = 10
+        self.warmup = True
+        self.epochs = 15
         self.lr = 1e-6
         self.lr_multiplier = 20
         self.models = ['roberta-base']
@@ -27,7 +27,7 @@ class CheapERParams:
         self.silent = True
         self.batch_size = 8
         self.balance = [0.5, 0.5]
-        self.deeper_trick = False
+        self.deeper_trick = True
         self.consistency = False
         self.sim_edges = True
         self.simple_slicing = True
@@ -37,7 +37,7 @@ class CheapERParams:
         self.temperature = None
         self.discard_old_data = False
         self.use_scores = False
-        self.threshold = 0.5
+        self.threshold = 0
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
