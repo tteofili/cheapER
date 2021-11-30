@@ -121,7 +121,7 @@ class EMTERModel:
         valid_dataset = self.prepare_columns(valid_dataset)
 
         if warmup:
-            warmup_ratio = 0.1
+            warmup_ratio = 0.02
         else:
             warmup_ratio = 0
 
@@ -131,7 +131,6 @@ class EMTERModel:
             per_device_train_batch_size=batch_size,  # batch size per device during training
             per_device_eval_batch_size=batch_size * 4,  # batch size for evaluation
             logging_dir='./logs',  # directory for storing logs
-            save_total_limit=2,
             do_eval=True,
             num_train_epochs=epochs,
             evaluation_strategy="epoch",
