@@ -112,9 +112,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                             epochs=3, lr=5e-5)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
-                    teacher.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
+                    teacher.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
                                   epochs=params.epochs, lr=params.lr, batch_size=params.batch_size,
-                                  silent=params.silent)
+                                  silent=params.silent, adaptive_ft=params.adaptive_ft)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = teacher \
                         .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
                               silent=params.silent)

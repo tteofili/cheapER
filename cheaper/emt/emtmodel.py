@@ -257,7 +257,7 @@ class EMTERModel:
         return p, r, f1, pnm, rnm, f1nm
 
     def predict(self, t1, t2, **kwargs):
-        x = pd.DataFrame(t1 + t2).T
+        x = pd.DataFrame([0] + t1 + t2).T
 
         device, n_gpu = initialize_gpu_seed(22)
         processor = DeepMatcherProcessor()
