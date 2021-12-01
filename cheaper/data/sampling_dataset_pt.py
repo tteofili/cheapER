@@ -3,6 +3,7 @@ import logging
 import math
 import random
 import re
+import traceback
 from collections import Counter
 
 import numpy as np
@@ -15,7 +16,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from cheaper.data.edit_dna import Sequence
 from cheaper.data.plot import plot_pretrain, plotting_dizionari, plot_dataPT
 from cheaper.emt.logging_customized import setup_logging
-import traceback
 
 setup_logging()
 '''
@@ -222,7 +222,7 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match, dictR_mat
     data4hash, dataL, dataR, tableLlist, tableRlist = create_data(tableL, tableR, indiciL, indiciR)
     res = []
     weights = [0.4, 0.6]
-    for threshold, num_perm in [(0.65, 256)]:
+    for threshold, num_perm in [(0.65, 256), (0.9, 64)]:
         res += minHash_LSH(data4hash, threshold=threshold, num_perm=num_perm, weights=weights)
         logging.info("{} pairs found".format(len(res)))
     dataset_pt = create_dataset_pt(res, dataL, dataR, tableLlist, tableRlist, min_sim, max_sim, dictL_match,
@@ -458,7 +458,7 @@ def csvTable2datasetRANDOM_countOcc(tableL, tableR, totale, min_sim, max_sim, in
 
 
 def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, tot_copy_match,
-                                    max_occ, sim_function=lambda x, y: [1, 1]):
+                 max_occ, sim_function=lambda x, y: [1, 1]):
     # senza doppioni nella lista
 
     loop_i = 0
@@ -509,9 +509,9 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
     logging.info(f'{len(result_list_noMatch)} negative pairs found via LSH blocking and low similarity check')
 
     count_i = 0
-    bigger_size = 5 * totale
+    bigger_size = max(5 * totale, 1000)
     logging.info(f'max pair visit: {bigger_size}')
-    while loop_i<120000 and count_i < bigger_size and (match<totale or no_match<totale):
+    while loop_i < 120000 and count_i < bigger_size and (match < totale or no_match < totale):
         try:
             random.seed(count_i)
             x = random.randint(1, len(tableLlist) - 1)
@@ -552,9 +552,10 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
                 elif sim_vector[0] < min_sim and no_match < (totale + tot_copy_match):
                     if (tableL_el, tableR_el, sim_vector) not in result_list_noMatch:
                         # NO_match
-                        if count_occurrence(dictL_NOmatch, tableL_ELEM, limit=max_occ) and count_occurrence(dictR_NOmatch,
-                                                                                                            tableR_ELEM,
-                                                                                                            limit=max_occ):
+                        if count_occurrence(dictL_NOmatch, tableL_ELEM, limit=max_occ) and count_occurrence(
+                                dictR_NOmatch,
+                                tableR_ELEM,
+                                limit=max_occ):
                             # NO_match
                             # count_occurrence(dictL_NOmatch, tableL_ELEM)
                             # count_occurrence(dictR_NOmatch, tableR_ELEM)
@@ -569,7 +570,8 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
             elif copies < tot_copy_match:
                 tableL_el2 = copy_EDIT_match(tableL_el)
                 sim_vector = sim_function(tableL_el, tableL_el2)
-                if (tableL_el, tableL_el2, sim_vector) not in result_list_match and (sim_vector[0] > max_sim or sim_vector[0] < min_sim):
+                if (tableL_el, tableL_el2, sim_vector) not in result_list_match and (
+                        sim_vector[0] > max_sim or sim_vector[0] < min_sim):
                     # match
                     if count_occurrence(dictL_match, tableL_ELEM):
                         # count_occurrence(dictL_match, tableL_ELEM)
@@ -582,7 +584,8 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
 
                 tableR_el2 = copy_EDIT_match(tableR_el)
                 sim_vector = sim_function(tableR_el, tableR_el2)
-                if (tableR_el, tableR_el2, sim_vector) not in result_list_match and (sim_vector[0] > max_sim or sim_vector[0] < min_sim):
+                if (tableR_el, tableR_el2, sim_vector) not in result_list_match and (
+                        sim_vector[0] > max_sim or sim_vector[0] < min_sim):
                     # match
                     if count_occurrence(dictR_match, tableR_ELEM, limit=max_occ):
                         # count_occurrence(dictR_match, tableR_ELEM)
