@@ -3,11 +3,7 @@ from pipeline import cheaper_train
 from pipeline import get_datasets
 
 # cheapER parameters' settings
-params = CheapERParams()
-params.models = ['distilroberta-base']
-params.lr = 1e-5
-params.lr_multiplier = 2
-params.discard_old_data = True
+params = CheapERParams(fast=True)
 
 # get datasets
 datasets = get_datasets()

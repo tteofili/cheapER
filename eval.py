@@ -5,7 +5,7 @@ from pipeline import cheaper_train
 from pipeline import get_datasets
 
 # cheapER parameters' settings
-params = CheapERParams()
+params = CheapERParams(fast=False)
 
 # get datasets
 datasets = get_datasets()
@@ -17,4 +17,3 @@ for d in datasets:
     results.append(d_res)
     print(f'{d[4]}:\n{d_res}')
 print(results)
-

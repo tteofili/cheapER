@@ -1,9 +1,6 @@
-from cheaper.emt import config
-
-
 class CheapERParams:
 
-    def __init__(self):
+    def __init__(self, fast: bool = True):
         self.sigma = 100
         self.kappa = 10
         self.epsilon = 0
@@ -16,9 +13,16 @@ class CheapERParams:
         self.warmup = True
         self.weight_decay = 0.01
         self.epochs = 15
-        self.lr = 1e-7
-        self.lr_multiplier = 200
-        self.models = ['roberta-base']
+        if fast:
+            self.models = ['distilroberta-base']
+            self.lr = 1e-5
+            self.lr_multiplier = 2
+            self.teaching_iterations = 3
+        else:
+            self.lr = 1e-7
+            self.lr_multiplier = 200
+            self.models = ['roberta-base']
+            self.teaching_iterations = 5
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
@@ -33,15 +37,15 @@ class CheapERParams:
         self.sim_edges = True
         self.simple_slicing = True
         self.model_type = 'noisy-student'
-        self.teaching_iterations = 3
         self.data_noise = True
         self.temperature = None
-        self.discard_old_data = False
+        self.discard_old_data = True
         self.use_scores = False
         self.threshold = 0
 
     def __str__(self):
-        return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(self.epsilon) + ',adaptive_ft=' \
+        return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
+            self.epsilon) + ',adaptive_ft=' \
                + str(self.adaptive_ft) + ',num_runs=' + str(self.num_runs) + ',normalize=' + str(self.normalize) \
                + ',sim_length=' + str(self.sim_length) + ',warmup=' + str(self.warmup) + ',epochs=' + str(self.epochs) \
                + ',lr=' + str(self.lr) + ',attribute_shuffle=' + str(self.attribute_shuffle) + ',identity=' \
@@ -51,7 +55,7 @@ class CheapERParams:
                + str(self.adjust_ds_size) + ',batch_size=' + str(self.batch_size) + ',silent=' + str(self.silent) \
                + ',deeper_trick=' + str(self.deeper_trick) + ',consistency=' + str(self.consistency) + ',sim_edges=' \
                + str(self.sim_edges) + ',simple_slicing=' + str(self.simple_slicing) + ',use_model=' \
-               + str(self.model_type) + ',teaching_iterations=' + str(self.teaching_iterations) + ',lr_multiplier=' +\
+               + str(self.model_type) + ',teaching_iterations=' + str(self.teaching_iterations) + ',lr_multiplier=' + \
                str(self.lr_multiplier) + ',data_noise=' + str(self.data_noise) + ',temperature=' \
-               + str(self.temperature) + ',discard_old_data=' + str(self.discard_old_data) + ',use_scores=' +\
+               + str(self.temperature) + ',discard_old_data=' + str(self.discard_old_data) + ',use_scores=' + \
                str(self.use_scores) + ',threshold=' + str(self.threshold) + ',weight_decay=' + str(self.weight_decay)
