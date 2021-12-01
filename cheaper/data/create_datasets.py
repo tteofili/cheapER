@@ -206,6 +206,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     if simple_slicing and k_slice_max > 0:
         k_slice = k_slice_max // 2
+        if k_slice == 0:
+            k_slice = -1
         if consistency:
             logging.info("adding {} consistency pairs".format(len(consistency_list)))
             vinsim_data += consistency_list
