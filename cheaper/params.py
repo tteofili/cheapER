@@ -6,7 +6,7 @@ class CheapERParams:
     def __init__(self):
         self.sigma = 100
         self.kappa = 10
-        self.epsilon = 0.015
+        self.epsilon = 0
         self.slicing = [0.05, 0.1, 0.2, 0.4, 0.33, 0.5, 1]
         self.adaptive_ft = True
         self.num_runs = 1

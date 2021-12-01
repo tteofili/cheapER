@@ -211,6 +211,9 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         k_slice = len(result_list_match)
         logging.debug("riduco k")
 
+    if k_slice == 0:
+        k_slice = -1
+
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
     logging.info("k_slice {}".format(str(k_slice)))
 
