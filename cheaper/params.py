@@ -4,8 +4,8 @@ from cheaper.emt import config
 class CheapERParams:
 
     def __init__(self):
-        self.sigma = 1000
-        self.kappa = 100
+        self.sigma = 100
+        self.kappa = 10
         self.epsilon = 0.015
         self.slicing = [0.1, 0.33, 0.5, 1]
         self.adaptive_ft = True
@@ -15,8 +15,8 @@ class CheapERParams:
         self.sim_length = 5
         self.warmup = True
         self.epochs = 15
-        self.lr = 1e-6
-        self.lr_multiplier = 20
+        self.lr = 1e-7
+        self.lr_multiplier = 200
         self.models = ['roberta-base']
         self.attribute_shuffle = False
         self.identity = False
@@ -28,7 +28,7 @@ class CheapERParams:
         self.batch_size = 8
         self.balance = [0.5, 0.5]
         self.deeper_trick = True
-        self.consistency = False
+        self.consistency = True
         self.sim_edges = True
         self.simple_slicing = True
         self.model_type = 'noisy-student'
