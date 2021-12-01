@@ -200,31 +200,28 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     k_slice_max = min(len(result_list_match), len(result_list_match))
 
-    if consistency:
-        logging.info("adding {} consistency pairs".format(len(consistency_list)))
-        random_tuples0 += consistency_list
-
-    # SERVE per controllare che i match e i non match siano di egual numero
-    # altrimenti si riduce il taglio di k
-    # si suppone che sia riuscito a trovare meno match del k_slice=tot_pt/2
-    if len(result_list_match) <= tot_pt / 2 and len(result_list_match) > 3:
-        k_slice = len(result_list_match)
-        logging.debug("riduco k")
-
-    if k_slice == 0:
-        k_slice = -1
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
     logging.info("k_slice {}".format(str(k_slice)))
 
     if simple_slicing and k_slice_max > 0:
-        matches_list = result_list_match + consistency_list
-        matches_list = matches_list[:k_slice_max]
+        k_slice = k_slice_max // 2
+        if consistency:
+            logging.info("adding {} consistency pairs".format(len(consistency_list)))
+            vinsim_data += consistency_list
+        # matches_list = result_list_match + consistency_list
+        matches_list = result_list_match[:k_slice_max]
         nonmatches_list = result_list_noMatch[:k_slice_max]
-        random_tuples1 = matches_list[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
-        random_tuples2 = nonmatches_list[-int(k_slice * (0.5 + balance[1])):]  # likely matches
+        random_tuples1 = matches_list[:int(k_slice * (0.5 + balance[0]))]  # likely matches
+        random_tuples2 = nonmatches_list[-int(k_slice * (0.5 + balance[1])):]  # likely non matches
+        vinsim_data += random_tuples1
+        vinsim_data += random_tuples2
+
     else:
         k_slice = min(len(result_list_match), len(result_list_match))
+        if k_slice == 0:
+            k_slice = -1
+
         neg_slice = int(k_slice * (0.5 + balance[0]))
         if sim_edges:
             random_tuples1 = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]))[:neg_slice]  # likely non matches
@@ -243,12 +240,12 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             logging.info("adding {} consistency pairs".format(consistency_slice))
             random_tuples1 += consistency_list[:consistency_slice]
 
-    random_tuples1 += random_tuples2
+        random_tuples1 += random_tuples2
 
+        logging.debug(len(random_tuples1))
+        # Concatenazione.
+        vinsim_data += random_tuples1
 
-    logging.debug(len(random_tuples1))
-    # Concatenazione.
-    vinsim_data += random_tuples1
     # Shuffle.
     shuffle(vinsim_data)
 
