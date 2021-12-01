@@ -85,7 +85,7 @@ class EMTERModel:
             trainer.save_model(model_dir)
 
     def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
-              epochs=3, lr=1e-5, adaptive_ft=False, silent=False, batch_size=BATCH_SIZE):
+              epochs=3, lr=1e-5, adaptive_ft=False, silent=False, batch_size=BATCH_SIZE, weight_decay=0):
         device, n_gpu = initialize_gpu_seed(22)
 
         if adaptive_ft:
@@ -129,7 +129,7 @@ class EMTERModel:
             learning_rate=lr,
             output_dir='./results',  # output directory
             per_device_train_batch_size=batch_size,  # batch size per device during training
-            per_device_eval_batch_size=batch_size * 4,  # batch size for evaluation
+            per_device_eval_batch_size=batch_size,  # batch size for evaluation
             logging_dir='./logs',  # directory for storing logs
             do_eval=True,
             num_train_epochs=epochs,
@@ -139,12 +139,13 @@ class EMTERModel:
             adam_epsilon=1e-6,
             adam_beta1=0.99,
             adam_beta2=0.98,
-            weight_decay=0.01,
+            weight_decay=weight_decay,
             logging_strategy="epoch",
             load_best_model_at_end=True,
             save_total_limit=2,
             greater_is_better=True,
             metric_for_best_model='eval_f1',
+            max_grad_norm=1.0,
         )
 
         trainer = Trainer(

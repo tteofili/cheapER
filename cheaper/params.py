@@ -14,6 +14,7 @@ class CheapERParams:
         self.normalize = True
         self.sim_length = 5
         self.warmup = True
+        self.weight_decay = 0.01
         self.epochs = 15
         self.lr = 1e-7
         self.lr_multiplier = 200
@@ -53,4 +54,4 @@ class CheapERParams:
                + str(self.model_type) + ',teaching_iterations=' + str(self.teaching_iterations) + ',lr_multiplier=' +\
                str(self.lr_multiplier) + ',data_noise=' + str(self.data_noise) + ',temperature=' \
                + str(self.temperature) + ',discard_old_data=' + str(self.discard_old_data) + ',use_scores=' +\
-               str(self.use_scores) + ',threshold=' + str(self.threshold)
+               str(self.use_scores) + ',threshold=' + str(self.threshold) + ',weight_decay=' + str(self.weight_decay)
