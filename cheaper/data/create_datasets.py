@@ -211,14 +211,14 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         if consistency:
             logging.info("adding {} consistency pairs".format(len(consistency_list)))
             vinsim_data += consistency_list
-        # matches_list = result_list_match + consistency_list
+        result_list_match = sorted(result_list_match, key=lambda tup: (tup[2][0]), reverse=not sim_edges)
+        result_list_noMatch = sorted(result_list_match, key=lambda tup: (tup[2][0]), reverse=not sim_edges)
         matches_list = result_list_match[:k_slice_max]
         nonmatches_list = result_list_noMatch[:k_slice_max]
-        random_tuples1 = matches_list[:int(k_slice * (0.5 + balance[0]))]  # likely matches
-        random_tuples2 = nonmatches_list[-int(k_slice * (0.5 + balance[1])):]  # likely non matches
+        random_tuples1 = nonmatches_list[:int(k_slice * (0.5 + balance[0]))]  # likely non matches
+        random_tuples2 = matches_list[-int(k_slice * (0.5 + balance[1])):]  # likely matches
         vinsim_data += random_tuples1
         vinsim_data += random_tuples2
-
     else:
         k_slice = min(len(result_list_match), len(result_list_match))
         if k_slice == 0:
