@@ -12,19 +12,21 @@ class CheapERParams:
         self.weight_decay = 0.01
         self.epochs = 15
         if fast:
+            self.slicing = [0.1, 0.5, 1]
             self.models = ['distilroberta-base']
             self.lr = 1e-5
             self.lr_multiplier = 2
             self.teaching_iterations = 3
-            self.sigma = 100
-            self.kappa = 10
+            self.sigma = 1000
+            self.kappa = 100
         else:
+            self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 1]
             self.lr = 1e-7
             self.lr_multiplier = 200
             self.models = ['roberta-base']
             self.teaching_iterations = 5
-            self.sigma = 1000
-            self.kappa = 100
+            self.sigma = 3000
+            self.kappa = 300
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
@@ -33,7 +35,7 @@ class CheapERParams:
         self.generated_only = True
         self.silent = True
         self.batch_size = 8
-        self.balance = [0.5, 0.5]
+        self.balance = [0.6, 0.3]
         self.deeper_trick = True
         self.consistency = True
         self.sim_edges = True
