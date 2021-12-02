@@ -4,7 +4,6 @@ class CheapERParams:
         self.epsilon = 0
         self.slicing = [0.05, 0.1, 0.2, 0.4, 0.33, 0.5, 1]
         self.adaptive_ft = True
-        self.num_runs = 1
         self.compare = False
         self.normalize = True
         self.sim_length = 5
@@ -17,16 +16,21 @@ class CheapERParams:
             self.lr = 1e-5
             self.lr_multiplier = 2
             self.teaching_iterations = 3
-            self.sigma = 1000
-            self.kappa = 100
+            self.sigma = 100
+            self.kappa = 10
+            self.num_runs = 1
+            self.batch_size = 8
         else:
             self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 1]
-            self.lr = 1e-7
-            self.lr_multiplier = 200
+            self.lr = 1e-6
+            self.lr_multiplier = 20
             self.models = ['roberta-base']
             self.teaching_iterations = 5
-            self.sigma = 3000
-            self.kappa = 300
+            self.sigma = 1000
+            self.kappa = 100
+            self.epochs = 30
+            self.num_runs = 5
+            self.batch_size = 16
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
@@ -34,8 +38,7 @@ class CheapERParams:
         self.approx = 'perceptron'
         self.generated_only = True
         self.silent = True
-        self.batch_size = 8
-        self.balance = [0.6, 0.3]
+        self.balance = [0.5, 0.5]
         self.deeper_trick = True
         self.consistency = True
         self.sim_edges = True
@@ -43,7 +46,7 @@ class CheapERParams:
         self.model_type = 'noisy-student'
         self.data_noise = True
         self.temperature = None
-        self.discard_old_data = True
+        self.discard_old_data = False
         self.use_scores = False
         self.threshold = 0
 

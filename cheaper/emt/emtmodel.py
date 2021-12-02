@@ -146,6 +146,7 @@ class EMTERModel:
             greater_is_better=True,
             metric_for_best_model='eval_f1',
             max_grad_norm=1.0,
+            disable_tqdm=silent,
         )
 
         trainer = Trainer(
