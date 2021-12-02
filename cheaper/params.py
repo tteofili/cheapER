@@ -1,8 +1,6 @@
 class CheapERParams:
 
     def __init__(self, fast: bool = True):
-        self.sigma = 100
-        self.kappa = 10
         self.epsilon = 0
         self.slicing = [0.05, 0.1, 0.2, 0.4, 0.33, 0.5, 1]
         self.adaptive_ft = True
@@ -18,11 +16,15 @@ class CheapERParams:
             self.lr = 1e-5
             self.lr_multiplier = 2
             self.teaching_iterations = 3
+            self.sigma = 100
+            self.kappa = 10
         else:
             self.lr = 1e-7
             self.lr_multiplier = 200
             self.models = ['roberta-base']
             self.teaching_iterations = 5
+            self.sigma = 1000
+            self.kappa = 100
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
