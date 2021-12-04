@@ -13,10 +13,10 @@ class CheapERParams:
         if fast:
             self.slicing = [0.1, 0.5, 1]
             self.models = ['distilroberta-base']
-            self.lr = 1e-5
-            self.lr_multiplier = 2
+            self.lr = 1e-6
+            self.lr_multiplier = 20
             self.teaching_iterations = 3
-            self.sigma = 100
+            self.sigma = 10000
             self.kappa = 10
             self.num_runs = 1
             self.batch_size = 8

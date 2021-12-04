@@ -4,9 +4,9 @@ from pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams()
-params.epochs = 3
+params.epochs = 7
+params.slicing = [0.33, 0.5]
 params.adaptive_ft = False
-params.threshold = 0.5
 
 # get datasets
 datasets = get_datasets()

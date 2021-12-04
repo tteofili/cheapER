@@ -189,16 +189,16 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # unione in una sola lista random_tuples0= insieme dei candidati per il pt
     random_tuples0 = result_list_noMatch + result_list_match
 
-    logging.debug("tot_pt: " + str(tot_pt))
-    logging.debug("len(random_tuples0) " + str(len(random_tuples0)))
-    logging.debug("len(result_list_noMatch) " + str(len(result_list_noMatch)))
-    logging.debug("len(result_list_match) " + str(len(result_list_match)))
+    logging.info("tot_pt: " + str(tot_pt))
+    logging.info("len(random_tuples0) " + str(len(random_tuples0)))
+    logging.info("len(result_list_noMatch) " + str(len(result_list_noMatch)))
+    logging.info("len(result_list_match) " + str(len(result_list_match)))
 
     random.shuffle(random_tuples0)
     random_tuples0sort = sorted(random_tuples0, key=lambda tup: (tup[2][0]))
     plot_pretrain(random_tuples0sort)
 
-    k_slice_max = min(len(result_list_match), len(result_list_match))
+    k_slice_max = min(len(result_list_match), len(result_list_noMatch))
 
 
     # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
@@ -212,7 +212,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             logging.info("adding {} consistency pairs".format(len(consistency_list)))
             vinsim_data += consistency_list
         result_list_match = sorted(result_list_match, key=lambda tup: (tup[2][0]), reverse=not sim_edges)
-        result_list_noMatch = sorted(result_list_match, key=lambda tup: (tup[2][0]), reverse=not sim_edges)
+        result_list_noMatch = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]), reverse=not sim_edges)
         matches_list = result_list_match[:k_slice_max]
         nonmatches_list = result_list_noMatch[:k_slice_max]
         non_matching_candidates = nonmatches_list[:int(k_slice * (0.5 + balance[0]))]

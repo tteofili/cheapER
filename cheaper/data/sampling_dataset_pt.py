@@ -509,9 +509,9 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
     logging.info(f'{len(result_list_noMatch)} negative pairs found via LSH blocking and low similarity check')
 
     count_i = 0
-    bigger_size = max(5 * totale, 1000)
-    logging.info(f'max pair visit: {bigger_size}')
-    while loop_i < 120000 and count_i < bigger_size and (match < totale or no_match < totale):
+    # bigger_size = max(10 * totale, 1000)
+    # logging.info(f'max pair visit: {bigger_size}')
+    while loop_i < 120000 and (match < totale or no_match < totale):
         try:
             random.seed(count_i)
             x = random.randint(1, len(tableLlist) - 1)
