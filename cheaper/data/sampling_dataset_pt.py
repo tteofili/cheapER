@@ -511,7 +511,7 @@ def create_lists(tableL, tableR, totale, min_sim, max_sim, indici, min_cos_sim, 
     count_i = 0
     bigger_size = max(10 * 2 * totale, 1000)
     logging.info(f'max pair visit: {bigger_size}')
-    while loop_i < 120000 and count_i < bigger_size(match < totale or no_match < totale):
+    while loop_i < 120000 and count_i < bigger_size and (match < totale or no_match < totale):
         try:
             random.seed(count_i)
             x = random.randint(1, len(tableLlist) - 1)
