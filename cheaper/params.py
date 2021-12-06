@@ -11,7 +11,7 @@ class CheapERParams:
         self.silent = True
         self.weight_decay = 0.01
         if fast:
-            self.slicing = [0.1, 0.5, 1]
+            self.slicing = [0.1, 0.33, 0.5, 1]
             self.models = ['distilroberta-base']
             self.lr = 1e-5
             self.lr_multiplier = 2
