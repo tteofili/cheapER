@@ -8,6 +8,7 @@ class CheapERParams:
         self.normalize = True
         self.sim_length = 5
         self.warmup = True
+        self.silent = True
         self.weight_decay = 0.01
         if fast:
             self.slicing = [0.1, 0.5, 1]
@@ -20,7 +21,6 @@ class CheapERParams:
             self.epochs = 15
             self.num_runs = 1
             self.batch_size = 8
-            self.silent = False
         else:
             self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 1]
             self.lr = 1e-6
@@ -32,7 +32,6 @@ class CheapERParams:
             self.epochs = 30
             self.num_runs = 2
             self.batch_size = 16
-            self.silent = True
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
