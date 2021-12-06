@@ -13,8 +13,8 @@ class CheapERParams:
         if fast:
             self.slicing = [0.1, 0.5, 1]
             self.models = ['distilroberta-base']
-            self.lr = 1e-6
-            self.lr_multiplier = 20
+            self.lr = 1e-5
+            self.lr_multiplier = 2
             self.teaching_iterations = 3
             self.sigma = 500
             self.kappa = 50
@@ -39,7 +39,7 @@ class CheapERParams:
         self.approx = 'perceptron'
         self.generated_only = True
         self.balance = [0.5, 0.5]
-        self.deeper_trick = True
+        self.deeper_trick = False
         self.consistency = True
         self.sim_edges = True
         self.simple_slicing = True

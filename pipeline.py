@@ -214,7 +214,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                       epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
                                       adaptive_ft=params.adaptive_ft,
                                       silent=params.silent,
-                                      batch_size=params.batch_size, weight_decay=params.weight_decay)
+                                      batch_size=2 * params.batch_size, weight_decay=params.weight_decay)
 
                         da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = student.eval(
                             test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
