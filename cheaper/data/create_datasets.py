@@ -93,9 +93,9 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         max_sim_noMatch = max(max_sim_noMatch, margin_score)
         min_sim_Match = min(margin_score, min_sim_Match)
     logging.info("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
-    max_sim = min(soglia + max(min_sim_Match, max_sim_noMatch), 0.95)
+    max_sim = min(soglia + max(min_sim_Match, max_sim_noMatch), 0.99999)
     logging.info("!max_sim " + str(max_sim))
-    min_sim = max(min(min_sim_Match, max_sim_noMatch) - soglia, 0.05)
+    min_sim = max(min(min_sim_Match, max_sim_noMatch) - soglia, 0.000001)
     logging.info("!min_sim " + str(min_sim))
 
     # Dataset per DeepER classico: [(tupla1, tupla2, label), ...].
