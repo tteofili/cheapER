@@ -10,11 +10,11 @@ class CheapERParams:
         self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
+        self.lr = 1e-6
+        self.lr_multiplier = 20
         if fast:
             self.slicing = [0.1, 0.33, 0.5, 1]
-            self.models = ['distilroberta-base']
-            self.lr = 2e-5
-            self.lr_multiplier = 1
+            self.models = ['distilbert-base-uncased', 'distilroberta-base']
             self.teaching_iterations = 3
             self.sigma = 1000
             self.kappa = 100
@@ -23,9 +23,7 @@ class CheapERParams:
             self.batch_size = 8
         else:
             self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 1]
-            self.lr = 1e-6
-            self.lr_multiplier = 20
-            self.models = ['roberta-base']
+            self.models = ['bert-base-uncased', 'roberta-base']
             self.teaching_iterations = 5
             self.sigma = 3000
             self.kappa = 1200
