@@ -200,12 +200,9 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     k_slice_max = min(len(result_list_match), len(result_list_noMatch))
 
-
-    # print di alcuni elementidel dataset di pt e get k estremi che formeranno il dataset di pt
-    logging.info("k_slice {}".format(str(k_slice)))
-
     if simple_slicing and k_slice_max > 0:
-        k_slice = k_slice_max // 2
+        k_slice = tot_pt // 2
+        logging.info("k_slice {}".format(str(k_slice)))
         if k_slice == 0:
             k_slice = -1
         if consistency:
@@ -213,8 +210,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             vinsim_data += consistency_list
         result_list_match = sorted(result_list_match, key=lambda tup: (tup[2][0]), reverse=sim_edges)
         result_list_noMatch = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]), reverse=not sim_edges)
-        matches_list = result_list_match[:k_slice_max]
-        nonmatches_list = result_list_noMatch[:k_slice_max]
+        matches_list = result_list_match
+        nonmatches_list = result_list_noMatch
         non_matching_candidates = nonmatches_list[:int(k_slice * (0.5 + balance[0]))]
         logging.info("adding {} non-matching pairs".format(len(non_matching_candidates)))
         random_tuples1 = non_matching_candidates  # likely non matches
@@ -246,6 +243,9 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             consistency_slice = tot_pt - len(random_tuples1)
             logging.info("adding {} consistency pairs".format(consistency_slice))
             random_tuples1 += consistency_list[:consistency_slice]
+        else:
+            logging.info("adding {} consistency pairs".format(len(consistency_list)))
+            random_tuples1 += consistency_list
 
         random_tuples1 += random_tuples2
 

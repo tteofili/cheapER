@@ -16,7 +16,7 @@ class CheapERParams:
             self.lr = 1e-5
             self.lr_multiplier = 2
             self.teaching_iterations = 3
-            self.sigma = 100
+            self.sigma = 1000
             self.kappa = 10
             self.epochs = 15
             self.num_runs = 1
@@ -27,8 +27,8 @@ class CheapERParams:
             self.lr_multiplier = 20
             self.models = ['roberta-base']
             self.teaching_iterations = 5
-            self.sigma = 1000
-            self.kappa = 100
+            self.sigma = 3000
+            self.kappa = 1200
             self.epochs = 30
             self.num_runs = 2
             self.batch_size = 16
