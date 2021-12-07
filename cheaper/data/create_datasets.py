@@ -203,6 +203,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     if simple_slicing and k_slice_max > 0:
         k_slice = tot_pt // 2
         logging.info("k_slice {}".format(str(k_slice)))
+        if k_slice > k_slice_max:
+            k_slice = k_slice_max
         if k_slice == 0:
             k_slice = -1
         if consistency:
