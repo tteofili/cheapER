@@ -16,8 +16,8 @@ class CheapERParams:
             self.lr = 1e-5
             self.lr_multiplier = 2
             self.teaching_iterations = 3
-            self.sigma = 500
-            self.kappa = 50
+            self.sigma = 100
+            self.kappa = 10
             self.epochs = 15
             self.num_runs = 1
             self.batch_size = 8
