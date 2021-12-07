@@ -89,7 +89,6 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
     for n in range(params.num_runs):
         for cut in params.slicing:
-
             if params.model_type == 'noisy-student':
                 logging.info('Generating dataset')
                 # create datasets
