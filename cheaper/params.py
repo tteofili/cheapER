@@ -11,13 +11,13 @@ class CheapERParams:
         self.silent = True
         self.weight_decay = 0.01
         self.lr = 1e-6
-        self.lr_multiplier = 20
+        self.lr_multiplier = 10
         if fast:
             self.slicing = [0.1, 0.33, 0.5, 1]
             self.models = ['distilbert-base-uncased', 'distilroberta-base']
             self.teaching_iterations = 3
-            self.sigma = 1000
-            self.kappa = 100
+            self.sigma = 100
+            self.kappa = 10
             self.epochs = 15
             self.num_runs = 1
             self.batch_size = 8
