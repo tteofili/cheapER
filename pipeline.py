@@ -1,15 +1,13 @@
 from __future__ import print_function
 
-import itertools
 import logging
 import os
+import random
+import warnings
 from datetime import date
 from inspect import getsource
-import random
 
 import pandas as pd
-import warnings
-
 from sklearn.metrics import classification_report
 
 from cheaper.data.create_datasets import add_shuffle, parse_original
@@ -111,9 +109,11 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                             epochs=3, lr=5e-5)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
-                    teacher.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length, warmup=params.warmup,
+                    teacher.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length,
+                                  warmup=params.warmup,
                                   epochs=params.epochs, lr=params.lr, batch_size=params.batch_size,
-                                  silent=params.silent, adaptive_ft=params.adaptive_ft, weight_decay=params.weight_decay)
+                                  silent=params.silent, adaptive_ft=params.adaptive_ft,
+                                  weight_decay=params.weight_decay)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = teacher \
                         .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
                               silent=params.silent)
@@ -127,7 +127,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     for t_i in range(params.teaching_iterations):
                         if params.discard_old_data:
                             vinsim_data_app = []
-                        if params.temperature is not None:
+                        if params.temperature is not None:  # harder temperature leads to softer distributions
                             if params.temperature == 'asc':
                                 temperature = float(1 + t_i / 10)
                             elif params.temperature == 'desc':
@@ -136,6 +136,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 temperature = 1 + t_i
                             elif isinstance(params.temperature, float):
                                 temperature = params.temperature
+                            else:
+                                logging.warning(f'temperature param "{params.temperature}" set to 1')
+                                temperature = 1
                             simf = lambda t1, t2: [teacher.predict(t1, t2, t=temperature)['scores'].values[0]]
                         else:
                             simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
@@ -205,7 +208,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                     dataDa[random_index] = (line[0], copy_EDIT_match(line[rec_idx]), line[2])
 
                         # gt+generated data train
-                        logging.info('Training with {} record pairs ({} generated, {} GT)'.format(len(train_cut) + len(dataDa),
+                        logging.info(
+                            'Training with {} record pairs ({} generated, {} GT)'.format(len(train_cut) + len(dataDa),
                                                                                          len(dataDa), len(train_cut)))
 
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
