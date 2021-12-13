@@ -14,7 +14,7 @@ class CheapERParams:
         self.lr_multiplier = 10
         if fast:
             self.slicing = [0.1, 0.33, 0.5, 1]
-            self.models = ['distilbert-base-uncased', 'distilroberta-base']
+            self.models = ['distilbert-base-uncased']
             self.teaching_iterations = 3
             self.sigma = 100
             self.kappa = 10
@@ -23,7 +23,7 @@ class CheapERParams:
             self.batch_size = 8
         else:
             self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 1]
-            self.models = ['bert-base-uncased', 'roberta-base']
+            self.models = ['roberta-base']
             self.teaching_iterations = 5
             self.sigma = 3000
             self.kappa = 1200
@@ -33,7 +33,7 @@ class CheapERParams:
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
-        self.adjust_ds_size = False
+        self.adjust_ds_size = True
         self.approx = 'perceptron'
         self.generated_only = True
         self.balance = [0.5, 0.5]
