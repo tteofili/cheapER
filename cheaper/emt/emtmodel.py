@@ -85,7 +85,8 @@ class EMTERModel:
             trainer.save_model(model_dir)
 
     def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
-              epochs=3, lr=1e-5, adaptive_ft=False, silent=False, batch_size=BATCH_SIZE, weight_decay=0):
+              epochs=3, lr=1e-5, adaptive_ft=False, silent=False, batch_size=BATCH_SIZE, weight_decay=0,
+              label_smoothing=0):
         device, n_gpu = initialize_gpu_seed(22)
 
         if adaptive_ft:
@@ -146,6 +147,7 @@ class EMTERModel:
             greater_is_better=True,
             metric_for_best_model='eval_f1',
             max_grad_norm=1.0,
+            label_smoothing_factor=label_smoothing
         )
 
         trainer = Trainer(

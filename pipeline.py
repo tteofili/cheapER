@@ -113,7 +113,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                   warmup=params.warmup,
                                   epochs=params.epochs, lr=params.lr, batch_size=params.batch_size,
                                   silent=params.silent, adaptive_ft=params.adaptive_ft,
-                                  weight_decay=params.weight_decay)
+                                  weight_decay=params.weight_decay, label_smoothing=params.label_smoothing)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = teacher \
                         .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
                               silent=params.silent)
@@ -136,7 +136,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                             elif params.temperature == 'linear':
                                 temperature = 1 + t_i
                             elif params.temperature == 'threshold':
-                                temperature = 1 + abs(threshold - 0.5)
+                                temperature = (1 + t_i) + abs(threshold - 0.5)
                             elif isinstance(params.temperature, float):
                                 # inspired by rankmax, we adapt the temperature using the label approximation threshold
                                 # see https://storage.googleapis.com/pub-tools-public-publication-data/pdf/87fc0a222b8e175c960e9ff391531cd977dfca35.pdf
@@ -218,11 +218,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                          len(dataDa), len(train_cut)))
 
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
-                                      warmup=params.warmup,
-                                      epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
-                                      adaptive_ft=params.adaptive_ft,
-                                      silent=params.silent,
-                                      batch_size=2 * params.batch_size, weight_decay=params.weight_decay)
+                                      warmup=params.warmup, epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
+                                      adaptive_ft=params.adaptive_ft, silent=params.silent,
+                                      batch_size=2 * params.batch_size, weight_decay=params.weight_decay,
+                                      label_smoothing=params.label_smoothing)
 
                         da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = student.eval(
                             test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
