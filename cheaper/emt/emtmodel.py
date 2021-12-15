@@ -60,7 +60,7 @@ class EMTERModel:
 
             training_args = TrainingArguments(
                 learning_rate=lr,
-                output_dir='./results',  # output directory
+                output_dir='./models/'+dataset_name,  # output directory
                 per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
                 per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
                 logging_dir='./logs',  # directory for storing logs
@@ -127,7 +127,7 @@ class EMTERModel:
 
         training_args = TrainingArguments(
             learning_rate=lr,
-            output_dir='./results',  # output directory
+            output_dir='./models/'+dataset_name,  # output directory
             per_device_train_batch_size=batch_size,  # batch size per device during training
             per_device_eval_batch_size=batch_size,  # batch size for evaluation
             logging_dir='./logs',  # directory for storing logs
