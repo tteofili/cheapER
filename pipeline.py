@@ -124,6 +124,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'f1NM': classic_f1NOMATCH}
                     results = results.append(new_row, ignore_index=True)
                     vinsim_data_app = []
+                    threshold = 1
                     for t_i in range(params.teaching_iterations):
                         if params.discard_old_data:
                             vinsim_data_app = []
@@ -134,7 +135,11 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 temperature = float(1 - t_i / 10)
                             elif params.temperature == 'linear':
                                 temperature = 1 + t_i
+                            elif params.temperature == 'threshold':
+                                temperature = 1 + abs(threshold - 0.5)
                             elif isinstance(params.temperature, float):
+                                # inspired by rankmax, we adapt the temperature using the label approximation threshold
+                                # see https://storage.googleapis.com/pub-tools-public-publication-data/pdf/87fc0a222b8e175c960e9ff391531cd977dfca35.pdf
                                 temperature = params.temperature
                             else:
                                 logging.warning(f'temperature param "{params.temperature}" set to 1')
@@ -147,7 +152,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         # create datasets
                         test_file = base_dir + dataset_name + os.sep + 'test.csv'
                         valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
-                        data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c = create_datasets(gt_file,
+                        data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c, threshold = create_datasets(gt_file,
                                                                                                          t1_file,
                                                                                                          t2_file,
                                                                                                          indexes, simf,

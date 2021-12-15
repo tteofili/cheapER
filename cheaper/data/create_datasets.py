@@ -297,4 +297,5 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # VANNO AGGIUNTI I TAGLI DELLA Ground Truth [200,100,50...] in ogni addestramento
     vinsim_data_app = list(map(lambda q: (q[0], q[1], q[2][0]), vinsim_data_app))
 
-    return data, deeper_train, deeper_valid, deeper_test, vinsim_data, vinsim_data_app
+    threshold = max_sim
+    return data, deeper_train, deeper_valid, deeper_test, vinsim_data, vinsim_data_app, threshold
