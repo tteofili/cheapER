@@ -1,7 +1,7 @@
 class CheapERParams:
 
     def __init__(self, fast: bool = True):
-        self.epsilon = 0
+        self.epsilon = 0.015
         self.slicing = [0.05, 0.1, 0.2, 0.4, 0.33, 0.5, 1]
         self.adaptive_ft = True
         self.compare = False
@@ -45,7 +45,7 @@ class CheapERParams:
         self.temperature = 'threshold'
         self.discard_old_data = True
         self.use_scores = False
-        self.threshold = 0
+        self.threshold = 0.5
         self.label_smoothing = 0
 
     def __str__(self):

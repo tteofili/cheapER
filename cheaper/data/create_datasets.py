@@ -89,15 +89,16 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         tot_copy = min(tot_copy, int(tot_pt / 10))
 
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
-    if margin_score > 0:
-        max_sim_noMatch = max(max_sim_noMatch, margin_score)
-        min_sim_Match = min(margin_score, min_sim_Match)
     logging.info("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
-    max_sim = min(soglia + max(min_sim_Match, max_sim_noMatch), 0.99999)
-    logging.info("!max_sim " + str(max_sim))
-    min_sim = max(min(min_sim_Match, max_sim_noMatch) - soglia, 0.000001)
-    logging.info("!min_sim " + str(min_sim))
+    if margin_score > 0:
+        max_sim = margin_score - soglia #max(max_sim_noMatch, margin_score)
+        min_sim = margin_score + soglia #min(margin_score, min_sim_Match)
+    else:
+        max_sim = min(soglia + max(min_sim_Match, max_sim_noMatch), 0.99999)
+        min_sim = max(min(min_sim_Match, max_sim_noMatch) - soglia, 0.000001)
 
+    logging.info("!max_sim " + str(max_sim))
+    logging.info("!min_sim " + str(min_sim))
     # Dataset per DeepER classico: [(tupla1, tupla2, label), ...].
     deeper_data = list(map(lambda q: (q[0], q[1], q[3]), data))
     deeper_valid_data = list(map(lambda q: (q[0], q[1], q[3]), valid_data))
