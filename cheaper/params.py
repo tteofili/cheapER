@@ -44,7 +44,7 @@ class CheapERParams:
         self.temperature = 'threshold'
         self.discard_old_data = True
         self.use_scores = False
-        self.threshold = 0
+        self.threshold = 0.5
         self.label_smoothing = 0
 
     def __str__(self):
