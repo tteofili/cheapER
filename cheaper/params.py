@@ -2,7 +2,6 @@ class CheapERParams:
 
     def __init__(self, fast: bool = True):
         self.epsilon = 0
-        self.slicing = [0.05, 0.1, 0.2, 0.4, 0.33, 0.5, 1]
         self.adaptive_ft = True
         self.compare = False
         self.normalize = True
@@ -10,7 +9,7 @@ class CheapERParams:
         self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
-        self.lr = 5e-6
+        self.lr = 2e-6
         self.lr_multiplier = 10
         self.batch_size = 8
         if fast:
