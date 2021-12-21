@@ -16,7 +16,7 @@ class CheapERParams:
             self.slicing = [0.1, 0.33, 0.5, 1]
             self.models = ['distilbert-base-uncased']
             self.teaching_iterations = 3
-            self.sigma = 500
+            self.sigma = 1000
             self.kappa = 50
             self.epochs = 15
             self.num_runs = 1
@@ -41,10 +41,10 @@ class CheapERParams:
         self.simple_slicing = True
         self.model_type = 'noisy-student'
         self.data_noise = True
-        self.temperature = 'threshold'
+        self.temperature = None
         self.discard_old_data = True
         self.use_scores = False
-        self.threshold = 0.5
+        self.threshold = 0
         self.label_smoothing = 0
 
     def __str__(self):
