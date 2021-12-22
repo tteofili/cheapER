@@ -45,7 +45,7 @@ class CheapERParams:
         self.discard_old_data = True
         self.use_scores = False
         self.threshold = 0
-        self.label_smoothing = 0
+        self.label_smoothing = 0.1
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
