@@ -164,16 +164,13 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     min_sim_c = min_sim
     max_sim_c = max_sim
     while len(result_list_match) < tot_pt/2 and len(result_list_match) < tot_pt/2:
-        result_list_noMatch_c, result_list_match_c, consistency_list_c = create_lists(TABLE1_FILE, TABLE2_FILE, tot_pt,
+        result_list_noMatch, result_list_match, consistency_list = create_lists(TABLE1_FILE, TABLE2_FILE, tot_pt,
                                                                                 min_sim_c,
                                                                                 max_sim_c, ATT_INDEXES,
                                                                                 min_cos_sim, tot_copy, max_occ,
                                                                                 sim_function=simf)
-        logging.info("{} matches, {} non-matches, {} consistency pairs".format(len(result_list_match_c),
-                                                                               len(result_list_noMatch_c), len(consistency_list_c)))
-        result_list_match += result_list_match_c
-        result_list_noMatch += result_list_noMatch_c
-        consistency_list += consistency_list_c
+        logging.info("{} matches, {} non-matches, {} consistency pairs".format(len(result_list_match),
+                                                                               len(result_list_noMatch), len(consistency_list)))
         delta = (max_sim_c - min_sim)/10
         max_sim_c = max_sim_c - delta
         min_sim_c = min_sim_c + delta
