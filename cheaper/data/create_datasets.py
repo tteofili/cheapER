@@ -174,6 +174,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         delta = (max_sim_c - min_sim)/10
         max_sim_c = max_sim_c - delta
         min_sim_c = min_sim_c + delta
+        max_sim_c = max(min_sim_c, max_sim_c)
+        min_sim_c = min(min_sim_c, max_sim_c)
 
 
     # result_list_noMatch = result_list_noMatch[:len(result_list_match)]
