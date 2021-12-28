@@ -163,7 +163,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     # tot_copy = tot_pt * 0.1
     min_sim_c = min_sim
     max_sim_c = max_sim
-    while len(result_list_match) < tot_pt/2 and len(result_list_match) < tot_pt/2:
+    it = 0
+    while len(result_list_match) < tot_pt/2 and len(result_list_match) < tot_pt/2 and it < 3:
         result_list_noMatch, result_list_match, consistency_list = create_lists(TABLE1_FILE, TABLE2_FILE, tot_pt,
                                                                                 min_sim_c,
                                                                                 max_sim_c, ATT_INDEXES,
@@ -176,6 +177,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         min_sim_c = min_sim_c + delta
         max_sim_c = max(min_sim_c, max_sim_c)
         min_sim_c = min(min_sim_c, max_sim_c)
+        it += 1
 
 
     # result_list_noMatch = result_list_noMatch[:len(result_list_match)]
