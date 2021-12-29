@@ -31,7 +31,7 @@ class CheapERParams:
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
-        self.adjust_ds_size = False
+        self.adjust_ds_size = True
         self.approx = 'perceptron'
         self.generated_only = True
         self.balance = [0.5, 0.5]

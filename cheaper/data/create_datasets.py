@@ -96,6 +96,10 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     else:
         max_sim = min(soglia + max(min_sim_Match, max_sim_noMatch), 0.99999)
         min_sim = max(min(min_sim_Match, max_sim_noMatch) - soglia, 0.000001)
+    if min_sim > 0.5:
+        min_sim = 0.5
+    if max_sim < 0.5:
+        max_sim = 0.5
 
     logging.info("!max_sim " + str(max_sim))
     logging.info("!min_sim " + str(min_sim))
