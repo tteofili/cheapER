@@ -9,25 +9,25 @@ class CheapERParams:
         self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
-        self.lr = 2e-6
+        self.lr = 1e-6
         self.lr_multiplier = 10
         self.batch_size = 8
         if fast:
             self.slicing = [0.1, 0.33, 0.5, 1]
             self.models = ['distilbert-base-uncased']
             self.teaching_iterations = 3
-            self.sigma = 1000
-            self.kappa = 50
+            self.sigma = 100
+            self.kappa = 10
             self.epochs = 15
             self.num_runs = 1
         else:
             self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 1]
             self.models = ['roberta-base']
             self.teaching_iterations = 5
-            self.sigma = 3000
-            self.kappa = 1200
+            self.sigma = 1000
+            self.kappa = 100
             self.epochs = 30
-            self.num_runs = 2
+            self.num_runs = 1
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
@@ -36,13 +36,13 @@ class CheapERParams:
         self.generated_only = True
         self.balance = [0.5, 0.5]
         self.deeper_trick = True
-        self.consistency = False
+        self.consistency = True
         self.sim_edges = True
         self.simple_slicing = True
         self.model_type = 'noisy-student'
         self.data_noise = True
         self.temperature = 'threshold'
-        self.discard_old_data = True
+        self.discard_old_data = False
         self.use_scores = False
         self.threshold = 0
         self.label_smoothing = 0.1
