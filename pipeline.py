@@ -109,7 +109,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     teacher.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length,
-                                  warmup=params.warmup,
+                                  warmup=params.warmup, hf_training=params.hf_training,
                                   epochs=params.epochs, lr=params.lr, batch_size=params.batch_size,
                                   silent=params.silent, adaptive_ft=params.adaptive_ft,
                                   weight_decay=params.weight_decay, label_smoothing=params.label_smoothing)
@@ -218,7 +218,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                         student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
                                       warmup=params.warmup, epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
-                                      adaptive_ft=params.adaptive_ft, silent=params.silent,
+                                      adaptive_ft=params.adaptive_ft, silent=params.silent, hf_training=params.hf_training,
                                       batch_size=2 * params.batch_size, weight_decay=params.weight_decay,
                                       label_smoothing=params.label_smoothing)
 

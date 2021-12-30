@@ -45,7 +45,8 @@ class CheapERParams:
         self.discard_old_data = False
         self.use_scores = False
         self.threshold = 0
-        self.label_smoothing = 0.1
+        self.label_smoothing = 0
+        self.hf_training = False
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
@@ -63,4 +64,4 @@ class CheapERParams:
                str(self.lr_multiplier) + ',data_noise=' + str(self.data_noise) + ',temperature=' \
                + str(self.temperature) + ',discard_old_data=' + str(self.discard_old_data) + ',use_scores=' + \
                str(self.use_scores) + ',threshold=' + str(self.threshold) + ',weight_decay=' + str(self.weight_decay) + \
-               ',label_smoothing=' + str(self.label_smoothing)
+               ',label_smoothing=' + str(self.label_smoothing) + ',hf_training=' + str(self.hf_training)

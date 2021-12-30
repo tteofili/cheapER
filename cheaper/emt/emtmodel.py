@@ -14,6 +14,8 @@ from cheaper.emt.data_representation import DeepMatcherProcessor
 from cheaper.emt.evaluation import Evaluation
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.emt.model import save_model, load_model
+from cheaper.emt.optimizer import build_optimizer
+from cheaper.emt.training import train
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 
 setup_logging()
@@ -86,7 +88,7 @@ class EMTERModel:
 
     def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
               epochs=3, lr=1e-5, adaptive_ft=False, silent=False, batch_size=BATCH_SIZE, weight_decay=0,
-              label_smoothing=0):
+              label_smoothing=0, hf_training=False):
         device, n_gpu = initialize_gpu_seed(22)
 
         if adaptive_ft:
@@ -98,121 +100,121 @@ class EMTERModel:
 
         trainF, validF = deepmatcher_format.tofiles(label_train, label_valid, dataset_name)
 
-        metric = load_metric("f1")
+        if hf_training:
+            metric = load_metric("f1")
 
-        def compute_metrics(eval_pred):
-            logits, labels = eval_pred
-            predictions = np.argmax(logits, axis=-1)
-            return metric.compute(predictions=predictions, references=labels)
+            def compute_metrics(eval_pred):
+                logits, labels = eval_pred
+                predictions = np.argmax(logits, axis=-1)
+                return metric.compute(predictions=predictions, references=labels)
 
-        train_dataset = load_dataset('csv', data_files=trainF, split='train')
-        valid_dataset = load_dataset('csv', data_files=validF, split='train')
+            train_dataset = load_dataset('csv', data_files=trainF, split='train')
+            valid_dataset = load_dataset('csv', data_files=validF, split='train')
 
-        def tokenize_function(example):
-            text_a = ' '.join({k: str(v) for k, v in example.items() if k.startswith('left_')}.values())
-            text_b = ' '.join({k: str(v) for k, v in example.items() if k.startswith('right_')}.values())
-            return self.tokenizer(
-                text_a, text_b, padding="max_length", truncation=True, max_length=seq_length
+            def tokenize_function(example):
+                text_a = ' '.join({k: str(v) for k, v in example.items() if k.startswith('left_')}.values())
+                text_b = ' '.join({k: str(v) for k, v in example.items() if k.startswith('right_')}.values())
+                return self.tokenizer(
+                    text_a, text_b, padding="max_length", truncation=True, max_length=seq_length
+                )
+
+            train_dataset = train_dataset.map(tokenize_function)
+            valid_dataset = valid_dataset.map(tokenize_function)
+
+            train_dataset = self.prepare_columns(train_dataset)
+            valid_dataset = self.prepare_columns(valid_dataset)
+
+            if warmup:
+                warmup_ratio = 0.02
+            else:
+                warmup_ratio = 0
+
+            training_args = TrainingArguments(
+                learning_rate=lr,
+                output_dir='./models/'+dataset_name,  # output directory
+                per_device_train_batch_size=batch_size,  # batch size per device during training
+                per_device_eval_batch_size=batch_size,  # batch size for evaluation
+                logging_dir='./logs',  # directory for storing logs
+                do_eval=True,
+                num_train_epochs=epochs,
+                evaluation_strategy="epoch",
+                save_strategy="epoch",
+                warmup_ratio=warmup_ratio,
+                adam_epsilon=1e-6,
+                adam_beta1=0.99,
+                adam_beta2=0.98,
+                weight_decay=weight_decay,
+                logging_strategy="epoch",
+                load_best_model_at_end=True,
+                save_total_limit=2,
+                greater_is_better=True,
+                metric_for_best_model='eval_f1',
+                max_grad_norm=1.0,
+                label_smoothing_factor=label_smoothing
             )
 
-        train_dataset = train_dataset.map(tokenize_function)
-        valid_dataset = valid_dataset.map(tokenize_function)
+            trainer = Trainer(
+                tokenizer=self.tokenizer,
+                model=self.model,  # the instantiated 🤗 Transformers model to be trained
+                args=training_args,  # training arguments, defined above
+                train_dataset=train_dataset,  # training dataset
+                eval_dataset=valid_dataset,  # evaluation dataset
+                compute_metrics=compute_metrics,
+            )
 
-        train_dataset = self.prepare_columns(train_dataset)
-        valid_dataset = self.prepare_columns(valid_dataset)
+            train_out = trainer.train()
+            model_dir = 'models/' + dataset_name
+            trainer.save_model(model_dir)
+            # eval_out = trainer.evaluate(valid_dataset)
+            return train_out
 
-        if warmup:
-            warmup_ratio = 0.02
         else:
-            warmup_ratio = 0
+            processor = DeepMatcherProcessor()
+            train_examples = processor.get_train_examples_file(trainF)
+            label_list = processor.get_labels()
+            training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, batch_size,
+                                             DataType.TRAINING, self.model_type)
 
-        training_args = TrainingArguments(
-            learning_rate=lr,
-            output_dir='./models/'+dataset_name,  # output directory
-            per_device_train_batch_size=batch_size,  # batch size per device during training
-            per_device_eval_batch_size=batch_size,  # batch size for evaluation
-            logging_dir='./logs',  # directory for storing logs
-            do_eval=True,
-            num_train_epochs=epochs,
-            evaluation_strategy="epoch",
-            save_strategy="epoch",
-            warmup_ratio=warmup_ratio,
-            adam_epsilon=1e-6,
-            adam_beta1=0.99,
-            adam_beta2=0.98,
-            weight_decay=weight_decay,
-            logging_strategy="epoch",
-            load_best_model_at_end=True,
-            save_total_limit=2,
-            greater_is_better=True,
-            metric_for_best_model='eval_f1',
-            max_grad_norm=1.0,
-            label_smoothing_factor=label_smoothing
-        )
+            num_epochs = epochs
+            num_train_steps = len(training_data_loader) * num_epochs
 
-        trainer = Trainer(
-            tokenizer=self.tokenizer,
-            model=self.model,  # the instantiated 🤗 Transformers model to be trained
-            args=training_args,  # training arguments, defined above
-            train_dataset=train_dataset,  # training dataset
-            eval_dataset=valid_dataset,  # evaluation dataset
-            compute_metrics=compute_metrics,
-        )
+            learning_rate = lr
+            adam_eps = 1e-6
+            if warmup:
+                warmup_steps = int(len(training_data_loader) * 0.1)
+                weight_decay = 0.01
+            else:
+                warmup_steps = 0
+                weight_decay = 0
+            optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
+                                                   weight_decay)
 
-        train_out = trainer.train()
-        model_dir = 'models/' + dataset_name
-        trainer.save_model(model_dir)
+            eval_examples = processor.get_test_examples_file(validF)
+            evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, batch_size,
+                                               DataType.EVALUATION, self.model_type)
 
-        # eval_out = trainer.evaluate(valid_dataset)
+            exp_name = 'models/' + dataset_name
+            evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
 
-        return train_out
+            self.model, result = train(device, training_data_loader, self.model, optimizer, scheduler, evaluation,
+                                       num_epochs, 1.0, False, exp_name, exp_name, self.model_type, silent)
 
-        # processor = DeepMatcherProcessor()
-        # train_examples = processor.get_train_examples_file(trainF)
-        # label_list = processor.get_labels()
-        # training_data_loader = load_data(train_examples, label_list, self.tokenizer, seq_length, batch_size,
-        #                                  DataType.TRAINING, self.model_type)
-        #
-        # num_epochs = epochs
-        # num_train_steps = len(training_data_loader) * num_epochs
-        #
-        # learning_rate = lr
-        # adam_eps = 1e-6
-        # if warmup:
-        #     warmup_steps = int(len(training_data_loader) * 0.1)
-        #     weight_decay = 0.01
-        # else:
-        #     warmup_steps = 0
-        #     weight_decay = 0
-        # optimizer, scheduler = build_optimizer(self.model, num_train_steps, learning_rate, adam_eps, warmup_steps,
-        #                                        weight_decay)
-        #
-        # eval_examples = processor.get_test_examples_file(validF)
-        # evaluation_data_loader = load_data(eval_examples, label_list, self.tokenizer, seq_length, batch_size,
-        #                                    DataType.EVALUATION, self.model_type)
-        #
-        # exp_name = 'models/' + dataset_name
-        # evaluation = Evaluation(evaluation_data_loader, exp_name, exp_name, len(label_list), self.model_type)
-        #
-        # self.model, result = train(device, training_data_loader, self.model, optimizer, scheduler, evaluation,
-        #                            num_epochs, 1.0, False, exp_name, exp_name, self.model_type, silent)
-        #
-        # save_model(self.model, exp_name, exp_name, tokenizer=self.tokenizer)
-        #
-        # try:
-        #     l0 = result.split('\n')[2].split('       ')[2].split('      ')
-        #     l1 = result.split('\n')[3].split('       ')[2].split('      ')
-        # except:
-        #     l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
-        #     l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
-        #
-        # p = l1[0]
-        # r = l1[1]
-        # f1 = l1[2]
-        # pnm = l0[0]
-        # rnm = l0[1]
-        # f1nm = l0[2]
-        # return p, r, f1, pnm, rnm, f1nm
+            save_model(self.model, exp_name, exp_name, tokenizer=self.tokenizer)
+
+            try:
+                l0 = result.split('\n')[2].split('       ')[2].split('      ')
+                l1 = result.split('\n')[3].split('       ')[2].split('      ')
+            except:
+                l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
+                l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
+
+            p = l1[0]
+            r = l1[1]
+            f1 = l1[2]
+            pnm = l0[0]
+            rnm = l0[1]
+            f1nm = l0[2]
+            return p, r, f1, pnm, rnm, f1nm
 
     def prepare_columns(self, dataset):
         for c in dataset.column_names:
