@@ -31,7 +31,7 @@ class CheapERParams:
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
-        self.adjust_ds_size = True
+        self.adjust_ds_size = False
         self.approx = 'perceptron'
         self.generated_only = True
         self.balance = [0.5, 0.5]
@@ -45,7 +45,7 @@ class CheapERParams:
         self.discard_old_data = False
         self.use_scores = False
         self.threshold = 0
-        self.label_smoothing = 0
+        self.label_smoothing = 0.1
         self.hf_training = False
 
     def __str__(self):
