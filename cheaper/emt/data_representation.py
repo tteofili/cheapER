@@ -113,20 +113,21 @@ class DeepMatcherProcessor(DataProcessor):
         for (i, line) in enumerate(lines):
             if i == 0:
                 continue
-            vals = line[0].split(',')
-            guid = "%s-%s" % (set_type, vals[0])
-            vlen = len(vals)
-            if vlen % 2 != 0:
-                label = '0'
-                lv = (vlen - 1) / 2
-                start = 1
-                end = 1 + lv
-            else:
-                label = vals[1]
-                lv = (vlen - 2) / 2
-                start = 2
-                end = 2 + lv
             try:
+                vals = line[0].split(',')
+                guid = "%s-%s" % (set_type, vals[0])
+                vlen = len(vals)
+                if vlen % 2 != 0:
+                    label = '0'
+                    lv = (vlen - 1) / 2
+                    start = 1
+                    end = 1 + lv
+                else:
+                    label = vals[1]
+                    lv = (vlen - 2) / 2
+                    start = 2
+                    end = 2 + lv
+
                 if label not in ['1', '0']:
                     label = '0'
 
