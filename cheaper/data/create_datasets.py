@@ -183,6 +183,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         min_sim_c = min(min_sim_c, max_sim_c)
         it += 1
 
+    min_sim = min_sim_c
+    max_sim = max_sim_c
 
     # result_list_noMatch = result_list_noMatch[:len(result_list_match)]
     # test per il count dei valori degli attributi
