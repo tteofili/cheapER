@@ -46,7 +46,7 @@ class CheapERParams:
         self.use_scores = False
         self.threshold = 0
         self.label_smoothing = 0.1
-        self.hf_training = False
+        self.hf_training = True
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
