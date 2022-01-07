@@ -185,7 +185,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                         logging.info('New generated dataset size: {}'.format(len(vinsim_data_app)))
 
-                        student = EMTERModel(model_type)
+                        student = EMTERModel(model_type, model_noise=True)
 
                         logging.info("------------- Student Training {} -----------------".format(model_type))
 

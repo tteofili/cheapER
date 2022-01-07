@@ -9,9 +9,9 @@ class CheapERParams:
         self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
-        self.lr = 1e-5
-        self.lr_multiplier = 2
-        self.batch_size = 8
+        self.lr = 1e-6
+        self.lr_multiplier = 20
+        self.batch_size = 16
         if fast:
             self.slicing = [0.1, 0.33, 0.5, 1]
             self.models = ['distilbert-base-uncased']
@@ -42,7 +42,7 @@ class CheapERParams:
         self.model_type = 'noisy-student'
         self.data_noise = True
         self.temperature = 'threshold'
-        self.discard_old_data = False
+        self.discard_old_data = True
         self.use_scores = False
         self.threshold = 0
         self.label_smoothing = 0.1

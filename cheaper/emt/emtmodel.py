@@ -15,8 +15,8 @@ from cheaper.emt.evaluation import Evaluation
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.emt.model import save_model, load_model
 from cheaper.emt.optimizer import build_optimizer
-from cheaper.emt.training import train
 from cheaper.emt.torch_initializer import initialize_gpu_seed
+from cheaper.emt.training import train
 
 setup_logging()
 
@@ -30,11 +30,16 @@ MAX_SEQ_LENGTH = 250
 
 class EMTERModel:
 
-    def __init__(self, model_type):
+    def __init__(self, model_type, model_noise: bool = False):
         self.model_type = model_type
         config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
         config = config_class.from_pretrained(self.model_type)
         self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
+        if model_noise:
+            config.dropout = 0.5
+            config.attention_dropout = 0.5
+            config.qa_dropout = 0.5
+            config.seq_classif_dropout = 0.5
         self.model = model_class.from_pretrained(self.model_type, config=config)
         self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
 
@@ -62,7 +67,7 @@ class EMTERModel:
 
             training_args = TrainingArguments(
                 learning_rate=lr,
-                output_dir='./models/'+dataset_name,  # output directory
+                output_dir='./models/' + dataset_name,  # output directory
                 per_device_train_batch_size=BATCH_SIZE,  # batch size per device during training
                 per_device_eval_batch_size=BATCH_SIZE * 4,  # batch size for evaluation
                 logging_dir='./logs',  # directory for storing logs
@@ -131,7 +136,7 @@ class EMTERModel:
 
             training_args = TrainingArguments(
                 learning_rate=lr,
-                output_dir='./models/'+dataset_name,  # output directory
+                output_dir='./models/' + dataset_name,  # output directory
                 per_device_train_batch_size=batch_size,  # batch size per device during training
                 per_device_eval_batch_size=batch_size,  # batch size for evaluation
                 logging_dir='./logs',  # directory for storing logs

@@ -182,6 +182,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         max_sim_c = max(min_sim_c, max_sim_c)
         min_sim_c = min(min_sim_c, max_sim_c)
         it += 1
+        if min_sim_c >= 0.5 or max_sim_c <= 0.5:
+            break
 
     min_sim = min_sim_c
     max_sim = max_sim_c
