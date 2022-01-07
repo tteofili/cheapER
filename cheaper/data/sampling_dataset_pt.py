@@ -223,7 +223,10 @@ def minHash_lsh(tableL, tableR, indici, min_sim, max_sim, dictL_match, dictR_mat
     res = []
     weights = [0.4, 0.6]
     for threshold, num_perm in [(0.65, 256), (0.9, 64), (0.5, 128), (0.3, 64)]:
-        res += minHash_LSH(data4hash, threshold=threshold, num_perm=num_perm, weights=weights)
+        res_c = minHash_LSH(data4hash, threshold=threshold, num_perm=num_perm, weights=weights)
+        for r in res_c:
+            if r not in res:
+                res.append(r)
         logging.info("{} pairs found".format(len(res)))
     dataset_pt = create_dataset_pt(res, dataL, dataR, tableLlist, tableRlist, min_sim, max_sim, dictL_match,
                                    dictR_match, dictL_NOmatch, dictR_NOmatch, sim_function)
