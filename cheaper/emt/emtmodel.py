@@ -101,7 +101,8 @@ class EMTERModel:
         if adaptive_ft:
             adaptive_ft_model_dir = 'models/' + dataset_name + "/mlm-" + model_type
             logging.info('loading adaptive_ft model from {}'.format(adaptive_ft_model_dir))
-            self.model = load_model(adaptive_ft_model_dir)
+            #config = self.model.config
+            self.model = load_model(adaptive_ft_model_dir)#, config=config)
 
         self.model = self.model.to(device)
 

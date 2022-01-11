@@ -185,7 +185,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                         logging.info('New generated dataset size: {}'.format(len(vinsim_data_app)))
 
-                        student = EMTERModel(model_type, model_noise=True, add_layers=t_i + 1)
+                        student = EMTERModel(model_type, model_noise=True)#, add_layers=t_i)
 
                         logging.info("------------- Student Training {} -----------------".format(model_type))
 
@@ -200,26 +200,28 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         if params.attribute_shuffle:
                             dataDa = add_shuffle(dataDa)
 
-                        if params.data_noise:
-                            # add noise
-                            for i in range(int(len(dataDa) / 3)):
-                                random_index = random.randint(0, len(dataDa) - 1)
-                                line = dataDa[random_index]
-                                rec_idx = random.randint(0, 1)
-                                if rec_idx == 0:
-                                    dataDa[random_index] = (copy_EDIT_match(line[rec_idx]), line[1], line[2])
-                                else:
-                                    dataDa[random_index] = (line[0], copy_EDIT_match(line[rec_idx]), line[2])
+                        new_train = train_cut + dataDa
 
                         # gt+generated data train
                         logging.info(
-                            'Training with {} record pairs ({} generated, {} GT)'.format(len(train_cut) + len(dataDa),
-                                                                                         len(dataDa), len(train_cut)))
+                            'Training with {} record pairs ({} generated, {} GT)'.format(len(new_train), len(dataDa),
+                                                                                         len(train_cut)))
 
-                        student.train(train_cut + dataDa, valid, model_type, dataset_name, seq_length=seq_length,
+                        if params.data_noise:
+                            # add noise
+                            for i in range(int(len(new_train) / 5)):
+                                random_index = random.randint(0, len(new_train) - 1)
+                                line = new_train[random_index]
+                                rec_idx = random.randint(0, 1)
+                                if rec_idx == 0:
+                                    new_train[random_index] = (copy_EDIT_match(line[rec_idx]), line[1], line[2])
+                                else:
+                                    new_train[random_index] = (line[0], copy_EDIT_match(line[rec_idx]), line[2])
+
+                        student.train(new_train, valid, model_type, dataset_name, seq_length=seq_length,
                                       warmup=params.warmup, epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
                                       adaptive_ft=params.adaptive_ft, silent=params.silent, hf_training=params.hf_training,
-                                      batch_size=2 * params.batch_size, weight_decay=params.weight_decay,
+                                      batch_size=params.batch_size, weight_decay=params.weight_decay,
                                       label_smoothing=params.label_smoothing)
 
                         da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = student.eval(
