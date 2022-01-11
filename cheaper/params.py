@@ -9,8 +9,8 @@ class CheapERParams:
         self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
-        self.lr = 1e-6
-        self.lr_multiplier = 20
+        self.lr = 2e-5
+        self.lr_multiplier = 1
         self.batch_size = 16
         if fast:
             self.slicing = [0.1, 0.33, 0.5, 1]

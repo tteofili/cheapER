@@ -30,7 +30,7 @@ MAX_SEQ_LENGTH = 250
 
 class EMTERModel:
 
-    def __init__(self, model_type, model_noise: bool = False):
+    def __init__(self, model_type, model_noise: bool = False, add_layers: int = 0):
         self.model_type = model_type
         config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
         config = config_class.from_pretrained(self.model_type)
@@ -40,6 +40,8 @@ class EMTERModel:
             config.attention_dropout = 0.5
             config.qa_dropout = 0.5
             config.seq_classif_dropout = 0.5
+        if add_layers > 0:
+            config.num_hidden_layers = config.num_hidden_layers + add_layers
         self.model = model_class.from_pretrained(self.model_type, config=config)
         self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
 
