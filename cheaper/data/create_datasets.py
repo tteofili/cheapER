@@ -175,7 +175,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
                                                                                 min_cos_sim, tot_copy, max_occ,
                                                                                 sim_function=simf)
         logging.info("{} matches, {} non-matches, {} consistency pairs".format(len(result_list_match),
-                                                                               len(result_list_noMatch), len(consistency_list)))
+                                                                               len(result_list_noMatch),
+                                                                               len(consistency_list)))
         delta = (max_sim_c - min_sim)/10
         if (min_sim_c + delta) >= 0.5 or (max_sim_c - delta) <= 0.5:
             break
@@ -249,7 +250,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         vinsim_data += random_tuples2
         logging.info("generated data size {}".format(len(vinsim_data)))
     else:
-        k_slice = min(len(result_list_match), len(result_list_match))
+        k_slice = min(len(result_list_match), len(result_list_noMatch))
         if k_slice == 0:
             k_slice = -1
 
