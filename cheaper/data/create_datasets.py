@@ -177,13 +177,15 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         logging.info("{} matches, {} non-matches, {} consistency pairs".format(len(result_list_match),
                                                                                len(result_list_noMatch), len(consistency_list)))
         delta = (max_sim_c - min_sim)/10
-        max_sim_c = max_sim_c - delta
-        min_sim_c = min_sim_c + delta
-        max_sim_c = max(min_sim_c, max_sim_c)
-        min_sim_c = min(min_sim_c, max_sim_c)
-        it += 1
-        if min_sim_c >= 0.5 or max_sim_c <= 0.5:
+        if (min_sim_c + delta) >= 0.5 or (max_sim_c - delta) <= 0.5:
             break
+        else:
+            max_sim_c = max_sim_c - delta
+            min_sim_c = min_sim_c + delta
+            max_sim_c = max(min_sim_c, max_sim_c)
+            min_sim_c = min(min_sim_c, max_sim_c)
+            it += 1
+
 
     min_sim = min_sim_c
     max_sim = max_sim_c
