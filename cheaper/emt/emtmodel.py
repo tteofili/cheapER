@@ -95,7 +95,7 @@ class EMTERModel:
 
     def train(self, label_train, label_valid, model_type, dataset_name, seq_length=MAX_SEQ_LENGTH, warmup=False,
               epochs=3, lr=1e-5, adaptive_ft=False, silent=False, batch_size=BATCH_SIZE, weight_decay=0,
-              label_smoothing=0, hf_training=False):
+              label_smoothing=0, hf_training=False, best_model='eval_loss'):
         device, n_gpu = initialize_gpu_seed(22)
 
         if adaptive_ft:
@@ -137,6 +137,12 @@ class EMTERModel:
             else:
                 warmup_ratio = 0
 
+            metric_for_best_model = best_model
+            if metric_for_best_model == 'eval_f1':
+                greater_is_better = True
+            else:
+                greater_is_better = False
+
             training_args = TrainingArguments(
                 learning_rate=lr,
                 output_dir='./models/' + dataset_name,  # output directory
@@ -155,8 +161,8 @@ class EMTERModel:
                 logging_strategy="epoch",
                 load_best_model_at_end=True,
                 save_total_limit=2,
-                greater_is_better=True,
-                metric_for_best_model='eval_f1',
+                greater_is_better=greater_is_better,
+                metric_for_best_model=metric_for_best_model,
                 max_grad_norm=1.0,
                 label_smoothing_factor=label_smoothing
             )

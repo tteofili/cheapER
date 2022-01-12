@@ -98,6 +98,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                 train_cut = train.copy()
 
+                if params.seq_length > 0:
+                    # override default dataset seq_length
+                    seq_length = params.seq_length
+
                 for model_type in params.models:
 
                     teacher = EMTERModel(model_type)
@@ -111,7 +115,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     teacher.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length,
                                   warmup=params.warmup, hf_training=params.hf_training,
                                   epochs=params.epochs, lr=params.lr, batch_size=params.batch_size,
-                                  silent=params.silent, adaptive_ft=params.adaptive_ft,
+                                  silent=params.silent, adaptive_ft=params.adaptive_ft, best_model=params.best_model,
                                   weight_decay=params.weight_decay, label_smoothing=params.label_smoothing)
                     classic_precision, classic_recall, classic_f1, classic_precisionNOMATCH, classic_recallNOMATCH, classic_f1NOMATCH = teacher \
                         .eval(test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
@@ -222,7 +226,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                       warmup=params.warmup, epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
                                       adaptive_ft=params.adaptive_ft, silent=params.silent, hf_training=params.hf_training,
                                       batch_size=params.batch_size, weight_decay=params.weight_decay,
-                                      label_smoothing=params.label_smoothing)
+                                      label_smoothing=params.label_smoothing, best_model=params.best_model,)
 
                         da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = student.eval(
                             test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,

@@ -4,6 +4,7 @@ from pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams()
+params.batch_size = 4
 
 # get datasets
 datasets = get_datasets()
