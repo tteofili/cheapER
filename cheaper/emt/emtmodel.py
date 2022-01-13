@@ -17,6 +17,7 @@ from cheaper.emt.model import save_model, load_model
 from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
+from transformers import pipeline
 
 setup_logging()
 
@@ -44,6 +45,7 @@ class EMTERModel:
             config.num_hidden_layers = config.num_hidden_layers + add_layers
         self.model = model_class.from_pretrained(self.model_type, config=config)
         self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
+        self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
                     seq_length=MAX_SEQ_LENGTH, epochs=3, lr=5e-5, ow=False):
@@ -298,3 +300,19 @@ class EMTERModel:
         _, _, _, predictions = prediction.predict(self.model, device, test_data_loader, True, **kwargs)
         os.remove(tmpf)
         return predictions
+
+    def noise(self, tupla):
+        copy_tup = []
+        for i in range(len(tupla)):
+            change_attr = random.randint(0, 2)
+            if len(tupla[i])>1 and change_attr == 1:
+                text = str(tupla[i])
+                masked_text = text.replace(random.choice(text.split(' ')), '[MASK]', 1)
+                sequences = self.noise_pipeline(masked_text)
+                noised = sequences[random.randint(0, len(sequences) - 1)]['sequence']
+                copy_tup.append(noised)
+            else:
+                copy_tup.append(tupla[i])
+        return copy_tup
+
+
