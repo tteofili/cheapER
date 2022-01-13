@@ -6,27 +6,24 @@ class CheapERParams:
         self.compare = False
         self.normalize = True
         self.sim_length = 5
-        self.warmup = True
+        self.warmup = False
         self.silent = True
         self.weight_decay = 0.01
-        self.lr = 1e-5
+        self.lr = 5e-5
         self.lr_multiplier = 1
         self.batch_size = 16
         self.epochs = 30
+        self.teaching_iterations = 5
+        self.sigma = 1000
+        self.kappa = 100
         if fast:
-            self.slicing = [0.1, 0.33, 0.5, 1]
+            self.slicing = [0.05, 0.1, 0.33]
             self.models = ['distilbert-base-uncased']
-            self.teaching_iterations = 3
-            self.sigma = 100
-            self.kappa = 10
             self.num_runs = 1
         else:
-            self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 1]
+            self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 0.7, 1]
             self.models = ['roberta-base']
-            self.teaching_iterations = 5
-            self.sigma = 1000
-            self.kappa = 100
-            self.num_runs = 1
+            self.num_runs = 3
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False

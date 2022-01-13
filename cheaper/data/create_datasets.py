@@ -233,19 +233,25 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             k_slice = k_slice_max
         if k_slice == 0:
             k_slice = -1
-        if consistency:
-            logging.info("adding {} consistency pairs".format(len(consistency_list)))
-            vinsim_data += consistency_list
+
         result_list_match = sorted(result_list_match, key=lambda tup: (tup[2][0]), reverse=sim_edges)
         result_list_noMatch = sorted(result_list_noMatch, key=lambda tup: (tup[2][0]), reverse=not sim_edges)
-        matches_list = result_list_match
-        nonmatches_list = result_list_noMatch
-        non_matching_candidates = nonmatches_list[:int(k_slice * (0.5 + balance[0]))]
+
+        neg_slice = int(k_slice * (0.5 + balance[0]))
+        pos_slice = int(k_slice * (0.5 + balance[1]))
+        if consistency:
+            consistency_slice = len(result_list_match) + len(consistency_list) - len(result_list_noMatch)
+            vinsim_data += consistency_list[:consistency_slice]
+            logging.info("adding {} consistency pairs".format(len(consistency_list[:consistency_slice])))
+
+        non_matching_candidates = result_list_noMatch[:neg_slice]
         logging.info("adding {} non-matching pairs".format(len(non_matching_candidates)))
         random_tuples1 = non_matching_candidates  # likely non matches
-        matching_candidates = matches_list[-int(k_slice * (0.5 + balance[1])):]
+
+        matching_candidates = result_list_match[-pos_slice:]
         logging.info("adding {} matching pairs".format(len(matching_candidates)))
         random_tuples2 = matching_candidates  # likely matches
+
         vinsim_data += random_tuples1
         vinsim_data += random_tuples2
         logging.info("generated data size {}".format(len(vinsim_data)))
