@@ -20,7 +20,7 @@ from cheaper.emt.training import train
 
 setup_logging()
 
-from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling
+from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling, EarlyStoppingCallback
 from transformers import LineByLineTextDataset
 from datasets import load_dataset, load_metric
 
@@ -175,6 +175,9 @@ class EMTERModel:
                 eval_dataset=valid_dataset,  # evaluation dataset
                 compute_metrics=compute_metrics,
             )
+
+            if greater_is_better:
+                trainer.add_callback(EarlyStoppingCallback(7))
 
             train_out = trainer.train()
             model_dir = 'models/' + dataset_name

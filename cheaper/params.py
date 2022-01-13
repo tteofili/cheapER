@@ -12,13 +12,13 @@ class CheapERParams:
         self.lr = 1e-5
         self.lr_multiplier = 1
         self.batch_size = 16
+        self.epochs = 30
         if fast:
             self.slicing = [0.1, 0.33, 0.5, 1]
             self.models = ['distilbert-base-uncased']
             self.teaching_iterations = 3
             self.sigma = 100
             self.kappa = 10
-            self.epochs = 15
             self.num_runs = 1
         else:
             self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 1]
@@ -26,7 +26,6 @@ class CheapERParams:
             self.teaching_iterations = 5
             self.sigma = 1000
             self.kappa = 100
-            self.epochs = 30
             self.num_runs = 1
         self.attribute_shuffle = False
         self.identity = False
