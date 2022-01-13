@@ -8,7 +8,7 @@ class CheapERParams:
         self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
-        self.lr = 5e-5
+        self.lr = 1e-5
         self.lr_multiplier = 1
         self.batch_size = 16
         self.epochs = 30
@@ -31,7 +31,7 @@ class CheapERParams:
         self.adjust_ds_size = False
         self.approx = 'perceptron'
         self.generated_only = True
-        self.balance = [0.5, 0.5]
+        self.balance = [0.6, 0.4]
         self.deeper_trick = True
         self.consistency = True
         self.sim_edges = True
