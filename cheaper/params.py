@@ -3,7 +3,6 @@ class CheapERParams:
     def __init__(self, fast: bool = True):
         self.epsilon = 0
         self.adaptive_ft = True
-        self.compare = False
         self.normalize = True
         self.sim_length = 5
         self.warmup = True
@@ -17,6 +16,7 @@ class CheapERParams:
         self.sigma = 1000
         self.kappa = 100
         if fast:
+            self.compare = False
             self.slicing = [0.05, 0.1, 0.33]
             self.models = ['distilbert-base-uncased']
             self.num_runs = 1
@@ -24,6 +24,7 @@ class CheapERParams:
             self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 0.7, 1]
             self.models = ['roberta-base']
             self.num_runs = 3
+            self.compare = True
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False

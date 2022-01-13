@@ -104,12 +104,25 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                 for model_type in params.models:
 
+                    if params.compare:
+                        basic = EMTERModel(model_type)
+                        basic.train(train_cut, valid, model_type, dataset_name,
+                                  warmup=params.warmup, hf_training=params.hf_training, seq_length=seq_length,
+                                  epochs=params.epochs, lr=params.lr * params.lr_multiplier, batch_size=params.batch_size,
+                                  silent=params.silent, adaptive_ft=False, best_model=params.best_model,
+                                  weight_decay=params.weight_decay, label_smoothing=params.label_smoothing)
+                        pm, rm, f1m, pnm, rnm, f1nm = basic.eval(test, dataset_name, seq_length=seq_length,
+                                                                 batch_size=params.batch_size, silent=params.silent)
+                        new_row = {'model_type': model_type, 'train': 'teacher', 'cut': cut, 'pM': pm, 'rM': rm,
+                                   'f1M': f1m, 'pNM': pnm, 'rNM': rnm, 'f1NM': f1nm}
+                        results = results.append(new_row, ignore_index=True)
+
                     teacher = EMTERModel(model_type)
 
                     if params.adaptive_ft:
                         generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
                         teacher.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
-                                            seq_length=seq_length, epochs=params.epochs, lr=5e-5)
+                                            seq_length=seq_length, epochs=max(15, params.epochs), lr=5e-5)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     teacher.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length,
