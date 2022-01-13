@@ -6,7 +6,7 @@ class CheapERParams:
         self.compare = False
         self.normalize = True
         self.sim_length = 5
-        self.warmup = False
+        self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
         self.lr = 5e-5
