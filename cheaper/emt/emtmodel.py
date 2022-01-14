@@ -36,11 +36,11 @@ class EMTERModel:
         # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
         config = AutoConfig.from_pretrained(self.model_type)
         self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
+        config.attention_dropout = 0.1
         if model_noise:
             config.dropout = 0.5
-            config.attention_dropout = 0.5
-            config.qa_dropout = 0.5
-            config.seq_classif_dropout = 0.5
+            # config.qa_dropout = 0.5
+            # config.seq_classif_dropout = 0.5
         if add_layers > 0:
             config.num_hidden_layers = config.num_hidden_layers + add_layers
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type, config=config)
@@ -135,7 +135,7 @@ class EMTERModel:
             valid_dataset = self.prepare_columns(valid_dataset)
 
             if warmup:
-                warmup_ratio = 0.02
+                warmup_ratio = 0.06
             else:
                 warmup_ratio = 0
 
@@ -157,7 +157,7 @@ class EMTERModel:
                 save_strategy="epoch",
                 warmup_ratio=warmup_ratio,
                 adam_epsilon=1e-6,
-                adam_beta1=0.99,
+                adam_beta1=0.9,
                 adam_beta2=0.98,
                 weight_decay=weight_decay,
                 logging_strategy="epoch",
