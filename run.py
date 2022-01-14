@@ -4,6 +4,7 @@ from pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams()
+params.models = ['microsoft/MiniLM-L12-H384-uncased']
 params.epochs = 5
 params.slicing = [0.1]
 

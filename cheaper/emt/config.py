@@ -32,10 +32,12 @@ class Config():
         'google/reformer-crime-and-punishment' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer, ReformerForMaskedLM),
         'google/reformer-enwik8' : (ReformerConfig, ReformerForSequenceClassification, ReformerTokenizer, ReformerForMaskedLM),
         'funnel-transformer/small' : (FunnelConfig, FunnelForSequenceClassification, FunnelTokenizer, FunnelForMaskedLM),
+        'microsoft/deberta-v3-small' : (DebertaV2Config, DebertaV2ForSequenceClassification, DebertaV2Tokenizer, DebertaV2ForMaskedLM),
         'microsoft/deberta-base' : (DebertaConfig, DebertaForSequenceClassification, DebertaTokenizer, DebertaForMaskedLM),
         'microsoft/deberta-v2-xlarge' : (DebertaV2Config, DebertaV2ForSequenceClassification, DebertaV2Tokenizer, DebertaV2ForMaskedLM),
         'facebook/bart-base' : (BartConfig, BartForSequenceClassification, BartTokenizer, BartForCausalLM),
         'kssteven/ibert-roberta-base': (IBertConfig, IBertForSequenceClassification, RobertaTokenizer, IBertForMaskedLM),
+        'microsoft/MiniLM-L12-H384-uncased': (BertConfig, BertForSequenceClassification, BertTokenizer, BertForMaskedLM),
     }
 
 

@@ -17,7 +17,7 @@ from cheaper.emt.model import save_model, load_model
 from cheaper.emt.optimizer import build_optimizer
 from cheaper.emt.torch_initializer import initialize_gpu_seed
 from cheaper.emt.training import train
-from transformers import pipeline
+from transformers import pipeline, AutoModelForMaskedLM, AutoModelForSequenceClassification, AutoTokenizer, AutoConfig
 
 setup_logging()
 
@@ -33,9 +33,9 @@ class EMTERModel:
 
     def __init__(self, model_type, model_noise: bool = False, add_layers: int = 0):
         self.model_type = model_type
-        config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
-        config = config_class.from_pretrained(self.model_type)
-        self.tokenizer = tokenizer_class.from_pretrained(self.model_type, do_lower_case=True)
+        # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
+        config = AutoConfig.from_pretrained(self.model_type)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
         if model_noise:
             config.dropout = 0.5
             config.attention_dropout = 0.5
@@ -43,8 +43,8 @@ class EMTERModel:
             config.seq_classif_dropout = 0.5
         if add_layers > 0:
             config.num_hidden_layers = config.num_hidden_layers + add_layers
-        self.model = model_class.from_pretrained(self.model_type, config=config)
-        self.mlm_model = mlm_model_class.from_pretrained(self.model_type, config=config)
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type, config=config)
+        self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type, config=config)
         self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
