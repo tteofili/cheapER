@@ -85,7 +85,6 @@ class EMTERModel:
             )
 
             trainer = Trainer(
-                place_model_on_device=device,
                 model=self.mlm_model,  # the instantiated 🤗 Transformers model to be trained
                 args=training_args,  # training arguments, defined above
                 data_collator=data_collator,
@@ -177,7 +176,6 @@ class EMTERModel:
                 train_dataset=train_dataset,  # training dataset
                 eval_dataset=valid_dataset,  # evaluation dataset
                 compute_metrics=compute_metrics,
-                place_model_on_device=device
             )
 
             if greater_is_better:
