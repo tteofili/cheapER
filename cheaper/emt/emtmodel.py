@@ -176,6 +176,7 @@ class EMTERModel:
                 train_dataset=train_dataset,  # training dataset
                 eval_dataset=valid_dataset,  # evaluation dataset
                 compute_metrics=compute_metrics,
+                place_model_on_device=device
             )
 
             if greater_is_better:
