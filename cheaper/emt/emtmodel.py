@@ -49,7 +49,7 @@ class EMTERModel:
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
                     seq_length=MAX_SEQ_LENGTH, epochs=3, lr=5e-5, ow=False):
-
+        device, n_gpu = initialize_gpu_seed(22)
         model_dir = 'models/' + dataset_name + "/mlm-" + model_type
         if not os.path.exists(model_dir):
             os.makedirs(model_dir, exist_ok=True)
