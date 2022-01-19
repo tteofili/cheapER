@@ -303,13 +303,13 @@ class EMTERModel:
         os.remove(tmpf)
         return predictions
 
-    def noise(self, tupla):
+    def noise(self, tupla, mask='[MASK]'):
         copy_tup = []
         for i in range(len(tupla)):
             change_attr = random.randint(0, 2)
             if len(tupla[i])>1 and change_attr == 1:
                 text = str(tupla[i])
-                masked_text = text.replace(random.choice(text.split(' ')), '<mask>', 1)
+                masked_text = text.replace(random.choice(text.split(' ')), mask, 1)
                 sequences = self.noise_pipeline(masked_text)
                 noised = sequences[random.randint(0, len(sequences) - 1)]['sequence']
                 copy_tup.append(noised)
