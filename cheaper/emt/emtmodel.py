@@ -32,10 +32,11 @@ MAX_SEQ_LENGTH = 250
 class EMTERModel:
 
     def __init__(self, model_type, model_noise: bool = False, add_layers: int = 0):
+        device, n_gpu = initialize_gpu_seed(22)
         self.model_type = model_type
         # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
         self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type)
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type).to(device)
         if model_noise:
             self.model.config.dropout = 0.5
             # config.qa_dropout = 0.5
@@ -43,7 +44,7 @@ class EMTERModel:
         if add_layers > 0:
             self.model.config.num_hidden_layers = self.model.config.num_hidden_layers + add_layers
 
-        self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type)
+        self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type).to(device)
         self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
@@ -54,8 +55,9 @@ class EMTERModel:
             os.makedirs(model_dir, exist_ok=True)
 
         if os.path.exists(model_dir + '/pytorch_model.bin') and not ow:
-            self.model = load_model(model_dir)
+            self.mlm_model = load_model(model_dir)
         else:
+            self.mlm_model = self.mlm_model.to(device)
             train_dataset = LineByLineTextDataset(
                 tokenizer=self.tokenizer,
                 file_path=unlabelled_train_file,
