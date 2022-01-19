@@ -35,7 +35,7 @@ class EMTERModel:
         device, n_gpu = initialize_gpu_seed(22)
         self.model_type = model_type
         # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
-        self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True).to(device)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type).to(device)
         if model_noise:
             self.model.config.dropout = 0.5
@@ -45,7 +45,7 @@ class EMTERModel:
             self.model.config.num_hidden_layers = self.model.config.num_hidden_layers + add_layers
 
         self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type).to(device)
-        self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer)
+        self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer, device=device)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
                     seq_length=MAX_SEQ_LENGTH, epochs=3, lr=5e-5, ow=False):
