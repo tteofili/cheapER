@@ -31,9 +31,9 @@ class CheapERParams:
         self.adjust_ds_size = False
         self.approx = 'perceptron'
         self.generated_only = True
-        self.balance = [0.6, 0.4]
+        self.balance = [0.5, 0.5]
         self.deeper_trick = False
-        self.consistency = False
+        self.consistency = True
         self.sim_edges = True
         self.simple_slicing = True
         self.model_type = 'noisy-student'

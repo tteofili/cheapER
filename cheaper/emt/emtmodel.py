@@ -34,17 +34,16 @@ class EMTERModel:
     def __init__(self, model_type, model_noise: bool = False, add_layers: int = 0):
         self.model_type = model_type
         # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
-        config = AutoConfig.from_pretrained(self.model_type)
         self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
-        config.attention_dropout = 0.1
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type)
         if model_noise:
-            config.dropout = 0.5
+            self.model.config.dropout = 0.5
             # config.qa_dropout = 0.5
             # config.seq_classif_dropout = 0.5
         if add_layers > 0:
-            config.num_hidden_layers = config.num_hidden_layers + add_layers
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type, config=config)
-        self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type, config=config)
+            self.model.config.num_hidden_layers = self.model.config.num_hidden_layers + add_layers
+
+        self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type)
         self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
