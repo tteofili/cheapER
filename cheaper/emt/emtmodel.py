@@ -178,7 +178,7 @@ class EMTERModel:
             )
 
             if greater_is_better:
-                trainer.add_callback(EarlyStoppingCallback(7))
+                trainer.add_callback(EarlyStoppingCallback(10))
 
             train_out = trainer.train()
             model_dir = 'models/' + dataset_name
@@ -306,7 +306,7 @@ class EMTERModel:
             change_attr = random.randint(0, 2)
             if len(tupla[i])>1 and change_attr == 1:
                 text = str(tupla[i])
-                masked_text = text.replace(random.choice(text.split(' ')), '[MASK]', 1)
+                masked_text = text.replace(random.choice(text.split(' ')), '<mask>', 1)
                 sequences = self.noise_pipeline(masked_text)
                 noised = sequences[random.randint(0, len(sequences) - 1)]['sequence']
                 copy_tup.append(noised)
