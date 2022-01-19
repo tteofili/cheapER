@@ -35,7 +35,7 @@ class EMTERModel:
         device, n_gpu = initialize_gpu_seed(22)
         self.model_type = model_type
         # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
-        self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True).to(device)
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type).to(device)
         if model_noise:
             self.model.config.dropout = 0.5
