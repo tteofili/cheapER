@@ -6,7 +6,9 @@ from pipeline import get_datasets
 params = CheapERParams()
 params.models = ['microsoft/MiniLM-L12-H384-uncased']
 params.epochs = 5
-params.slicing = [0.1]
+params.slicing = [0.05]
+params.mask_token = '<mask>'
+params.lr = 2e-5
 
 # get datasets
 datasets = get_datasets()

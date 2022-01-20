@@ -8,7 +8,7 @@ class CheapERParams:
         self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
-        self.lr = 1e-5
+        self.lr = 2e-5
         self.lr_multiplier = 1
         self.batch_size = 16
         self.epochs = 30
@@ -25,6 +25,7 @@ class CheapERParams:
             self.models = ['roberta-base']
             self.num_runs = 3
             self.compare = True
+            self.mask_token = '<mask>'
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
