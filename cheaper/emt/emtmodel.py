@@ -48,7 +48,7 @@ class EMTERModel:
         if device.type == 'cpu':
             device = -1
         else:
-            device = None
+            device = 0
         self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer, device=device)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
