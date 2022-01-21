@@ -47,6 +47,8 @@ class EMTERModel:
         self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type).to(device)
         if device.type == 'cpu':
             device = -1
+        else:
+            device = None
         self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer, device=device)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
