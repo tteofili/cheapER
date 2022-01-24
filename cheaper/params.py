@@ -39,7 +39,7 @@ class CheapERParams:
         self.simple_slicing = True
         self.model_type = 'noisy-student'
         self.data_noise = True
-        self.temperature = 'threshold'
+        self.temperature = 'desc'
         self.discard_old_data = True
         self.use_scores = False
         self.threshold = 0

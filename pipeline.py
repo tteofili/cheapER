@@ -146,13 +146,13 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                             vinsim_data_app = []
                         if params.temperature is not None:  # harder temperature leads to softer distributions
                             if params.temperature == 'asc':
-                                temperature = float(1 + t_i / 10)
+                                temperature = 1 +  t_i * (1 + threshold)
                             elif params.temperature == 'desc':
-                                temperature = float(1 - t_i / 10)
+                                temperature = 1 -  t_i * (1 + threshold)
                             elif params.temperature == 'linear':
                                 temperature = 1 + t_i
-                            elif params.temperature == 'threshold':
-                                temperature = (1 + t_i) * (1 + threshold)
+                            #elif params.temperature == 'threshold':
+                            #    temperature = (1 + t_i) * (1 + threshold)
                             elif isinstance(params.temperature, float):
                                 # inspired by rankmax, we adapt the temperature using the label approximation threshold
                                 # see https://storage.googleapis.com/pub-tools-public-publication-data/pdf/87fc0a222b8e175c960e9ff391531cd977dfca35.pdf
