@@ -8,7 +8,7 @@ class CheapERParams:
         self.warmup = True
         self.silent = True
         self.weight_decay = 0.01
-        self.lr = 1e-5
+        self.lr = 2e-5
         self.lr_multiplier = 1
         self.batch_size = 16
         self.epochs = 30
@@ -25,15 +25,16 @@ class CheapERParams:
             self.models = ['roberta-base']
             self.num_runs = 3
             self.compare = True
+            self.mask_token = '<mask>'
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
         self.adjust_ds_size = False
         self.approx = 'perceptron'
         self.generated_only = True
-        self.balance = [0.6, 0.4]
+        self.balance = [0.5, 0.5]
         self.deeper_trick = False
-        self.consistency = False
+        self.consistency = True
         self.sim_edges = True
         self.simple_slicing = True
         self.model_type = 'noisy-student'
@@ -46,6 +47,7 @@ class CheapERParams:
         self.hf_training = True
         self.seq_length = 0
         self.best_model = 'eval_f1'
+        self.mask_token = '[MASK]'
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
@@ -64,4 +66,5 @@ class CheapERParams:
                + str(self.temperature) + ',discard_old_data=' + str(self.discard_old_data) + ',use_scores=' + \
                str(self.use_scores) + ',threshold=' + str(self.threshold) + ',weight_decay=' + str(self.weight_decay) + \
                ',label_smoothing=' + str(self.label_smoothing) + ',hf_training=' + str(self.hf_training) +\
-               ',seq_length=' + str(self.seq_length) + ',best_model=' + str(self.best_model)
+               ',seq_length=' + str(self.seq_length) + ',best_model=' + str(self.best_model) + ',mask_token=' \
+               + str(self.mask_token)

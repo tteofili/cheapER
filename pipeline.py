@@ -113,7 +113,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                   weight_decay=params.weight_decay, label_smoothing=params.label_smoothing)
                         pm, rm, f1m, pnm, rnm, f1nm = basic.eval(test, dataset_name, seq_length=seq_length,
                                                                  batch_size=params.batch_size, silent=params.silent)
-                        new_row = {'model_type': model_type, 'train': 'teacher', 'cut': cut, 'pM': pm, 'rM': rm,
+                        new_row = {'model_type': model_type, 'train': 'baseline', 'cut': cut, 'pM': pm, 'rM': rm,
                                    'f1M': f1m, 'pNM': pnm, 'rNM': rnm, 'f1NM': f1nm}
                         results = results.append(new_row, ignore_index=True)
 
@@ -122,7 +122,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     if params.adaptive_ft:
                         generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
                         teacher.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
-                                            seq_length=seq_length, epochs=min(15, params.epochs), lr=5e-5)
+                                            seq_length=seq_length, epochs=min(5, params.epochs), lr=1e-5)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
                     logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     teacher.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length,
@@ -231,9 +231,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 line = new_train[random_index]
                                 rec_idx = random.randint(0, 1)
                                 if rec_idx == 0:
-                                    new_train[random_index] = (teacher.noise(line[rec_idx]), line[1], line[2])
+                                    new_train[random_index] = (teacher.noise(line[rec_idx], mask=params.mask_token), line[1], line[2])
                                 else:
-                                    new_train[random_index] = (line[0], teacher.noise(line[rec_idx]), line[2])
+                                    new_train[random_index] = (line[0], teacher.noise(line[rec_idx], mask=params.mask_token), line[2])
 
                         student.train(new_train, valid, model_type, dataset_name, seq_length=seq_length,
                                       warmup=params.warmup, epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
@@ -577,7 +577,7 @@ def get_datasets():
          ('%stemporary/' % base_dir), True, 180],
         [('%sabt_buy/train.csv' % base_dir), ('%sabt_buy/tableA.csv' % base_dir),
          ('%sabt_buy/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3)], 'abt_buy',
-         ('%stemporary/' % base_dir), True, 265],
+         ('%stemporary/' % base_dir), True, 275],
         [('%sbeers/train.csv' % base_dir), ('%sbeers/tableA.csv' % base_dir),
          ('%sbeers/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4)], 'beers',
          ('%stemporary/' % base_dir), True, 150],

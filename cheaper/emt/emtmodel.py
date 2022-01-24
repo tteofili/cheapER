@@ -32,20 +32,24 @@ MAX_SEQ_LENGTH = 250
 class EMTERModel:
 
     def __init__(self, model_type, model_noise: bool = False, add_layers: int = 0):
+        device, n_gpu = initialize_gpu_seed(22)
         self.model_type = model_type
         # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
-        config = AutoConfig.from_pretrained(self.model_type)
         self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
-        config.attention_dropout = 0.1
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type).to(device)
         if model_noise:
-            config.dropout = 0.5
+            self.model.config.dropout = 0.5
             # config.qa_dropout = 0.5
             # config.seq_classif_dropout = 0.5
         if add_layers > 0:
-            config.num_hidden_layers = config.num_hidden_layers + add_layers
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type, config=config)
-        self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type, config=config)
-        self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer)
+            self.model.config.num_hidden_layers = self.model.config.num_hidden_layers + add_layers
+
+        self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type).to(device)
+        if device.type == 'cpu':
+            device = -1
+        else:
+            device = 0
+        self.noise_pipeline = pipeline('fill-mask', model=self.mlm_model, tokenizer=self.tokenizer, device=device)
 
     def adaptive_ft(self, unlabelled_train_file, unlabelled_valid_file, dataset_name, model_type,
                     seq_length=MAX_SEQ_LENGTH, epochs=3, lr=5e-5, ow=False):
@@ -55,8 +59,9 @@ class EMTERModel:
             os.makedirs(model_dir, exist_ok=True)
 
         if os.path.exists(model_dir + '/pytorch_model.bin') and not ow:
-            self.model = load_model(model_dir)
+            self.mlm_model = load_model(model_dir)
         else:
+            self.mlm_model = self.mlm_model.to(device)
             train_dataset = LineByLineTextDataset(
                 tokenizer=self.tokenizer,
                 file_path=unlabelled_train_file,
@@ -179,7 +184,7 @@ class EMTERModel:
             )
 
             if greater_is_better:
-                trainer.add_callback(EarlyStoppingCallback(7))
+                trainer.add_callback(EarlyStoppingCallback(10))
 
             train_out = trainer.train()
             model_dir = 'models/' + dataset_name
@@ -301,13 +306,13 @@ class EMTERModel:
         os.remove(tmpf)
         return predictions
 
-    def noise(self, tupla):
+    def noise(self, tupla, mask='[MASK]'):
         copy_tup = []
         for i in range(len(tupla)):
             change_attr = random.randint(0, 2)
             if len(tupla[i])>1 and change_attr == 1:
                 text = str(tupla[i])
-                masked_text = text.replace(random.choice(text.split(' ')), '[MASK]', 1)
+                masked_text = text.replace(random.choice(text.split(' ')), mask, 1)
                 sequences = self.noise_pipeline(masked_text)
                 noised = sequences[random.randint(0, len(sequences) - 1)]['sequence']
                 copy_tup.append(noised)
