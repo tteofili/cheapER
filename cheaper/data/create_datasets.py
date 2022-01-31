@@ -168,7 +168,8 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     min_sim_c = min_sim
     max_sim_c = max_sim
     it = 0
-    while len(result_list_match) < tot_pt/2 and len(result_list_match) < tot_pt/2 and it < 3:
+    while len(result_list_match) < tot_pt/2 and len(result_list_match) < tot_pt/2 and it < 2:
+        logging.info(f"creating data with theta_min:{min_sim_c}, theta_max:{max_sim_c}")
         result_list_noMatch, result_list_match, consistency_list = create_lists(TABLE1_FILE, TABLE2_FILE, tot_pt,
                                                                                 min_sim_c,
                                                                                 max_sim_c, ATT_INDEXES,
