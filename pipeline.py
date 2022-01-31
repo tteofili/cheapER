@@ -105,13 +105,17 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 for model_type in params.models:
 
                     if params.compare:
+                        train_base, test_base, valid_base = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0],
+                                                            flag_Anhai, valid_file, test_file, False, cut=cut)
+
+                        train_cut_base = train_base.copy()
                         basic = EMTERModel(model_type)
-                        basic.train(train_cut, valid, model_type, dataset_name,
+                        basic.train(train_cut_base, valid_base, model_type, dataset_name,
                                   warmup=params.warmup, hf_training=params.hf_training, seq_length=seq_length,
                                   epochs=params.epochs, lr=params.lr * params.lr_multiplier, batch_size=params.batch_size,
                                   silent=params.silent, adaptive_ft=False, best_model=params.best_model,
                                   weight_decay=params.weight_decay, label_smoothing=params.label_smoothing)
-                        pm, rm, f1m, pnm, rnm, f1nm = basic.eval(test, dataset_name, seq_length=seq_length,
+                        pm, rm, f1m, pnm, rnm, f1nm = basic.eval(test_base, dataset_name, seq_length=seq_length,
                                                                  batch_size=params.batch_size, silent=params.silent)
                         new_row = {'model_type': model_type, 'train': 'baseline', 'cut': cut, 'pM': pm, 'rM': rm,
                                    'f1M': f1m, 'pNM': pnm, 'rNM': rnm, 'f1NM': f1nm}
