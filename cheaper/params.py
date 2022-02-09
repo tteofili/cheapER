@@ -11,21 +11,25 @@ class CheapERParams:
         self.lr = 1e-5
         self.lr_multiplier = 1
         self.batch_size = 16
-        self.epochs = 30
-        self.teaching_iterations = 5
-        self.sigma = 1000
-        self.kappa = 100
+        self.num_runs = 1
         if fast:
             self.compare = False
             self.slicing = [0.05, 0.1, 0.33]
             self.models = ['distilbert-base-uncased']
-            self.num_runs = 1
+            self.mask_token = '[MASK]'
+            self.epochs = 7
+            self.teaching_iterations = 3
+            self.sigma = 100
+            self.kappa = 10
         else:
             self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 0.7, 1]
             self.models = ['roberta-base']
-            self.num_runs = 3
             self.compare = True
             self.mask_token = '<mask>'
+            self.teaching_iterations = 5
+            self.epochs = 30
+            self.sigma = 1000
+            self.kappa = 100
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
@@ -47,7 +51,6 @@ class CheapERParams:
         self.hf_training = True
         self.seq_length = 0
         self.best_model = 'eval_f1'
-        self.mask_token = '[MASK]'
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
