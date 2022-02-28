@@ -1,6 +1,6 @@
 class CheapERParams:
 
-    def __init__(self, fast: bool = True):
+    def __init__(self, fast: bool = False):
         self.epsilon = 0
         self.adaptive_ft = True
         self.normalize = True
@@ -9,7 +9,7 @@ class CheapERParams:
         self.silent = True
         self.weight_decay = 0.01
         self.lr = 1e-5
-        self.lr_multiplier = 1
+        self.lr_multiplier = 3
         self.batch_size = 16
         self.num_runs = 1
         if fast:
@@ -17,7 +17,7 @@ class CheapERParams:
             self.slicing = [0.05, 0.1, 0.33]
             self.models = ['distilbert-base-uncased']
             self.mask_token = '[MASK]'
-            self.epochs = 7
+            self.epochs = 15
             self.teaching_iterations = 3
             self.sigma = 100
             self.kappa = 10
@@ -27,7 +27,7 @@ class CheapERParams:
             self.compare = True
             self.mask_token = '<mask>'
             self.teaching_iterations = 5
-            self.epochs = 30
+            self.epochs = 40
             self.sigma = 1000
             self.kappa = 100
         self.attribute_shuffle = False
@@ -37,12 +37,13 @@ class CheapERParams:
         self.approx = 'perceptron'
         self.generated_only = True
         self.balance = [0.5, 0.5]
-        self.deeper_trick = False
+        self.deeper_trick = True
         self.consistency = True
         self.sim_edges = True
         self.simple_slicing = True
         self.model_type = 'noisy-student'
         self.data_noise = True
+        self.model_noise = True
         self.temperature = 'asc'
         self.discard_old_data = True
         self.use_scores = False
@@ -70,4 +71,4 @@ class CheapERParams:
                str(self.use_scores) + ',threshold=' + str(self.threshold) + ',weight_decay=' + str(self.weight_decay) + \
                ',label_smoothing=' + str(self.label_smoothing) + ',hf_training=' + str(self.hf_training) +\
                ',seq_length=' + str(self.seq_length) + ',best_model=' + str(self.best_model) + ',mask_token=' \
-               + str(self.mask_token)
+               + str(self.mask_token) + ',model_noise=' + str(self.model_noise)
