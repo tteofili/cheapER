@@ -1,12 +1,7 @@
 import argparse
 import json
-import os
 import logging
-
-from pytorch_transformers import BertConfig, BertForSequenceClassification, BertTokenizer, XLNetTokenizer, \
-    XLNetForSequenceClassification, XLNetConfig, XLMForSequenceClassification, XLMConfig, XLMTokenizer, \
-    RobertaTokenizer, RobertaForSequenceClassification, RobertaConfig, DistilBertConfig, \
-    DistilBertForSequenceClassification, DistilBertTokenizer
+import os
 
 from cheaper.emt.logging_customized import setup_logging
 
@@ -16,14 +11,6 @@ setup_logging()
 class Config():
     DATA_PREFIX = "data"
     EXPERIMENT_PREFIX = "experiments"
-
-    MODEL_CLASSES = {
-        'bert': (BertConfig, BertForSequenceClassification, BertTokenizer),
-        'xlnet': (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer),
-        'xlm': (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
-        'roberta': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
-        'distilbert-base-uncased': (DistilBertConfig, DistilBertForSequenceClassification, DistilBertTokenizer),
-    }
 
 
 def write_config_to_file(args, model_output_dir: str, experiment_name: str):

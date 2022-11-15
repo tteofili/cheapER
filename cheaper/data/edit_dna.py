@@ -60,5 +60,4 @@ if __name__ == "__main__":
         d = 1  # max edit distance
         n = 2  # number of strings in result
         mutates=s.mutate(d, n)
-        print(mutates[1])
     #>>> ['AAA', 'GACAAAA', 'AAAAA', 'CAGAA', 'AACAAAA']'

@@ -1,7 +1,6 @@
 import os
 
-from pytorch_transformers import BertTokenizer
-from pytorch_transformers.modeling_bert import BertForSequenceClassification
+from transformers import AutoModelForSequenceClassification
 
 
 def save_model(model, experiment_name, model_output_dir, epoch=None, tokenizer=None):
@@ -21,8 +20,5 @@ def save_model(model, experiment_name, model_output_dir, epoch=None, tokenizer=N
     return output_sub_dir
 
 
-def load_model(model_dir, do_lower_case):
-    model = BertForSequenceClassification.from_pretrained(model_dir)
-    tokenizer = BertTokenizer.from_pretrained(model_dir, do_lower_case=do_lower_case)
-
-    return model, tokenizer
+def load_model(model_dir):#, config=None):
+    return AutoModelForSequenceClassification.from_pretrained(model_dir)#, config=config)

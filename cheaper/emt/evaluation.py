@@ -1,6 +1,6 @@
 import os
-import numpy as np
 
+import numpy as np
 import torch
 from sklearn.metrics import classification_report, f1_score
 from tqdm import tqdm
@@ -18,13 +18,13 @@ class Evaluation:
         self.n_labels = n_labels
         self.output_path = os.path.join(model_output_dir, experiment_name, "eval_results.txt")
 
-    def evaluate(self, model, device, epoch):
+    def evaluate(self, model, device, epoch, silent):
         nb_eval_steps = 0
         eval_loss = 0.0
         predictions = None
         labels = None
 
-        for batch in tqdm(self.evaluation_data_loader, desc="Evaluating"):
+        for batch in tqdm(self.evaluation_data_loader, desc="Evaluating", disable=silent):
             model.eval()
             batch = tuple(t.to(device) for t in batch)
 
@@ -34,7 +34,7 @@ class Evaluation:
                           'labels': batch[3]}
 
                 if self.model_type != 'distilbert-base-uncased':
-                    inputs['token_type_ids'] = batch[2] if self.model_type in ['bert', 'xlnet'] else None  # XLM, DistilBERT and RoBERTa don't use segment_ids
+                    inputs['token_type_ids'] = batch[2] if self.model_type in ['bert-base-uncased', 'xlnet-base-cased'] else None  # XLM, DistilBERT and RoBERTa don't use segment_ids
 
                 outputs = model(**inputs)
                 tmp_eval_loss, logits = outputs[:2]     # logits are always part of the output (see BertForSequenceClassification documentation),
@@ -66,14 +66,16 @@ class Evaluation:
                   'f1_score': f1,
                   'report': report}
 
-        with open(self.output_path, "a+") as writer:
-            tqdm.write("***** Eval results after epoch {} *****".format(epoch))
-            writer.write("***** Eval results after epoch {} *****\n".format(epoch))
-            for key in sorted(result.keys()):
-                tqdm.write("{}: {}".format(key, str(result[key])))
-                writer.write("{}: {}\n".format(key, str(result[key])))
+        try:
+            with open(self.output_path, "a+") as writer:
+                tqdm.write("***** Eval results after epoch {} *****".format(epoch))
+                writer.write("***** Eval results after epoch {} *****\n".format(epoch))
+                for key in sorted(result.keys()):
+                    tqdm.write("{}: {}".format(key, str(result[key])))
+                    writer.write("{}: {}\n".format(key, str(result[key])))
 
-            tqdm.write(report)
-            writer.write(report + "\n")
-
+                tqdm.write(report)
+                writer.write(report + "\n")
+        except:
+            pass
         return result

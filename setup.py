@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url= 'https://github.com/tteofili/cheapER.git',
-    packages=['cheapER'],
+    packages=['cheaper'],
     install_requires=[
           'pandas',
           'numpy',
@@ -21,6 +21,7 @@ setuptools.setup(
           'tqdm',
           'transformers',
           'torch',
+          'datasets',
       ],
     classifiers=[
         "Programming Language :: Python :: 3",

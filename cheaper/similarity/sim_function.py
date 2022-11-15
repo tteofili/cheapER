@@ -1,16 +1,14 @@
+import math
+import re
+from collections import Counter
+
+import numpy
+import scipy
 import textdistance
 import textdistance as txd
+import torch
 from strsimpy.metric_lcs import MetricLCS
 from strsimpy.ngram import NGram
-import os
-import re, math
-from collections import Counter
-from transformers import *
-from sentence_transformers import SentenceTransformer
-from sentence_transformers import models
-import numpy
-import torch
-import scipy
 
 WORD = re.compile(r'\w+')
 
@@ -243,8 +241,7 @@ def remove_symb(tupla):
     for el in tupla:
         t=re.sub(r'[^\w]', ' ', str(el))
         tupla1.append(t)
-    print(tupla1)
-    
+
     return tupla1
 
 def min_cos(data):
@@ -310,18 +307,23 @@ def extract_bert(text, tokenizer, model):
     return text_ids, text_words, state[0]
 
 
-tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased', do_lower_case=False)
+'''PATH = "models" + os.sep + "sim_bert"
+
+# bert
+tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
 model = AutoModel.from_pretrained('bert-base-uncased')
+model.save_pretrained(PATH + os.sep + 'bert-encoder')
+tokenizer.save_pretrained(PATH + os.sep + 'bert-encoder')
+
+# s-bert
 embedder = SentenceTransformer('bert-base-nli-mean-tokens')
 
-PATH = "models" + os.sep + "sim_bert"
-model.save_pretrained(PATH)
-tokenizer.save_pretrained(PATH)
-embedding = models.BERT(PATH, max_seq_length=128,do_lower_case=True)
+# s-bert II
+embedding = models.BERT('bert-base-uncased', max_seq_length=128, do_lower_case=True)
 pooling_model = models.Pooling(embedding.get_word_embedding_dimension(),
                                pooling_mode_mean_tokens=True,
                                pooling_mode_cls_token=False,
                                pooling_mode_max_tokens=False)
 model2 = SentenceTransformer(modules=[embedding, pooling_model])
-model2.save(PATH)
-encoder = SentenceTransformer(PATH)
+model2.save(PATH + os.sep + 'sbert-encoder2')
+encoder = SentenceTransformer(PATH + os.sep + 'sbert-encoder2')'''

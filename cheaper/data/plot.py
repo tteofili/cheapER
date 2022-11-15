@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+# plt.switch_backend('agg')
 from itertools import islice 
+import logging
+from cheaper.emt.logging_customized import setup_logging
+
+setup_logging()
 
 # Ti restituisce i primi n valori di datatasetOriginal
 # con n = len(datasetOriginal) * percentuale
@@ -32,7 +36,6 @@ def plotting(result_list,index):
     min_sim_match=sim_list[index_min]
     max_sim_noMatch=sim_list[index_min-1]
     average=(sum(sim_list) / len(sim_list))
-    print(average)
     wrong_match=0
     wrong_NOmatch=0
     for i in range(len(sim_list)):
@@ -66,7 +69,6 @@ def plotting(result_list,index):
 def plot_graph(result_list,cut):
    
     for j in range(len(result_list[0][2])):
-        print(j)
 #        result_listANHAI1=ratio_dupl_noDup4Anhai(result_list,j)
 #        shuffle(result_listANHAI1)
         dataset5Percent=splitting_dataSet(cut, result_list)
@@ -78,7 +80,7 @@ def plot_graph(result_list,cut):
             else:
                 k=k+1
         
-        print("match number: "+str(g)+ " no match number: " + str(k))
+        logging.info("match number: "+str(g)+ " no match number: " + str(k))
         min_sim_match,max_sim_noMatch=plotting(dataset5Percent,j)
     return min_sim_match,max_sim_noMatch
 def plot_pretrain(data):
@@ -122,8 +124,8 @@ def plot_dataPT(data):
     
 def plotting_dizionari(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch) :
     listL_match=list(dictL_match.values())
-    print("listL_match[0]")
-    print(listL_match[0])
+    logging.info("listL_match[0]")
+    logging.info(listL_match[0])
     plotting_occorrenze(listL_match, "dictL_match")
     
     listR_match=list(dictR_match.values())
