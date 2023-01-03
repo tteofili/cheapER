@@ -34,6 +34,7 @@ class EMTERModel:
     def __init__(self, model_type, model_noise: bool = False, add_layers: int = 0):
         device, n_gpu = initialize_gpu_seed(22)
         self.model_type = model_type
+        self.model_noise = model_noise
         # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
         self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type).to(device)
@@ -301,7 +302,10 @@ class EMTERModel:
                                      MAX_SEQ_LENGTH,
                                      BATCH_SIZE,
                                      DataType.TEST, self.model_type)
-
+        if self.model_noise:
+            self.model.train()
+        else:
+            self.model.eval()
         _, _, _, predictions = prediction.predict(self.model, device, test_data_loader, True, **kwargs)
         os.remove(tmpf)
         return predictions

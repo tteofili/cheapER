@@ -6,7 +6,7 @@ import random
 import warnings
 from datetime import date
 from inspect import getsource
-
+import numpy as np
 import pandas as pd
 from sklearn.metrics import classification_report
 
@@ -147,6 +147,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     for t_i in range(params.teaching_iterations):
                         if params.discard_old_data:
                             vinsim_data_app = []
+                        temperature = 1
                         if params.temperature is not None:  # harder temperature leads to softer distributions
                             if params.temperature == 'asc':
                                 temperature = 1 +  t_i * (1 + threshold)
@@ -163,9 +164,10 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                             else:
                                 logging.warning(f'temperature param "{params.temperature}" set to 1')
                                 temperature = 1
-                            simf = lambda t1, t2: [teacher.predict(t1, t2, t=temperature)['scores'].values[0]]
+                        if t_i > 0 and params.model_noise:
+                            simf = lambda t1, t2: [np.stack(teacher.predict(t1, t2, t=temperature)['scores'].values[0] for _ in range(params.mcd_samples)).mean(axis=0)]
                         else:
-                            simf = lambda t1, t2: [teacher.predict(t1, t2)['scores'].values[0]]
+                            simf = lambda t1, t2: [teacher.predict(t1, t2, t=temperature)['scores'].values[0]]
 
                         logging.info('Generating dataset')
                         # create datasets

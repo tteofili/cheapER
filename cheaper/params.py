@@ -52,6 +52,7 @@ class CheapERParams:
         self.hf_training = True
         self.seq_length = 0
         self.best_model = 'eval_f1'
+        self.mcd_samples = 5
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
@@ -71,4 +72,4 @@ class CheapERParams:
                str(self.use_scores) + ',threshold=' + str(self.threshold) + ',weight_decay=' + str(self.weight_decay) + \
                ',label_smoothing=' + str(self.label_smoothing) + ',hf_training=' + str(self.hf_training) +\
                ',seq_length=' + str(self.seq_length) + ',best_model=' + str(self.best_model) + ',mask_token=' \
-               + str(self.mask_token) + ',model_noise=' + str(self.model_noise)
+               + str(self.mask_token) + ',model_noise=' + str(self.model_noise) + ',mcd_samples=' + str(self.mcd_samples)
