@@ -22,7 +22,7 @@ class CheapERParams:
             self.sigma = 100
             self.kappa = 10
         else:
-            self.slicing = [0.05, 0.1, 0.2, 0.33, 0.4, 0.5, 0.7, 1]
+            self.slicing = [0.05, 0.1, 0.33, 0.5, 0.7, 1]
             self.models = ['roberta-base']
             self.compare = True
             self.mask_token = '<mask>'

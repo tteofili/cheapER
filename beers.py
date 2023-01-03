@@ -3,7 +3,7 @@ from pipeline import cheaper_train
 from pipeline import get_datasets
 
 # cheapER parameters' settings
-params = CheapERParams()
+params = CheapERParams(fast=True)
 
 # get datasets
 datasets = get_datasets()
