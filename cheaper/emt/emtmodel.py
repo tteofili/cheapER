@@ -302,10 +302,7 @@ class EMTERModel:
                                      MAX_SEQ_LENGTH,
                                      BATCH_SIZE,
                                      DataType.TEST, self.model_type)
-        if self.model_noise:
-            self.model.train()
-        else:
-            self.model.eval()
+
         _, _, _, predictions = prediction.predict(self.model, device, test_data_loader, True, **kwargs)
         os.remove(tmpf)
         return predictions
