@@ -85,7 +85,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
         test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
 
     if adjust_ds_size:
-        tot_pt = min(tot_pt, int(len(data) * cut * 0.85))
+        tot_pt = min(tot_pt, int(len(data) * cut * 2))
         tot_copy = min(tot_copy, int(tot_pt / 10))
 
     min_sim_Match, max_sim_noMatch = plot_graph(data, cut)

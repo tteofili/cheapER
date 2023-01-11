@@ -165,8 +165,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                             else:
                                 logging.warning(f'temperature param "{params.temperature}" set to 1')
                                 temperature = 1
-                        if params.model_noise:
+                        if params.mcd_samples > 1:
                             simf = lambda t1, t2: [np.stack(teacher.predict(t1, t2, t=temperature)['scores'].values[0] for _ in range(params.mcd_samples)).mean(axis=0)]
+                            teacher.enable_mcd()
                         else:
                             simf = lambda t1, t2: [teacher.predict(t1, t2, t=temperature)['scores'].values[0]]
 

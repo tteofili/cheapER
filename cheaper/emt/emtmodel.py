@@ -5,6 +5,7 @@ import string
 
 import numpy as np
 import pandas as pd
+from torch import nn
 
 from cheaper.data import deepmatcher_format
 from cheaper.emt import prediction
@@ -321,5 +322,13 @@ class EMTERModel:
             else:
                 copy_tup.append(tupla[i])
         return copy_tup
+
+    def __apply_dropout(self, m):
+        if type(m) == nn.Dropout:
+            m.train()
+
+    def enable_mcd(self):
+        self.model.eval()
+        self.model.apply(self.__apply_dropout)
 
 
