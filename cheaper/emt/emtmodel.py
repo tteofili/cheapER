@@ -40,8 +40,9 @@ class EMTERModel:
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type).to(device)
         if model_noise:
             self.model.config.dropout = 0.5
-            # config.qa_dropout = 0.5
-            # config.seq_classif_dropout = 0.5
+            self.model.config.qa_dropout = 0.5
+            self.model.config.attention_dropout = 0.5
+            self.model.config.seq_classif_dropout = 0.5
         if add_layers > 0:
             self.model.config.num_hidden_layers = self.model.config.num_hidden_layers + add_layers
 
@@ -292,7 +293,7 @@ class EMTERModel:
     def predict(self, t1, t2, **kwargs):
         x = pd.DataFrame([0] + t1 + t2).T
 
-        device, n_gpu = initialize_gpu_seed(22)
+        device, n_gpu = initialize_gpu_seed(-1)
         processor = DeepMatcherProcessor()
         tmpf = "./{}.csv".format("".join([random.choice(string.ascii_lowercase) for _ in range(10)]))
         x.to_csv(tmpf)

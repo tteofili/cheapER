@@ -12,7 +12,8 @@ setup_logging()
 def initialize_gpu_seed(seed: int):
     device, n_gpu = setup_gpu()
 
-    init_seed_everywhere(seed, n_gpu)
+    if seed > 0:
+        init_seed_everywhere(seed, n_gpu)
 
     return device, n_gpu
 
