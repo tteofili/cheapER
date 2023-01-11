@@ -189,11 +189,12 @@ class EMTERModel:
             if greater_is_better:
                 trainer.add_callback(EarlyStoppingCallback(10))
 
-            train_out = trainer.train()
+            trainer.train()
             model_dir = 'models/' + dataset_name
             trainer.save_model(model_dir)
-            # eval_out = trainer.evaluate(valid_dataset)
-            return train_out
+            eval_out = trainer.evaluate(valid_dataset)
+            f1 = eval_out['eval_f1']
+            return 'nan', 'nan', f1, 'nan', 'nan', 'nan'
 
         else:
             processor = DeepMatcherProcessor()

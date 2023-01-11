@@ -4,6 +4,8 @@ from pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams(fast=True)
+params.slicing = [0.1]
+params.teaching_iterations = 2
 
 # get datasets
 datasets = get_datasets()
