@@ -242,21 +242,21 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 else:
                                     new_train[random_index] = (line[0], teacher.noise(line[rec_idx], mask=params.mask_token), line[2])
 
-                        _, _, f1, _, _, _ = student.train(new_train, valid, model_type, dataset_name, seq_length=seq_length,
+                        student.train(new_train, valid, model_type, dataset_name, seq_length=seq_length,
                                       warmup=params.warmup, epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
                                       adaptive_ft=params.adaptive_ft, silent=params.silent, hf_training=params.hf_training,
                                       batch_size=params.batch_size, weight_decay=params.weight_decay,
                                       label_smoothing=params.label_smoothing, best_model=params.best_model,)
-                        if f1 > best_f1:
-                            best_f1 = f1
+                        da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = student.eval(
+                            test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
+                            silent=params.silent)
+
+                        if da_f1 > best_f1:
+                            best_f1 = da_f1
                             save_path = 'models' + os.sep + dataset_name + os.sep + 'best'
                             if not os.path.exists(save_path):
                                 os.mkdir(save_path)
                             student.save(save_path)
-
-                        da_precision, da_recall, da_f1, da_precisionNOMATCH, da_recallNOMATCH, da_f1NOMATCH = student.eval(
-                            test, dataset_name, seq_length=seq_length, batch_size=params.batch_size,
-                            silent=params.silent)
                         new_row = {'model_type': model_type, 'train': 'student', 'cut': cut, 'pM': da_precision,
                                    'rM': da_recall,
                                    'f1M': da_f1,
