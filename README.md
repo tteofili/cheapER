@@ -1,7 +1,19 @@
 CheapER
 =======
 
-CheapER is a tool for performing Entity Resolution tasks with few labels.
+`CheapER` is a tool for performing Entity Resolution tasks with few labeled training samples.
+
+`CheapER` adopts large language models within a _noisy training_ framework, in combination with _adaptive fine tuning_, _consistency training_, _adaptive softmax_ and _Monte Carlo dropout_.
+
+![*CheapER pipeline*](cheaper.png)
+
+# Experiments
+
+`CheapER` requires less labeled training data with respect to SotA systems (as of early 2023) to reach the same _F1_.
+
+![*CheapER cost on DM datasets*](dm_results.png)
+
+Experiments on the _DeepMatcher_ datasets can be reproduced using the `eval.py` script.
 
 # Notebooks
 
