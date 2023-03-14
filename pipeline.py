@@ -199,13 +199,15 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         logging.info('Previous generated dataset size: {}'.format(len(vinsim_data_app)))
 
                         if params.use_scores:
-                            for line in vinsim_data_c:
-                                if line not in vinsim_data_app:
-                                    vinsim_data_app += [line]
+                            generated_data = vinsim_data_c
                         else:
-                            for line in vinsim_data_app_c:
-                                if line not in vinsim_data_app:
-                                    vinsim_data_app += [line]
+                            generated_data = vinsim_data_app_c
+
+                        for line in generated_data:
+                            if line not in vinsim_data_app:
+                                if params.sample_tag:
+                                    line = (['PSEUDO'] + line[0], line[1], line[2])
+                                vinsim_data_app += [line]
 
                         logging.info('New generated dataset size: {}'.format(len(vinsim_data_app)))
 
@@ -214,15 +216,6 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         logging.info("------------- Student Training {} -----------------".format(model_type))
 
                         dataDa = vinsim_data_app
-
-                        if params.sample_tag:
-                            new_list = []
-                            for pair in dataDa:
-                                t1 = ['PSEUDO'] + pair[0][:]
-                                t2 = pair[1][:]
-                                label = pair[2]
-                                new_list.append((t1, t2, label))
-                            dataDa = new_list
 
                         if params.identity:
                             dataDa = add_identity(dataDa)
