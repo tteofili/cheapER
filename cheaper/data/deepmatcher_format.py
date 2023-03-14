@@ -26,7 +26,6 @@ def tofiles(pt_train, pt_valid, name):
                 df.drop(df.columns[i], axis=1, inplace=True)
         df = df.dropna(axis=0,
                        how='any',
-                       thresh=None,
                        subset=None, )
         df.columns = names
     trainName = datadir + name + '_trainSim'+str(len(pt_train))+'.csv'
@@ -42,47 +41,12 @@ def tofiles(pt_train, pt_valid, name):
                 df.drop(df.columns[i], axis=1, inplace=True)
         df = df.dropna(axis=0,
                        how='any',
-                       thresh=None,
                        subset=None, )
         df.columns = names
     validName = datadir + name + '_validSim'+str(len(pt_train))+'.csv'
     os.makedirs(validName[:validName.rfind('/')], exist_ok=True)
 
     vd = df.astype(str).to_csv(validName, index=False)
-
-    return trainName, validName
-
-def tofiles_unlabelled(pt_train, pt_valid, name):
-    pt_train = unflat(pt_train, 2)
-    pt_valid = unflat(pt_valid, 2)
-
-    df = pd.DataFrame(pt_train)
-    if len(pt_train) > 0:
-        cols = len(df.columns)
-        for i in range(cols):
-            if i > len(names):
-                df.drop(df.columns[i], axis=1, inplace=True)
-        df = df.dropna(axis=0,
-                       how='any',
-                       thresh=None,
-                       subset=None, )
-        df.columns = names
-    trainName = datadir + name + '_trainSim'+str(len(pt_train))+'.csv'
-    tr = df.to_csv(trainName, index=False)
-
-    df = pd.DataFrame(pt_valid)
-    if len(pt_valid) > 0:
-        cols = len(df.columns)
-        for i in range(cols):
-            if i > len(names):
-                df.drop(df.columns[i], axis=1, inplace=True)
-        df = df.dropna(axis=0,
-                       how='any',
-                       thresh=None,
-                       subset=None, )
-        df.columns = names
-    validName = datadir + name + '_validSim'+str(len(pt_train))+'.csv'
-    vd = df.to_csv(validName, index=False)
 
     return trainName, validName
 

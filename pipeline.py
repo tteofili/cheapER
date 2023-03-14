@@ -215,6 +215,15 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                         dataDa = vinsim_data_app
 
+                        if params.sample_tag:
+                            new_list = []
+                            for pair in dataDa:
+                                t1 = ['[PL]'] + pair[0][:]
+                                t2 = pair[1][:]
+                                label = pair[2]
+                                new_list.append((t1, t2, label))
+                            dataDa = new_list
+
                         if params.identity:
                             dataDa = add_identity(dataDa)
 
@@ -238,9 +247,12 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 line = new_train[random_index]
                                 rec_idx = random.randint(0, 1)
                                 if rec_idx == 0:
-                                    new_train[random_index] = (teacher.noise(line[rec_idx], mask=params.mask_token), line[1], line[2])
+                                    noised_line = (teacher.noise(line[rec_idx], mask=params.mask_token), line[1], line[2])
                                 else:
-                                    new_train[random_index] = (line[0], teacher.noise(line[rec_idx], mask=params.mask_token), line[2])
+                                    noised_line = (line[0], teacher.noise(line[rec_idx], mask=params.mask_token), line[2])
+                                if params.sample_tag:
+                                    noised_line = (['[N]'] + noised_line[0], noised_line[1], noised_line[2])
+                                new_train[random_index] = noised_line
 
                         student.train(new_train, valid, model_type, dataset_name, seq_length=seq_length,
                                       warmup=params.warmup, epochs=params.epochs + t_i, lr=params.lr * params.lr_multiplier,
