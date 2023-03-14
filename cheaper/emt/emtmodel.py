@@ -284,12 +284,12 @@ class EMTERModel:
             l0 = result['report'].split('\n')[2].split('       ')[2].split('      ')
             l1 = result['report'].split('\n')[3].split('       ')[2].split('      ')
 
-        p = l1[0]
-        r = l1[1]
-        f1 = l1[2]
-        pnm = l0[0]
-        rnm = l0[1]
-        f1nm = l0[2]
+        p = float(l1[0])
+        r = float(l1[1])
+        f1 = float(l1[2])
+        pnm = float(l0[0])
+        rnm = float(l0[1])
+        f1nm = float(l0[2])
         return p, r, f1, pnm, rnm, f1nm
 
     def predict(self, t1, t2, **kwargs):

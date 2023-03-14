@@ -218,7 +218,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         if params.sample_tag:
                             new_list = []
                             for pair in dataDa:
-                                t1 = ['[PL]'] + pair[0][:]
+                                t1 = ['PSEUDO'] + pair[0][:]
                                 t2 = pair[1][:]
                                 label = pair[2]
                                 new_list.append((t1, t2, label))
@@ -251,7 +251,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 else:
                                     noised_line = (line[0], teacher.noise(line[rec_idx], mask=params.mask_token), line[2])
                                 if params.sample_tag:
-                                    noised_line = (['[N]'] + noised_line[0], noised_line[1], noised_line[2])
+                                    noised_line = (['NOISE'] + noised_line[0], noised_line[1], noised_line[2])
                                 new_train[random_index] = noised_line
 
                         student.train(new_train, valid, model_type, dataset_name, seq_length=seq_length,
