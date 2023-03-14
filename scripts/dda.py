@@ -1,6 +1,6 @@
 from cheaper.params import CheapERParams
-from pipeline import cheaper_train
-from pipeline import get_datasets
+from cheaper.pipeline import cheaper_train
+from cheaper.pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams()

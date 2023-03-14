@@ -1,11 +1,11 @@
 from cheaper.params import CheapERParams
-from pipeline import cheaper_train
-from pipeline import get_datasets
+from cheaper.pipeline import cheaper_train
+from cheaper.pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams(fast=True)
-params.slicing = [0.1]
-params.teaching_iterations = 2
+params.models = ['microsoft/MiniLM-L12-H384-uncased']
+params.slicing = [0.05]
 
 # get datasets
 datasets = get_datasets()

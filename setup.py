@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url= 'https://github.com/tteofili/cheapER.git',
-    packages=['cheaper'],
+    packages=['cheaper', 'cheaper.data', 'cheaper.emt', 'cheaper.similarity'],
     install_requires=[
           'pandas',
           'numpy',
