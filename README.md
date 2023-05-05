@@ -17,4 +17,5 @@ Experiments on the _DeepMatcher_ datasets can be reproduced using the `eval.py` 
 
 # Notebooks
 
-* Effectiveness of [adaptive fine-tuning](https://ruder.io/recent-advances-lm-fine-tuning/) for the ER task: https://colab.research.google.com/drive/1G0PMnt4xtrwvztjmOBTPbJmwV51ajysN#scrollTo=3sonS3GiFaE1
+* [Effectiveness](https://colab.research.google.com/drive/1G0PMnt4xtrwvztjmOBTPbJmwV51ajysN#scrollTo=3sonS3GiFaE1) of [adaptive fine-tuning](https://ruder.io/recent-advances-lm-fine-tuning/) for the ER task.
+* [CheapER training using 5% of the BeerAdvo-RateBeer dataset](example.ipynb) (using a DistilBert model).

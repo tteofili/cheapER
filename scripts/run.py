@@ -4,7 +4,7 @@ from cheaper.pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams(fast=True)
-params.models = ['microsoft/MiniLM-L12-H384-uncased']
+params.models = ['distilroberta-base']
 params.slicing = [0.05]
 
 # get datasets
