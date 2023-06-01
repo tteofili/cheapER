@@ -53,7 +53,7 @@ class CheapERParams:
         self.seq_length = 0
         self.best_model = 'eval_f1'
         self.mcd_samples = 1
-        self.sample_tag = False
+        self.sample_tag = False # refer to [Tagged Back-Translation](https://arxiv.org/abs/1906.06442)
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
