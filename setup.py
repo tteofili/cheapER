@@ -22,6 +22,13 @@ setuptools.setup(
           'transformers',
           'torch',
           'datasets',
+          'matplotlib',
+          'textdistance',
+          'strsimpy',
+          'nltk',
+          'datasketch',
+          'tensorboardX',
+          'wandb'
       ],
     classifiers=[
         "Programming Language :: Python :: 3",
