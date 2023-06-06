@@ -146,7 +146,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                     threshold = 0.5
                     best_f1 = 0
                     sigma = params.sigma
-                    consistency = params.kappa
+                    kappa = params.kappa
                     for t_i in range(params.teaching_iterations):
                         if params.discard_old_data:
                             vinsim_data_app = []
@@ -177,7 +177,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
                         if params.adjust_ds_size:
                             sigma = len(train_cut) * (2 + t_i)
-                            consistency = min(consistency, int(sigma / 10))
+                            kappa = min(kappa, int(sigma / 10))
                         data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c, threshold = create_datasets(gt_file,
                                                                                                          t1_file,
                                                                                                          t2_file,
@@ -193,7 +193,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                                          test_file,
                                                                                                          params.balance,
                                                                                                          params.deeper_trick,
-                                                                                                         consistency,
+                                                                                                         kappa,
                                                                                                          params.sim_edges,
                                                                                                          params.simple_slicing,
                                                                                                          margin_score=params.threshold)

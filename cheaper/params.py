@@ -15,10 +15,12 @@ class CheapERParams:
         if fast:
             self.compare = False
             self.slicing = [0.05, 0.1, 0.33]
-            self.models = ['distilbert-base-uncased']
-            self.mask_token = '[MASK]'
-            self.epochs = 15
-            self.teaching_iterations = 3
+            self.compare = False
+            self.mask_token = '<mask>'
+            self.models = ['distilroberta-base']
+            self.mcd_samples = 5
+            self.epochs = 20
+            self.teaching_iterations = 5
             self.sigma = 100
             self.kappa = 10
         else:
@@ -26,14 +28,15 @@ class CheapERParams:
             self.models = ['roberta-base']
             self.compare = True
             self.mask_token = '<mask>'
-            self.teaching_iterations = 5
+            self.teaching_iterations = 7
             self.epochs = 40
             self.sigma = 1000
             self.kappa = 100
+            self.mcd_samples = 10
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
-        self.adjust_ds_size = False
+        self.adjust_ds_size = True
         self.approx = 'perceptron'
         self.generated_only = True
         self.balance = [0.5, 0.5]
@@ -52,8 +55,7 @@ class CheapERParams:
         self.hf_training = True
         self.seq_length = 0
         self.best_model = 'eval_f1'
-        self.mcd_samples = 1
-        self.sample_tag = False # refer to [Tagged Back-Translation](https://arxiv.org/abs/1906.06442)
+        self.sample_tag = True # refer to [Tagged Back-Translation](https://arxiv.org/abs/1906.06442)
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
