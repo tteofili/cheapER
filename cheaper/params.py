@@ -12,27 +12,22 @@ class CheapERParams:
         self.lr_multiplier = 3
         self.batch_size = 16
         self.num_runs = 1
+        self.slicing = [0.05, 0.1, 0.33, 0.5, 0.7, 1]
         if fast:
             self.compare = False
-            self.slicing = [0.05, 0.1, 0.33]
-            self.compare = False
-            self.mask_token = '<mask>'
             self.models = ['distilroberta-base']
             self.mcd_samples = 5
             self.epochs = 20
             self.teaching_iterations = 5
-            self.sigma = 100
-            self.kappa = 10
         else:
-            self.slicing = [0.05, 0.1, 0.33, 0.5, 0.7, 1]
             self.models = ['roberta-base']
             self.compare = True
-            self.mask_token = '<mask>'
             self.teaching_iterations = 7
             self.epochs = 40
-            self.sigma = 1000
-            self.kappa = 100
             self.mcd_samples = 10
+        self.mask_token = '<mask>'
+        self.sigma = 1000
+        self.kappa = 100
         self.attribute_shuffle = False
         self.identity = False
         self.symmetry = False
