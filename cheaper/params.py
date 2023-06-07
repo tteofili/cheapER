@@ -49,6 +49,7 @@ class CheapERParams:
         self.label_smoothing = 0.1
         self.hf_training = True
         self.seq_length = 0
+        self.layers_increase = 0
         self.best_model = 'eval_f1'
         self.sample_tag = True # refer to [Tagged Back-Translation](https://arxiv.org/abs/1906.06442)
 
@@ -71,4 +72,4 @@ class CheapERParams:
                ',label_smoothing=' + str(self.label_smoothing) + ',hf_training=' + str(self.hf_training) +\
                ',seq_length=' + str(self.seq_length) + ',best_model=' + str(self.best_model) + ',mask_token=' \
                + str(self.mask_token) + ',model_noise=' + str(self.model_noise) + ',mcd_samples=' + str(self.mcd_samples)\
-               + ', sample_tag=' + str(self.sample_tag)
+               + ', sample_tag=' + str(self.sample_tag) + ', layers_increase=' + str(self.layers_increase)

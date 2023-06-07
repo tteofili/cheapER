@@ -9,7 +9,6 @@ from torch import nn
 
 from cheaper.data import deepmatcher_format
 from cheaper.emt import prediction
-from cheaper.emt.config import Config
 from cheaper.emt.data_loader import load_data, DataType
 from cheaper.emt.data_representation import DeepMatcherProcessor
 from cheaper.emt.evaluation import Evaluation
@@ -36,16 +35,22 @@ class EMTERModel:
         device, n_gpu = initialize_gpu_seed(22)
         self.model_type = model_type
         self.model_noise = model_noise
-        # config_class, model_class, tokenizer_class, mlm_model_class = Config().MODEL_CLASSES[self.model_type]
+
         self.tokenizer = AutoTokenizer.from_pretrained(model_type, do_lower_case=True)
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type).to(device)
+
+        if add_layers > 0:
+            config = AutoConfig.from_pretrained(self.model_type)
+            no_layers = config.num_hidden_layers + add_layers
+            config.num_hidden_layers = no_layers
+            self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type, config=config).to(device)
+        else:
+            self.model = AutoModelForSequenceClassification.from_pretrained(self.model_type).to(device)
+
         if model_noise:
             self.model.config.dropout = 0.5
             self.model.config.qa_dropout = 0.5
             self.model.config.attention_dropout = 0.5
             self.model.config.seq_classif_dropout = 0.5
-        if add_layers > 0:
-            self.model.config.num_hidden_layers = self.model.config.num_hidden_layers + add_layers
 
         self.mlm_model = AutoModelForMaskedLM.from_pretrained(self.model_type).to(device)
         if device.type == 'cpu':
@@ -111,8 +116,8 @@ class EMTERModel:
         if adaptive_ft:
             adaptive_ft_model_dir = 'models/' + dataset_name + "/mlm-" + model_type
             logging.info('loading adaptive_ft model from {}'.format(adaptive_ft_model_dir))
-            #config = self.model.config
-            self.model = load_model(adaptive_ft_model_dir)#, config=config)
+            config = self.model.config
+            self.model = load_model(adaptive_ft_model_dir, config=config)
 
         self.model = self.model.to(device)
 

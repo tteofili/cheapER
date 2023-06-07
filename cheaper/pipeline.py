@@ -177,7 +177,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
                         if params.adjust_ds_size:
                             sigma = len(train_cut) * (2 + t_i)
-                            kappa = min(kappa, int(sigma / 10))
+                            kappa = int(sigma / 10)
                         data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c, threshold = create_datasets(gt_file,
                                                                                                          t1_file,
                                                                                                          t2_file,
@@ -213,7 +213,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                         logging.info('New generated dataset size: {}'.format(len(vinsim_data_app)))
 
-                        student = EMTERModel(model_type, model_noise=params.model_noise)#, add_layers=t_i)
+                        student = EMTERModel(model_type, model_noise=params.model_noise,
+                                             add_layers=t_i * params.layers_increase)
 
                         logging.info("------------- Student Training {} -----------------".format(model_type))
 

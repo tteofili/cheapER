@@ -4,9 +4,12 @@ from cheaper.pipeline import get_datasets
 
 # cheapER parameters' settings
 params = CheapERParams(fast=True)
-params.models = ['distilroberta-base']
 params.slicing = [0.05]
-params.mask_token = '<mask>'
+params.sigma = 10
+params.kappa = 2
+params.epochs = 3
+params.layers_increase = 1
+
 # get datasets
 datasets = get_datasets()
 results_df = cheaper_train(datasets[5], params)
