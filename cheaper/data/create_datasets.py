@@ -274,7 +274,7 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
             consistency_slice = tot_pt - len(random_tuples1)
             logging.info("adding {} consistency pairs".format(consistency_slice))
             random_tuples1 += consistency_list[:consistency_slice]
-        else:
+        elif consistency:
             logging.info("adding {} consistency pairs".format(len(consistency_list)))
             random_tuples1 += consistency_list
 
