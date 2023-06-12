@@ -192,7 +192,7 @@ class EMTERModel:
             )
 
             if greater_is_better:
-                trainer.add_callback(EarlyStoppingCallback(10))
+                trainer.add_callback(EarlyStoppingCallback(int(epochs/2)))
 
             trainer.train()
             model_dir = 'models/' + dataset_name
