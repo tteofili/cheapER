@@ -8,7 +8,7 @@ params.slicing = [0.05]
 params.sigma = 10
 params.kappa = 2
 params.epochs = 3
-params.layers_increase = 1
+params.adaptive_ft = False
 
 # get datasets
 datasets = get_datasets()

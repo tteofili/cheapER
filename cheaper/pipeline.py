@@ -208,7 +208,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                         for line in generated_data:
                             if line not in vinsim_data_app:
                                 if params.sample_tag:
-                                    line = (['PL'] + line[0], line[1], line[2])
+                                    line = (['PL '] + line[0], line[1], line[2])
                                 vinsim_data_app += [line]
 
                         logging.info('New generated dataset size: {}'.format(len(vinsim_data_app)))
@@ -247,7 +247,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 else:
                                     noised_line = (line[0], teacher.noise(line[rec_idx], mask=params.mask_token), line[2])
                                 if params.sample_tag:
-                                    noised_line = (['NS'] + noised_line[0], noised_line[1], noised_line[2])
+                                    noised_line = (['NS '] + noised_line[0], noised_line[1], noised_line[2])
                                 new_train[random_index] = noised_line
 
                         student.train(new_train, valid, model_type, dataset_name, seq_length=seq_length,
