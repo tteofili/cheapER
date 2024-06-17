@@ -90,6 +90,7 @@ class EMTERModel:
                 logging_dir='./logs',  # directory for storing logs
                 save_total_limit=2,
                 do_eval=True,
+                gradient_accumulation_steps=2,
                 num_train_epochs=epochs
             )
 
@@ -179,6 +180,7 @@ class EMTERModel:
                 greater_is_better=greater_is_better,
                 metric_for_best_model=metric_for_best_model,
                 max_grad_norm=1.0,
+                gradient_accumulation_steps=2,
                 label_smoothing_factor=label_smoothing
             )
 

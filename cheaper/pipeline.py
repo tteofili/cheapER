@@ -72,8 +72,8 @@ def sim_eval(simf, theta_min, theta_max, test):
     return p, r, f1, pnm, rnm, f1nm
 
 
-def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, seq_length, params: CheapERParams):
-    results = pd.DataFrame()
+def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, seq_length, params: CheapERParams):
+    results = []
 
     tableA = pd.read_csv(t1_file)
     tableB = pd.read_csv(t2_file)
@@ -92,7 +92,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
-                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
+                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_anhai,
                                                     valid_file, test_file, params.deeper_trick, cut=cut)
 
                 train_cut = train.copy()
@@ -105,7 +105,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
 
                     if params.compare:
                         train_base, test_base, valid_base = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0],
-                                                            flag_Anhai, valid_file, test_file, False, cut=cut)
+                                                                           flag_anhai, valid_file, test_file, False, cut=cut)
 
                         train_cut_base = train_base.copy()
                         basic = EMTERModel(model_type)
@@ -118,7 +118,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                  batch_size=params.batch_size, silent=params.silent)
                         new_row = {'model_type': model_type, 'train': 'baseline', 'cut': cut, 'pM': pm, 'rM': rm,
                                    'f1M': f1m, 'pNM': pnm, 'rNM': rnm, 'f1NM': f1nm}
-                        results = results.append(new_row, ignore_index=True)
+                        results.append(new_row)
 
                     teacher = EMTERModel(model_type)
 
@@ -141,7 +141,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'f1M': classic_f1,
                                'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH,
                                'f1NM': classic_f1NOMATCH}
-                    results = results.append(new_row, ignore_index=True)
+                    results.append(new_row)
                     vinsim_data_app = []
                     threshold = 0.5
                     best_f1 = 0
@@ -166,7 +166,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                 logging.warning(f'temperature param "{params.temperature}" set to 1')
                                 temperature = 1
                         if params.mcd_samples > 1:
-                            simf = lambda t1, t2: [np.stack(teacher.predict(t1, t2, t=temperature)['scores'].values[0] for _ in range(params.mcd_samples)).mean(axis=0)]
+                            simf = lambda t1, t2: [np.stack([teacher.predict(t1, t2, t=temperature)['scores'].values[0] for _ in range(params.mcd_samples)]).mean(axis=0)]
                             teacher.enable_mcd()
                         else:
                             simf = lambda t1, t2: [teacher.predict(t1, t2, t=temperature)['scores'].values[0]]
@@ -179,24 +179,24 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                             sigma = len(train_cut) * (2 + t_i)
                             kappa = int(sigma / 10)
                         data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c, threshold = create_datasets(gt_file,
-                                                                                                         t1_file,
-                                                                                                         t2_file,
-                                                                                                         indexes, simf,
-                                                                                                         dataset_name,
-                                                                                                         sigma,
-                                                                                                         flag_Anhai,
-                                                                                                         params.epsilon,
-                                                                                                         kappa,
-                                                                                                         params.num_runs,
-                                                                                                         cut,
-                                                                                                         valid_file,
-                                                                                                         test_file,
-                                                                                                         params.balance,
-                                                                                                         params.deeper_trick,
-                                                                                                         params.consistency,
-                                                                                                         params.sim_edges,
-                                                                                                         params.simple_slicing,
-                                                                                                         margin_score=params.threshold)
+                                                                                                                    t1_file,
+                                                                                                                    t2_file,
+                                                                                                                    indexes, simf,
+                                                                                                                    dataset_name,
+                                                                                                                    sigma,
+                                                                                                                    flag_anhai,
+                                                                                                                    params.epsilon,
+                                                                                                                    kappa,
+                                                                                                                    params.num_runs,
+                                                                                                                    cut,
+                                                                                                                    valid_file,
+                                                                                                                    test_file,
+                                                                                                                    params.balance,
+                                                                                                                    params.deeper_trick,
+                                                                                                                    params.consistency,
+                                                                                                                    params.sim_edges,
+                                                                                                                    params.simple_slicing,
+                                                                                                                    margin_score=params.threshold)
 
                         logging.info('Previous generated dataset size: {}'.format(len(vinsim_data_app)))
 
@@ -270,8 +270,8 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                    'f1M': da_f1,
                                    'pNM': da_precisionNOMATCH,
                                    'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
-                        results = results.append(new_row, ignore_index=True)
-                        logging.info(results.to_string)
+                        results.append(new_row)
+                        logging.info(results)
                         teacher = student
 
             elif params.model_type == 'bert':
@@ -281,7 +281,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
-                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_Anhai,
+                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_anhai,
                                                     valid_file, test_file, params.deeper_trick)
 
                 train_cut = splitting_dataSet(cut, train)
@@ -307,7 +307,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'f1M': classic_f1,
                                'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH,
                                'f1NM': classic_f1NOMATCH}
-                    results = results.append(new_row, ignore_index=True)
+                    results.append(new_row)
 
                     simf = lambda t1, t2: [model.predict(t1, t2)['scores'].values[0]]
 
@@ -319,7 +319,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                              t2_file, indexes, simf,
                                                                                              dataset_name,
                                                                                              params.sigma,
-                                                                                             flag_Anhai, params.epsilon,
+                                                                                             flag_anhai, params.epsilon,
                                                                                              params.kappa,
                                                                                              params.num_runs, cut,
                                                                                              valid_file,
@@ -362,7 +362,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                    'f1M': da_f1,
                                    'pNM': da_precisionNOMATCH,
                                    'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
-                        results = results.append(new_row, ignore_index=True)
+                        results.append(new_row)
 
                     # gt+generated data train
                     model = EMTERModel(model_type)
@@ -378,9 +378,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'f1M': da_f1,
                                'pNM': da_precisionNOMATCH,
                                'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
-                    results = results.append(new_row, ignore_index=True)
+                    results.append(new_row)
 
-                    logging.info(results.to_string)
+                    logging.info(results)
             elif params.model_type == 'hybrid':
                 simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
                                             normalize=params.normalize, lm=params.approx,
@@ -394,7 +394,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                                                                          t2_file, indexes, simf,
                                                                                          dataset_name,
                                                                                          params.sigma,
-                                                                                         flag_Anhai, params.epsilon,
+                                                                                         flag_anhai, params.epsilon,
                                                                                          params.kappa,
                                                                                          params.num_runs, cut,
                                                                                          valid_file,
@@ -428,7 +428,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                    'f1M': classic_f1,
                                    'pNM': classic_precisionNOMATCH, 'rNM': classic_recallNOMATCH,
                                    'f1NM': classic_f1NOMATCH}
-                        results = results.append(new_row, ignore_index=True)
+                        results.append(new_row)
 
                     logging.info("------------- Data augmented EMT Training {} -----------------".format(model_type))
 
@@ -465,7 +465,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                    'f1M': da_f1,
                                    'pNM': da_precisionNOMATCH,
                                    'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
-                        results = results.append(new_row, ignore_index=True)
+                        results.append(new_row)
 
                     # gt+generated data train
                     model = EMTERModel(model_type)
@@ -481,9 +481,9 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                                'f1M': da_f1,
                                'pNM': da_precisionNOMATCH,
                                'rNM': da_recallNOMATCH, 'f1NM': da_f1NOMATCH}
-                    results = results.append(new_row, ignore_index=True)
+                    results.append(new_row)
 
-                    logging.info(results.to_string)
+                    logging.info(results)
 
             elif params.model_type == 'sims':
                 simf = learn_best_aggregate(gt_file, t1_file, t2_file, indexes, simfunctions, cut, params.sim_length,
@@ -510,15 +510,15 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_Anhai, se
                            'f1M': sim_f1,
                            'pNM': sim_precisionNOMATCH,
                            'rNM': sim_recallNOMATCH, 'f1NM': sim_f1NOMATCH}
-                results = results.append(new_row, ignore_index=True)
+                results.append(new_row)
 
-                logging.info(results.to_string)
+                logging.info(results)
 
         today = date.today()
         filename = 'results' + os.sep + today.strftime("%b-%d-%Y") + '_' + dataset_name + '.csv'
         with open(filename, 'a') as f:
             f.write('# ' + str(params) + '\n')
-        results.to_csv(filename, mode='a')
+        pd.DataFrame(results).to_csv(filename, mode='a')
     return results
 
 

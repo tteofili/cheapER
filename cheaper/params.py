@@ -13,15 +13,14 @@ class CheapERParams:
         self.batch_size = 16
         self.num_runs = 1
         self.slicing = [0.05, 0.1, 0.33, 0.5, 0.7, 1]
+        self.compare = False
         if fast:
-            self.compare = False
             self.models = ['distilroberta-base']
             self.mcd_samples = 5
             self.epochs = 20
             self.teaching_iterations = 5
         else:
             self.models = ['roberta-base']
-            self.compare = True
             self.teaching_iterations = 7
             self.epochs = 40
             self.mcd_samples = 10
