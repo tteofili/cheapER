@@ -27,8 +27,10 @@ def init_seed_everywhere(seed, n_gpu):
 
 
 def setup_gpu():
-    # Setup GPU parameters
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    n_gpu = torch.cuda.device_count()
+    if torch.backends.mps.is_available():
+        return torch.device("mps"), torch.cuda.device_count()
+    else:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        n_gpu = torch.cuda.device_count()
 
-    return device, n_gpu
+        return device, n_gpu
