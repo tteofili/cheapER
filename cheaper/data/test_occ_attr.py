@@ -2,8 +2,8 @@ import logging
 import random
 from collections import Counter
 
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE
-from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc
+from cheaper.data.csv2dataset import csv_2_dataset_alternate
+from cheaper.data.sampling_dataset_pt import csv_table2dataset_random_count_occ
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.similarity.sim_function import sim4attrFZ
 
@@ -42,7 +42,7 @@ def init_dict_lista(lista_tupleMATCH,lista_tupleNO_MATCH,num_index):
 # TEST AREA #
 if __name__ == "__main__":
     
-    from plot import plot_pretrain, plotting_occorrenze
+    from plot import plot_pretrain, plot_occurrence
 
     #tableL='beer_exp_data/exp_data/tableA.csv'
     #tableR='beer_exp_data/exp_data/tableB.csv'
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
 
 
-    result_list=csv_2_datasetALTERNATE(ground_truth, TABLE1_FILE, TABLE2_FILE,ATT_INDEXES)
+    result_list=csv_2_dataset_alternate(ground_truth, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES)
     
     min_sim=0.4
     max_sim=0.85
@@ -68,21 +68,21 @@ if __name__ == "__main__":
     tot_copy=100
     
     simf = lambda a, b: sim4attrFZ(a, b)
-    result_list_noMatch,result_list_match =csvTable2datasetRANDOM_countOcc(TABLE1_FILE,TABLE2_FILE,230,min_sim,max_sim,ATT_INDEXES,min_cos_sim, tot_copy, simf )
+    result_list_noMatch,result_list_match =csv_table2dataset_random_count_occ(TABLE1_FILE, TABLE2_FILE, 230, min_sim, max_sim, ATT_INDEXES, min_cos_sim, tot_copy, simf)
     
     lista_attrMATCH,lista_attrNO_MATCH=init_dict_lista(result_list_match,result_list_noMatch,len(ATT_INDEXES))
     logging.info("dizionari doppi degli attributi RANDOM")
     j=0
     for dictionario in lista_attrMATCH:
         j=j+1
-        plotting_occorrenze(list(dictionario.values()), f'lista_attrMATCH{j}')
+        plot_occurrence(list(dictionario.values()), f'lista_attrMATCH{j}')
         d = Counter(dictionario)
         for k, v in d.most_common(5):
             logging.info( '%s: %i' % (k, v))
     j=0
     for dictionario in lista_attrNO_MATCH:
         j=j+1
-        plotting_occorrenze(list(dictionario.values()), f'lista_attrNO_MATCH{j}')
+        plot_occurrence(list(dictionario.values()), f'lista_attrNO_MATCH{j}')
         d = Counter(dictionario)
         for k, v in d.most_common(5):
             logging.info( '%s: %i' % (k, v))

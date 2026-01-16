@@ -110,7 +110,7 @@ def minHash_lsh(tableL, tableR, indici,simf):
     data4hash,dataL,dataR=create_data(tableL, tableR, indiciL,indiciR)
     res=minHash_LSH(data4hash)
     dataset_pt=create_dataset_pt(res, dataL,dataR,simf)
-    plot_dataPT(dataset_pt)
+    plot_data_pt(dataset_pt)
 
     return dataset_pt
 
@@ -118,7 +118,7 @@ def minHash_lsh(tableL, tableR, indici,simf):
 # TEST AREA #
 if __name__ == "__main__":
     from cheaper.similarity.sim_function import sim4attrFZ
-    from plot import plot_dataPT
+    from plot import plot_data_pt
     #tableL='beer_exp_data/exp_data/tableA.csv'
     #tableR='beer_exp_data/exp_data/tableB.csv'
     tableL='fodo_zaga/fodors.csv'
@@ -146,4 +146,4 @@ if __name__ == "__main__":
     #  'wfights cfntrols the rflative ifportance befween minizing fflse posftive',
     #  "arnie morton\\'s of chicago 435 s. la cienega blv. los angeles 310/246-1501 american 0", 
     #  "arnie morton\\'s of chicago 435 s. la cienega blvd. los angeles 310-246-1501 steakhouses 0"]
-    plot_dataPT(dataset_pt)
+    plot_data_pt(dataset_pt)

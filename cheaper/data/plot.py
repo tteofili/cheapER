@@ -103,7 +103,7 @@ def plot_pretrain(data):
     plt.ylabel('plot_pretraining data')
     plt.show(block=False)
     
-def plot_dataPT(data):
+def plot_data_pt(data):
     result_list = sorted(data, key=lambda tup: (tup[2][0]))
     sim_list = []
     t = []
@@ -122,24 +122,24 @@ def plot_dataPT(data):
     plt.show(block=False)
     return t, sim_list
     
-def plotting_dizionari(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch) :
+def plot_dicts(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch) :
     listL_match=list(dictL_match.values())
     logging.info("listL_match[0]")
     logging.info(listL_match[0])
-    plotting_occorrenze(listL_match, "dictL_match")
+    plot_occurrence(listL_match, "dictL_match")
     
     listR_match=list(dictR_match.values())
-    plotting_occorrenze(listR_match, "dictR_match")
+    plot_occurrence(listR_match, "dictR_match")
     
     listL_NOmatch=list(dictL_NOmatch.values())
-    plotting_occorrenze(listL_NOmatch, "dictL_NOmatch")
+    plot_occurrence(listL_NOmatch, "dictL_NOmatch")
     
     listR_NOmatch=list(dictR_NOmatch.values())
-    plotting_occorrenze(listR_NOmatch, "dictR_NOmatch")
+    plot_occurrence(listR_NOmatch, "dictR_NOmatch")
     
     
     
-def plotting_occorrenze(data, stringa_plotting):
+def plot_occurrence(data, stringa_plotting):
     data.sort() 
     t=list(range(0, len(data)))
     

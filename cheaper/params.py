@@ -16,14 +16,13 @@ class CheapERParams:
         self.compare = False
         if fast:
             self.models = ['distilroberta-base']
-            self.mcd_samples = 5
             self.epochs = 20
             self.teaching_iterations = 5
         else:
             self.models = ['roberta-base']
             self.teaching_iterations = 7
             self.epochs = 40
-            self.mcd_samples = 10
+        self.mcd_samples = 1
         self.mask_token = '<mask>'
         self.sigma = 1000
         self.kappa = 100

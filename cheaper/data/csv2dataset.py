@@ -12,7 +12,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from cheaper.data.edit_dna import Sequence
-from cheaper.data.plot import plotting_dizionari
+from cheaper.data.plot import plot_dicts
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.similarity.sim_function import sim4attrFZ_norm2
 
@@ -781,7 +781,7 @@ in caso di errore aprirli con textpad->formato->converti in utf8
     cosi ogni coppia di tuple ha stesso num di attributi
     ES:   indici=[(5, 9), (4, 5), (3, 3), (14, 4), (6, 11)]'''
 
-def csv_2_datasetALTERNATE(ground_truth, tableL, tableR, indici, sim_function=lambda x, y: [1, 1], max_len=-1, cut=1):
+def csv_2_dataset_alternate(ground_truth, tableL, tableR, indici, sim_function=lambda x, y: [1, 1], max_len=-1, cut=1):
 
     table1 = csv.reader(open(tableL,encoding="utf8"), delimiter=',')
     table2 = csv.reader(open(tableR,encoding="utf8"), delimiter=',')
@@ -1867,7 +1867,7 @@ def csvTable2datasetRANDOM_likeGold(tableL,tableR,totale,min_sim,max_sim,indici,
 
 
 
-    plotting_dizionari(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch)
+    plot_dicts(dictL_match, dictR_match, dictL_NOmatch, dictR_NOmatch)
     logging.info(result_list[:4])
     logging.info(result_list[-15:])
     return result_list

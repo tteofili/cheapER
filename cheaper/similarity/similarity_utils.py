@@ -10,8 +10,8 @@ import numpy as np
 from sklearn import linear_model
 
 from cheaper.data.create_datasets import create_datasets
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, check_anhai_dataset, parsing_anhai_nofilter
-from cheaper.data.plot import plot_dataPT
+from cheaper.data.csv2dataset import csv_2_dataset_alternate, check_anhai_dataset, parsing_anhai_nofilter
+from cheaper.data.plot import plot_data_pt
 from cheaper.emt.logging_customized import setup_logging
 
 get_lambda_name = lambda l: getsource(l).split('=')[0].strip()
@@ -34,7 +34,7 @@ def brute_force_per_attribute(gt_file, t1_file, t2_file, attr_indexes, sim_funct
         lowestMSE = 1e10
         for simf in sim_functions:
             name = get_lambda_name(simf)
-            data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, [k], sim_functions[2])
+            data = csv_2_dataset_alternate(gt_file, t1_file, t2_file, [k], sim_functions[2])
             perc = len(data) * 0.05
             split = int(min(perc / 2, 50))
             npdata = np.array(data[:split] + data[-split:])
@@ -145,7 +145,7 @@ def learn_best_aggregate(gt_file, t1_file, t2_file, attr_indexes, sim_functions,
 
     generated_sim = lambda t1, t2: agg_sim(fsims, t1, t2)
 
-    c_data = csv_2_datasetALTERNATE(gt_file, t1_file, t2_file, attr_indexes, generated_sim, cut=cut)
+    c_data = csv_2_dataset_alternate(gt_file, t1_file, t2_file, attr_indexes, generated_sim, cut=cut)
 
     npdata = np.array(c_data, dtype=object)
     X = np.zeros([len(npdata), len(fsims)])
@@ -242,7 +242,7 @@ def find_best_simfunction(gt_file, t1_file, t2_file, indexes, flagAnhai, simfunc
 
                 plt.xlabel(get_lambda_name(simf))
 
-                t, sim_list = plot_dataPT(vinsim_data)
+                t, sim_list = plot_data_pt(vinsim_data)
                 plt.xlabel('')
                 gradino = []
                 for g in range(len(t)):
