@@ -5,10 +5,8 @@ from cheaper.pipeline import get_datasets
 # cheapER parameters' settings
 params = CheapERParams(fast=True)
 params.slicing = [0.05]
-params.sigma = 10
-params.kappa = 2
-params.epochs = 3
-params.adaptive_ft = False
+params.batch_size = 4
+params.mcd_samples = 1
 
 # get datasets
 datasets = get_datasets()

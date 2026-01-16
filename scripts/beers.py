@@ -3,9 +3,8 @@ from cheaper.pipeline import cheaper_train
 from cheaper.pipeline import get_datasets
 
 # cheapER parameters' settings
-params = CheapERParams(fast=True)
-params.slicing = [0.1]
-params.teaching_iterations = 2
+params = CheapERParams()
+params.batch_size = 4
 
 # get datasets
 datasets = get_datasets()

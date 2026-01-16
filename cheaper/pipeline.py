@@ -12,7 +12,7 @@ from sklearn.metrics import classification_report
 
 from cheaper.data.create_datasets import add_shuffle, parse_original
 from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
-from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter, check_anhai_dataset, copy_EDIT_match
+from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter, check_anhai_dataset
 from cheaper.data.plot import plot_graph
 from cheaper.emt.emtmodel import EMTERModel
 from cheaper.emt.logging_customized import setup_logging
@@ -123,7 +123,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                     teacher = EMTERModel(model_type)
 
                     if params.adaptive_ft:
-                        generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
+                        generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB)
                         teacher.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
                                             seq_length=seq_length, epochs=min(5, params.epochs), lr=1e-5)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
@@ -293,7 +293,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                     model = EMTERModel(model_type)
 
                     if params.adaptive_ft:
-                        generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, [])
+                        generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB)
                         model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
                                           seq_length=seq_length,
                                           epochs=params.epochs, lr=params.lr)
@@ -406,7 +406,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                                                                                          params.simple_slicing)
                 logging.info('Generated dataset size: {}'.format(len(vinsim_data_app)))
 
-                generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app)
+                generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB)
 
                 train_cut = splitting_dataSet(cut, train)
 
@@ -531,7 +531,7 @@ def get_row(r1, r2, lprefix='ltable_', rprefix='rtable_'):
     return r1r2
 
 
-def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vinsim_data_app):
+def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB):
     if os.path.exists(unlabelled_train):
         os.remove(unlabelled_train)
     if os.path.exists(unlabelled_valid):
@@ -551,17 +551,6 @@ def generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB, vins
         for a in l[1:]:
             row += str(a) + ' '
         lines.append(row)
-
-    '''ug = []
-    for pair in vinsim_data_app:
-        ug.append(pair[0])
-        ug.append(pair[1])
-    ug = pd.DataFrame(ug)
-    for l in ug.values:
-        row = ''
-        for a in l[1:]:
-            row += str(a) + ' '
-        lines.append(row)'''
 
     split = int(len(lines) * 0.9)
     lines_train = lines[:split]
@@ -632,11 +621,10 @@ def cheaper_train(dataset, params: CheapERParams):
     t2_file = dataset[2]
     indexes = dataset[3]
     dataset_name = dataset[4]
-    flag_Anhai = dataset[6]
+    flag_anhai = dataset[6]
     seq_length = dataset[7]
     logging.info('CheapER: training on dataset "{}"'.format(dataset_name))
     logging.info('CheapER: using params "{}"'.format(params))
     if params.silent:
         warnings.filterwarnings("ignore")
-    return train_model(gt_file, t1_file, t2_file, indexes, dataset_name,
-                       flag_Anhai, seq_length, params)
+    return train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, seq_length, params)

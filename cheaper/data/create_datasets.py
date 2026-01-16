@@ -2,12 +2,11 @@ from __future__ import print_function
 
 import logging
 import random
-from collections import Counter
 from random import shuffle
 
-from cheaper.data.csv2dataset import csv_2_datasetALTERNATE, parsing_anhai_nofilter, check_anhai_dataset
-from cheaper.data.plot import plotting_occorrenze, plot_pretrain, plot_dataPT, plot_graph
-from cheaper.data.sampling_dataset_pt import csvTable2datasetRANDOM_countOcc, create_lists
+from cheaper.data.csv2dataset import csv_2_dataset_alternate, parsing_anhai_nofilter, check_anhai_dataset
+from cheaper.data.plot import plot_occurrence, plot_pretrain, plot_data_pt, plot_graph
+from cheaper.data.sampling_dataset_pt import create_lists
 from cheaper.data.test_occ_attr import init_dict_lista
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.similarity.sim_function import min_cos
@@ -47,20 +46,20 @@ def add_shuffle(dataDa, mult: int = 1):
             new_list.append((t1, t2, label))
     return new_list
 
-def parse_original(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, flag_Anhai, valid_file, test_file,
+def parse_original(ground_truth_file, table1_file, table2_file, att_indexes, simf, flag_anhai, valid_file, test_file,
                    deeper_trick, cut=1):
     logging.info('Parsing original dataset')
-    if flag_Anhai == False:
-        data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, cut=cut)
-        valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+    if flag_anhai == False:
+        data = csv_2_dataset_alternate(ground_truth_file, table1_file, table2_file, att_indexes, simf, cut=cut)
+        valid_data = csv_2_dataset_alternate(valid_file, table1_file, table2_file, att_indexes, simf)
+        test_data = csv_2_dataset_alternate(test_file, table1_file, table2_file, att_indexes, simf)
     else:
         if deeper_trick:
-            data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, cut=cut)
+            data = check_anhai_dataset(ground_truth_file, table1_file, table2_file, att_indexes, simf, cut=cut)
         else:
-            data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, cut=cut)
-        valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+            data = parsing_anhai_nofilter(ground_truth_file, table1_file, table2_file, att_indexes, simf, cut=cut)
+        valid_data = parsing_anhai_nofilter(valid_file, table1_file, table2_file, att_indexes, simf)
+        test_data = parsing_anhai_nofilter(test_file, table1_file, table2_file, att_indexes, simf)
 
     data = list(map(lambda q: (q[0], q[1], q[3]), data))
     valid_data = list(map(lambda q: (q[0], q[1], q[3]), valid_data))
@@ -68,30 +67,30 @@ def parse_original(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, sim
     return data, test_data, valid_data
 
 
-def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf, DATASET_NAME, tot_pt, flag_Anhai,
-                    soglia, tot_copy, num_run, cut, valid_file, test_file, balance, deeper_trick,
+def create_datasets(ground_truth_file, table1_file, table2_file, att_indexes, simf, dataset_name, tot_pt, flag_anhai,
+                    epsilon, tot_copy, num_run, cut, valid_file, test_file, balance, deeper_trick,
                     consistency, sim_edges, simple_slicing, margin_score=0):
     logging.info('Parsing original dataset')
-    if flag_Anhai == False:
-        data = csv_2_datasetALTERNATE(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        valid_data = csv_2_datasetALTERNATE(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        test_data = csv_2_datasetALTERNATE(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+    if flag_anhai == False:
+        data = csv_2_dataset_alternate(ground_truth_file, table1_file, table2_file, att_indexes, simf)
+        valid_data = csv_2_dataset_alternate(valid_file, table1_file, table2_file, att_indexes, simf)
+        test_data = csv_2_dataset_alternate(test_file, table1_file, table2_file, att_indexes, simf)
     else:
         if deeper_trick:
-            data = check_anhai_dataset(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+            data = check_anhai_dataset(ground_truth_file, table1_file, table2_file, att_indexes, simf)
         else:
-            data = parsing_anhai_nofilter(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        valid_data = parsing_anhai_nofilter(valid_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
-        test_data = parsing_anhai_nofilter(test_file, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, simf)
+            data = parsing_anhai_nofilter(ground_truth_file, table1_file, table2_file, att_indexes, simf)
+        valid_data = parsing_anhai_nofilter(valid_file, table1_file, table2_file, att_indexes, simf)
+        test_data = parsing_anhai_nofilter(test_file, table1_file, table2_file, att_indexes, simf)
 
-    min_sim_Match, max_sim_noMatch = plot_graph(data, cut)
-    logging.info("min_sim_Match " + str(min_sim_Match) + "max_sim_noMatch " + str(max_sim_noMatch))
+    min_sim_match, max_sim_no_match = plot_graph(data, cut)
+    logging.info("min_sim_match " + str(min_sim_match) + "max_sim_no_match " + str(max_sim_no_match))
     if margin_score > 0:
-        max_sim = margin_score + soglia #max(max_sim_noMatch, margin_score)
-        min_sim = margin_score - soglia #min(margin_score, min_sim_Match)
+        max_sim = margin_score + epsilon
+        min_sim = margin_score - epsilon
     else:
-        max_sim = min(soglia + max(min_sim_Match, max_sim_noMatch), 0.99999)
-        min_sim = max(min(min_sim_Match, max_sim_noMatch) - soglia, 0.000001)
+        max_sim = min(epsilon + max(min_sim_match, max_sim_no_match), 0.99999)
+        min_sim = max(min(min_sim_match, max_sim_no_match) - epsilon, 0.000001)
     if min_sim > 0.5:
         min_sim = 0.5
     if max_sim < 0.5:
@@ -158,17 +157,14 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     result_list_noMatch = []
     result_list_match = []
     consistency_list = []
-    # costruisce i dataset di pt con un max di occurrenza di una tuple di max_occ volte   csvTable2datasetRANDOM_NOOcc
-    # tot_pt = max(1000, bound * 2)
-    # tot_copy = tot_pt * 0.1
     min_sim_c = min_sim
     max_sim_c = max_sim
     it = 0
     while len(result_list_match) < tot_pt/2 and len(result_list_match) < tot_pt/2 and it < 2:
         logging.info(f"creating data with theta_min:{min_sim_c}, theta_max:{max_sim_c}")
-        result_list_noMatch, result_list_match, consistency_list = create_lists(TABLE1_FILE, TABLE2_FILE, tot_pt,
+        result_list_noMatch, result_list_match, consistency_list = create_lists(table1_file, table2_file, tot_pt,
                                                                                 min_sim_c,
-                                                                                max_sim_c, ATT_INDEXES,
+                                                                                max_sim_c, att_indexes,
                                                                                 min_cos_sim, tot_copy, max_occ,
                                                                                 sim_function=simf)
         logging.info("{} matches, {} non-matches, {} consistency pairs".format(len(result_list_match),
@@ -190,24 +186,17 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     # result_list_noMatch = result_list_noMatch[:len(result_list_match)]
     # test per il count dei valori degli attributi
-    lista_attrMATCH, lista_attrNO_MATCH = init_dict_lista(result_list_match, result_list_noMatch, len(ATT_INDEXES))
+    lista_attr_match, lista_attr_no_match = init_dict_lista(result_list_match, result_list_noMatch, len(att_indexes))
     logging.info("dizionari occorrenze degli attributi del dataset di pt")
     j = 0
-    for dictionario in lista_attrMATCH:
+    for dictionary in lista_attr_match:
         j = j + 1
-        plotting_occorrenze(list(dictionario.values()), f'lista_attrMATCH{j}')
-        #d = Counter(dictionario)
-        # for k, v in d.most_common(5):
-        #     logging.info('%s: %i' % (k, v))
-    j = 0
-    for dictionario in lista_attrNO_MATCH:
-        j = j + 1
-        plotting_occorrenze(list(dictionario.values()), f'lista_attrNO_MATCH{j}')
-        #d = Counter(dictionario)
-        # for k, v in d.most_common(5):
-        #     logging.info('%s: %i' % (k, v))
+        plot_occurrence(list(dictionary.values()), f'lista_attr_match{j}')
 
-    # fine test
+    j = 0
+    for dictionary in lista_attr_no_match:
+        j = j + 1
+        plot_occurrence(list(dictionary.values()), f'lista_attr_no_match{j}')
 
     # unione in una sola lista random_tuples0= insieme dei candidati per il pt
     random_tuples0 = result_list_noMatch + result_list_match
@@ -288,12 +277,12 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
     shuffle(vinsim_data)
 
     # plotting del dataset di pt finale
-    plot_dataPT(vinsim_data)
+    plot_data_pt(vinsim_data)
 
     logging.info("--------------- data augmentation creating dataset --------------")
 
     # arrotonda il sim_value a 0/1 per il test di data_augmentation
-    def converti_approssima(tuples, min_t=0.5, max_t=0.5):
+    def convert_approx(tuples, min_t=0.5, max_t=0.5):
         round_list = []
         discarded = []
         for el in tuples:
@@ -309,22 +298,22 @@ def create_datasets(GROUND_TRUTH_FILE, TABLE1_FILE, TABLE2_FILE, ATT_INDEXES, si
 
     # vinsim_data_app è il dataset di pt approssimato a 0/1
     logging.info(f'using threshold={max_sim} to approximate label')
-    vinsim_data_app, ignored = converti_approssima(vinsim_data, min_t=min_sim, max_t=max_sim)
+    vinsim_data_app, ignored = convert_approx(vinsim_data, min_t=min_sim, max_t=max_sim)
     logging.info('discarded {} elements'.format(len(ignored)))
     logging.debug(vinsim_data_app[:15])
 
     # Filtro.
     vinsim_data_app = shrink_data(vinsim_data_app)
 
-    plot_dataPT(vinsim_data_app)
+    plot_data_pt(vinsim_data_app)
 
     # Salva dataset su disco.
-    with open('datasets/temporary/datasetPT_{a}_{b}.txt'.format(a=DATASET_NAME, b=num_run), 'w') as output:
+    with open('datasets/temporary/datasetPT_{a}_{b}.txt'.format(a=dataset_name, b=num_run), 'w') as output:
         output.write(str(vinsim_data_app))
 
     # Dataset per il test di data_augmentation: [(tupla1, tupla2, label), ...]
     # VANNO AGGIUNTI I TAGLI DELLA Ground Truth [200,100,50...] in ogni addestramento
     vinsim_data_app = list(map(lambda q: (q[0], q[1], q[2][0]), vinsim_data_app))
 
-    threshold = max_sim
-    return data, deeper_train, deeper_valid, deeper_test, vinsim_data, vinsim_data_app, threshold
+    epsilon = max_sim
+    return data, deeper_train, deeper_valid, deeper_test, vinsim_data, vinsim_data_app, epsilon
