@@ -103,29 +103,6 @@ def create_datasets(ground_truth_file, table1_file, table2_file, att_indexes, si
     deeper_valid_data = list(map(lambda q: (q[0], q[1], q[3]), valid_data))
     deeper_test_data = list(map(lambda q: (q[0], q[1], q[3]), test_data))
 
-    # Taglia attributi se troppo lunghi
-    # Alcuni dataset hanno attributi con descrizioni molto lunghe.
-    # Questo filtro limita il numero di caratteri di un attributo a 1000.
-    def shrink_data(data):
-
-        def cut_string(s):
-            if len(s) >= 1000:
-                return s[:1000]
-            else:
-                return s
-
-        temp = []
-        for t1, t2, lb in data:
-            t1 = list(map(cut_string, t1))
-            t2 = list(map(cut_string, t2))
-            temp.append((t1, t2, lb))
-
-        return temp
-
-    deeper_data = shrink_data(deeper_data)
-    deeper_valid_data = shrink_data(deeper_valid_data)
-    deeper_test_data = shrink_data(deeper_test_data)
-
     # Tutti i successivi addestramenti partiranno dal 100% di deeper_train (80% di tutti i dati).
     # Le tuple in deeper_test non verranno mai usate per addestrare ma solo per testare i modelli.
     deeper_train = deeper_data
@@ -160,7 +137,7 @@ def create_datasets(ground_truth_file, table1_file, table2_file, att_indexes, si
     min_sim_c = min_sim
     max_sim_c = max_sim
     it = 0
-    while len(result_list_match) < tot_pt/2 and len(result_list_match) < tot_pt/2 and it < 2:
+    while len(result_list_match) < k_slice and len(result_list_match) < k_slice and it < 2:
         logging.info(f"creating data with theta_min:{min_sim_c}, theta_max:{max_sim_c}")
         result_list_noMatch, result_list_match, consistency_list = create_lists(table1_file, table2_file, tot_pt,
                                                                                 min_sim_c,
@@ -183,20 +160,6 @@ def create_datasets(ground_truth_file, table1_file, table2_file, att_indexes, si
 
     min_sim = min_sim_c
     max_sim = max_sim_c
-
-    # result_list_noMatch = result_list_noMatch[:len(result_list_match)]
-    # test per il count dei valori degli attributi
-    lista_attr_match, lista_attr_no_match = init_dict_lista(result_list_match, result_list_noMatch, len(att_indexes))
-    logging.info("dizionari occorrenze degli attributi del dataset di pt")
-    j = 0
-    for dictionary in lista_attr_match:
-        j = j + 1
-        plot_occurrence(list(dictionary.values()), f'lista_attr_match{j}')
-
-    j = 0
-    for dictionary in lista_attr_no_match:
-        j = j + 1
-        plot_occurrence(list(dictionary.values()), f'lista_attr_no_match{j}')
 
     # unione in una sola lista random_tuples0= insieme dei candidati per il pt
     random_tuples0 = result_list_noMatch + result_list_match
@@ -301,9 +264,6 @@ def create_datasets(ground_truth_file, table1_file, table2_file, att_indexes, si
     vinsim_data_app, ignored = convert_approx(vinsim_data, min_t=min_sim, max_t=max_sim)
     logging.info('discarded {} elements'.format(len(ignored)))
     logging.debug(vinsim_data_app[:15])
-
-    # Filtro.
-    vinsim_data_app = shrink_data(vinsim_data_app)
 
     plot_data_pt(vinsim_data_app)
 

@@ -24,7 +24,7 @@ class CheapERParams:
             self.epochs = 40
         self.mcd_samples = 1
         self.mask_token = '<mask>'
-        self.sigma = 1000
+        self.sigma = 1000 # numero di tuple per addestrare lo student
         self.kappa = 100
         self.attribute_shuffle = False
         self.identity = False

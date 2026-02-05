@@ -507,7 +507,5 @@ def create_lists(table_l, table_r, total, min_sim, max_sim, index, min_cos_sim, 
             print(traceback.format_exc())
             print(f'skipped item {str(count_i)}')
 
-    logging.info("dizionari")
-    plot_dicts(dict_l_match, dict_r_match, dict_l_no_match, dict_r_no_match)
     logging.info("create candidates set")
     return result_list_no_match, result_list_match, copies_list

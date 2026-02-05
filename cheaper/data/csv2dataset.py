@@ -1395,6 +1395,7 @@ def check_anhai_dataset(ground_truth, tableA, tableB, indici, sim_function=lambd
 
                 result_list_NOmatch.append((tableA_el,tableB_el,sim_vector, 0))
 
+    # ho utilizzato il modello (sim_function) per calcolare le soglie
 
     logging.info(max(len(result_list_match),len(result_list_NOmatch)))
     logging.info(len(result_list_match))
