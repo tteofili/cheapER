@@ -172,7 +172,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                     if params.adaptive_ft:
                         generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB)
                         teacher.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
-                                            seq_length=seq_length, epochs=5, lr=params.lr)
+                                            seq_length=seq_length, epochs=params.epochs, lr=params.lr)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
                     if getattr(params, 'training_data_source', 'ground_truth') == 'battleship_oracle':
                         logging.info('Training with %d record pairs (Battleship oracle-labeled)', len(train_cut))
