@@ -49,7 +49,16 @@ class CheapERParams:
         self.seq_length = 0
         self.layers_increase = 0
         self.best_model = 'eval_f1'
-        self.sample_tag = True # refer to [Tagged Back-Translation](https://arxiv.org/abs/1906.06442)
+        self.sample_tag = False # refer to [Tagged Back-Translation](https://arxiv.org/abs/1906.06442)
+        # Battleship-style initial labeling (when training_data_source == 'battleship_oracle')
+        self.training_data_source = 'battleship_oracle'  # or 'ground_truth'
+        self.initial_budget = 100
+        self.oracle_type = 'similarity'  # 'similarity' | 'sbert' | 'llm'
+        self.first_iter_strategy = 'diversity'  # 'random' | 'diversity'
+        self.unlabeled_train_csv = None  # path to unlabeled candidate pairs CSV (id1, id2); if None, derived from dataset
+        self.oracle_threshold = 0.5
+        self.oracle_sbert_model = 'all-MiniLM-L6-v2'
+        self.first_iter_seed = 42
 
     def __str__(self):
         return 'sigma=' + str(self.sigma) + ',kappa=' + str(self.kappa) + ',epsilon=' + str(
@@ -70,4 +79,7 @@ class CheapERParams:
                ',label_smoothing=' + str(self.label_smoothing) + ',hf_training=' + str(self.hf_training) +\
                ',seq_length=' + str(self.seq_length) + ',best_model=' + str(self.best_model) + ',mask_token=' \
                + str(self.mask_token) + ',model_noise=' + str(self.model_noise) + ',mcd_samples=' + str(self.mcd_samples)\
-               + ', sample_tag=' + str(self.sample_tag) + ', layers_increase=' + str(self.layers_increase)
+               + ', sample_tag=' + str(self.sample_tag) + ', layers_increase=' + str(self.layers_increase) \
+               + ', training_data_source=' + str(self.training_data_source) + ', initial_budget=' + str(self.initial_budget) \
+               + ', oracle_type=' + str(self.oracle_type) + ', first_iter_strategy=' + str(self.first_iter_strategy) \
+               + ', oracle_threshold=' + str(self.oracle_threshold)

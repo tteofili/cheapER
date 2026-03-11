@@ -776,6 +776,45 @@ ha bisogno che i csv dati siano codificati in  utf8
 in caso di errore aprirli con textpad->formato->converti in utf8
 """
 
+def parse_unlabeled_pairs(pairs_csv, tableL, tableR, indici, max_candidates=-1, skip_header=False):
+    """
+    Load unlabeled candidate pairs from a CSV (e.g. blocking output).
+    CSV format: id1, id2 (optionally with header row; set skip_header=True if present).
+    Resolves ids to (tuple1, tuple2) using tableL, tableR and indici.
+    Returns list of (tuple1, tuple2) in same attribute form as parse_original.
+    If max_candidates > 0, only the first max_candidates pairs are returned.
+    """
+    table1 = csv.reader(open(tableL, encoding="utf8"), delimiter=',')
+    table2 = csv.reader(open(tableR, encoding="utf8"), delimiter=',')
+    pairs_reader = csv.reader(open(pairs_csv, encoding="utf8"), delimiter=',')
+    next(table1, None)
+    next(table2, None)
+    lines = list(pairs_reader)
+    if not lines:
+        return []
+    start = 1 if skip_header else 0
+    tableLlist = list(table1)
+    tableRlist = list(table2)
+    result = []
+    for line in lines[start:]:
+        if max_candidates > 0 and len(result) >= max_candidates:
+            break
+        if len(line) < 2:
+            continue
+        id1, id2 = str(line[0]).strip(), str(line[1]).strip()
+        row1 = [item for item in tableLlist if item[0] == id1]
+        row2 = [item for item in tableRlist if item[0] == id2]
+        if not row1 or not row2:
+            continue
+        tableL_el = []
+        tableR_el = []
+        for i1, i2 in indici:
+            tableL_el.append(row1[0][i1])
+            tableR_el.append(row2[0][i2])
+        result.append((tableL_el, tableR_el))
+    return result
+
+
 '''parsing dei csv e costruzione dataset alternato(match-NOmatch) =>  (tupla1,tupla2,vettore_sim,label_match_OR_no_match)
     indici= lista di Coppie di attributi considerati   (es: per Walmart Amazon (Walmart_att, Amazon_att))
     cosi ogni coppia di tuple ha stesso num di attributi

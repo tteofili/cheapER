@@ -12,13 +12,15 @@ from sklearn.metrics import classification_report
 
 from cheaper.data.create_datasets import add_shuffle, parse_original
 from cheaper.data.create_datasets import create_datasets, add_identity, add_symmetry
-from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter, check_anhai_dataset
+from cheaper.data.csv2dataset import splitting_dataSet, parsing_anhai_nofilter, check_anhai_dataset, parse_unlabeled_pairs
 from cheaper.data.plot import plot_graph
 from cheaper.emt.emtmodel import EMTERModel
 from cheaper.emt.logging_customized import setup_logging
 from cheaper.params import CheapERParams
 from cheaper.similarity import sim_function
 from cheaper.similarity.similarity_utils import learn_best_aggregate
+from cheaper.active_learning.first_iteration import first_iteration_select
+from cheaper.oracle import get_oracle
 
 simfunctions = [
     lambda t1, t2: sim_function.jaro(t1, t2),
@@ -88,14 +90,59 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
         for cut in params.slicing:
             if params.model_type == 'noisy-student':
                 logging.info('Generating dataset')
-                # create datasets
                 test_file = base_dir + dataset_name + os.sep + 'test.csv'
                 valid_file = base_dir + dataset_name + os.sep + 'valid.csv'
 
-                train, test, valid = parse_original(gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_anhai,
-                                                    valid_file, test_file, params.deeper_trick, cut=cut)
-
-                train_cut = train.copy()
+                if getattr(params, 'training_data_source', 'ground_truth') == 'battleship_oracle':
+                    unlabeled_path = getattr(params, 'unlabeled_train_csv', None) or (
+                        base_dir + dataset_name + os.sep + 'train.csv'
+                    )
+                    if not os.path.exists(unlabeled_path):
+                        raise FileNotFoundError(
+                            "Battleship mode requires unlabeled candidate CSV at %s or set params.unlabeled_train_csv"
+                            % unlabeled_path
+                        )
+                    candidates = parse_unlabeled_pairs(
+                        unlabeled_path, t1_file, t2_file, indexes, max_candidates=-1
+                    )
+                    if not candidates:
+                        raise ValueError("No candidate pairs loaded from %s" % unlabeled_path)
+                    budget = getattr(params, 'initial_budget', 100)
+                    strategy = getattr(params, 'first_iter_strategy', 'random')
+                    seed = getattr(params, 'first_iter_seed', 42)
+                    selected_indices = first_iteration_select(
+                        candidates, budget, strategy=strategy, seed=seed
+                    )
+                    oracle_fn = get_oracle(
+                        getattr(params, 'oracle_type', 'similarity'),
+                        threshold=getattr(params, 'oracle_threshold', 0.5),
+                        sim_function=simfunctions[0],
+                    )
+                    train_cut = []
+                    matches = 0
+                    non_matches = 0
+                    for idx in selected_indices:
+                        t1, t2 = candidates[idx]
+                        label = oracle_fn(t1, t2)
+                        if int(label) == 1:
+                            matches += 1
+                        else:
+                            non_matches += 1
+                        train_cut.append((t1, t2, label))
+                    logging.info(
+                        'Battleship initial labeling: %d candidates, selected %d, labeled by oracle -> %d train pairs (matches: %d, non-matches: %d)',
+                        len(candidates), len(selected_indices), len(train_cut), matches, non_matches,
+                    )
+                    _, test, valid = parse_original(
+                        gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_anhai,
+                        valid_file, test_file, params.deeper_trick, cut=1
+                    )
+                else:
+                    train, test, valid = parse_original(
+                        gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_anhai,
+                        valid_file, test_file, params.deeper_trick, cut=cut
+                    )
+                    train_cut = train.copy()
 
                 if params.seq_length > 0:
                     # override default dataset seq_length
@@ -125,9 +172,12 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                     if params.adaptive_ft:
                         generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB)
                         teacher.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
-                                            seq_length=seq_length, epochs=min(5, params.epochs), lr=1e-5)
+                                            seq_length=seq_length, epochs=5, lr=params.lr)
                     logging.info("------------- Teacher Training {} ------------------".format(model_type))
-                    logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
+                    if getattr(params, 'training_data_source', 'ground_truth') == 'battleship_oracle':
+                        logging.info('Training with %d record pairs (Battleship oracle-labeled)', len(train_cut))
+                    else:
+                        logging.info('Training with {} record pairs ({}% GT)'.format(len(train_cut), 100 * cut))
                     teacher.train(train_cut, valid, model_type, dataset_name, seq_length=seq_length,
                                   warmup=params.warmup, hf_training=params.hf_training,
                                   epochs=params.epochs, lr=params.lr, batch_size=params.batch_size,
@@ -571,6 +621,8 @@ base_dir = 'datasets' + os.sep
 
 
 def get_datasets():
+    # Each row: [gt_file, t1_file, t2_file, indexes, dataset_name, temp_dir, flag_anhai, seq_length]
+    # Optional 9th element: unlabeled_train_csv for Battleship mode (candidate pairs CSV with id1, id2)
     datasets = [
         [('%sdirty_walmart_amazon/train.csv' % base_dir), ('%sdirty_walmart_amazon/tableA.csv' % base_dir),
          ('%sdirty_walmart_amazon/tableB.csv' % base_dir), [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)],
@@ -623,6 +675,8 @@ def cheaper_train(dataset, params: CheapERParams):
     dataset_name = dataset[4]
     flag_anhai = dataset[6]
     seq_length = dataset[7]
+    if len(dataset) > 8 and dataset[8] is not None:
+        params.unlabeled_train_csv = dataset[8]
     logging.info('CheapER: training on dataset "{}"'.format(dataset_name))
     logging.info('CheapER: using params "{}"'.format(params))
     if params.silent:

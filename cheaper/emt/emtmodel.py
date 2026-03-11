@@ -62,7 +62,7 @@ class EMTERModel:
         if not os.path.exists(model_dir):
             os.makedirs(model_dir, exist_ok=True)
 
-        if os.path.exists(model_dir + '/pytorch_model.bin') and not ow:
+        if os.path.exists(model_dir + '/model.safetensors') and not ow:
             self.mlm_model = load_model(model_dir)
         else:
             self.mlm_model = self.mlm_model.to(device)
