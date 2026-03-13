@@ -53,10 +53,14 @@ class CheapERParams:
         # Battleship-style initial labeling (when training_data_source == 'battleship_oracle')
         self.training_data_source = 'battleship_oracle'  # or 'ground_truth'
         self.initial_budget = 100
-        self.oracle_type = 'similarity'  # 'similarity' | 'sbert' | 'llm'
-        self.first_iter_strategy = 'diversity'  # 'random' | 'diversity'
+        self.oracle_type = 'sbert'  # 'similarity' | 'sbert' | 'llm'
+        self.first_iter_strategy = 'centrality'  # 'random' | 'diversity' | 'centrality'
         self.unlabeled_train_csv = None  # path to unlabeled candidate pairs CSV (id1, id2); if None, derived from dataset
-        self.oracle_threshold = 0.5
+        # Centrality strategy (when first_iter_strategy == 'centrality')
+        self.centrality_criterion = 'bc'  # 'pagerank' | 'bc' (betweenness)
+        self.centrality_nn_param = 15  # k-NN per node when building graph
+        # float (e.g. 0.5) or 'median' | 'otsu' | 'p75' for data-driven threshold (similarity/SBERT only)
+        self.oracle_threshold = 'otsu'
         self.oracle_sbert_model = 'all-MiniLM-L6-v2'
         self.first_iter_seed = 42
 
@@ -82,4 +86,6 @@ class CheapERParams:
                + ', sample_tag=' + str(self.sample_tag) + ', layers_increase=' + str(self.layers_increase) \
                + ', training_data_source=' + str(self.training_data_source) + ', initial_budget=' + str(self.initial_budget) \
                + ', oracle_type=' + str(self.oracle_type) + ', first_iter_strategy=' + str(self.first_iter_strategy) \
-               + ', oracle_threshold=' + str(self.oracle_threshold)
+               + ', oracle_threshold=' + str(self.oracle_threshold) \
+               + ', centrality_criterion=' + str(self.centrality_criterion) \
+               + ', centrality_nn_param=' + str(self.centrality_nn_param)

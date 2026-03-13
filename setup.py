@@ -18,6 +18,7 @@ setuptools.setup(
           'numpy',
           'scipy',
           'scikit-learn',
+          'networkx',
           'tqdm',
           'transformers',
           'torch',

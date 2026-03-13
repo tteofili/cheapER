@@ -4,7 +4,7 @@ Oracle: (tuple1, tuple2) -> 0 | 1 (no-match | match).
 """
 import logging
 import re
-from typing import Callable, List, Tuple, Any, Optional
+from typing import Callable, List, Tuple, Any, Optional, Union
 
 import numpy as np
 
@@ -18,6 +18,60 @@ def _pair_to_display_text(tuple1: List[Any], tuple2: List[Any]) -> str:
     return f"Record A: {left}\nRecord B: {right}"
 
 
+def adaptive_threshold(scores: List[float], method: str = "median") -> float:
+    """
+    Compute a data-driven threshold from a list of similarity scores.
+    method: 'median' (balanced split), 'otsu' (maximize between-class variance),
+    or 'p75' (75th percentile, conservative).
+    """
+    scores_arr = np.asarray(scores, dtype=float)
+    if len(scores_arr) == 0:
+        return 0.5
+    if len(scores_arr) == 1:
+        return float(scores_arr[0])
+    if method == "median":
+        return float(np.median(scores_arr))
+    if method == "p75":
+        return float(np.percentile(scores_arr, 75))
+    if method == "otsu":
+        return _otsu_threshold_1d(scores_arr)
+    return float(np.median(scores_arr))
+
+
+def _otsu_threshold_1d(scores: np.ndarray) -> float:
+    """1D Otsu: threshold that maximizes between-class variance."""
+    lo, hi = float(scores.min()), float(scores.max())
+    if lo >= hi:
+        return (lo + hi) / 2.0
+    n_bins = min(256, max(2, len(scores) // 5))
+    hist, bin_edges = np.histogram(scores, bins=n_bins, range=(lo, hi))
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2.0
+    total = hist.sum()
+    if total == 0:
+        return 0.5
+    total_mean = (hist * bin_centers).sum() / total
+    best_var = 0.0
+    best_t = bin_centers[0]
+    w_below = 0.0
+    sum_below = 0.0
+    for i in range(len(hist)):
+        w_below += hist[i]
+        if w_below == 0:
+            continue
+        w_above = total - w_below
+        if w_above == 0:
+            break
+        sum_below += hist[i] * bin_centers[i]
+        mean_below = sum_below / w_below
+        sum_above = (hist * bin_centers).sum() - sum_below
+        mean_above = sum_above / w_above
+        var_between = w_below * w_above * (mean_below - mean_above) ** 2
+        if var_between > best_var:
+            best_var = var_between
+            best_t = bin_centers[i]
+    return float(best_t)
+
+
 class SimilarityOracle:
     """
     Oracle that uses a similarity function and a threshold.
@@ -28,10 +82,14 @@ class SimilarityOracle:
         self.sim_function = sim_function
         self.threshold = threshold
 
-    def __call__(self, tuple1: List[Any], tuple2: List[Any]) -> int:
+    def score(self, tuple1: List[Any], tuple2: List[Any]) -> float:
+        """Return raw similarity score (for adaptive threshold)."""
         scores = self.sim_function(tuple1, tuple2)
-        score = float(scores[0]) if scores else 0.0
-        return 1 if score >= self.threshold else 0
+        return float(scores[0]) if scores else 0.0
+
+    def __call__(self, tuple1: List[Any], tuple2: List[Any]) -> int:
+        s = self.score(tuple1, tuple2)
+        return 1 if s >= self.threshold else 0
 
 
 class SBERTOracle:
@@ -55,13 +113,24 @@ class SBERTOracle:
                 raise
         return self._model
 
-    def __call__(self, tuple1: List[Any], tuple2: List[Any]) -> int:
+    def score(self, tuple1: List[Any], tuple2: List[Any]) -> float:
+        """Return raw cosine similarity (for adaptive threshold)."""
         try:
             model = self._get_model()
             text1 = " ".join(str(a) for a in tuple1)
             text2 = " ".join(str(a) for a in tuple2)
             emb = model.encode([text1, text2])
-            sim = float(np.dot(emb[0], emb[1]) / (np.linalg.norm(emb[0]) * np.linalg.norm(emb[1]) + 1e-9))
+            return float(np.dot(emb[0], emb[1]) / (np.linalg.norm(emb[0]) * np.linalg.norm(emb[1]) + 1e-9))
+        except Exception as e:
+            if self._fallback is not None and hasattr(self._fallback, "score"):
+                return self._fallback.score(tuple1, tuple2)
+            if self._fallback is not None:
+                return 0.5
+            raise e
+
+    def __call__(self, tuple1: List[Any], tuple2: List[Any]) -> int:
+        try:
+            sim = self.score(tuple1, tuple2)
             return 1 if float(sim) >= self.threshold else 0
         except Exception as e:
             if self._fallback is not None:
@@ -102,9 +171,9 @@ class LLMOracle:
             import openai
             client = openai.OpenAI()
             r = client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-5-nano-2025-08-07",
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=10,
+                max_completion_tokens=100,
             )
             return (r.choices[0].message.content or "").strip()
         except Exception as e:
@@ -112,9 +181,12 @@ class LLMOracle:
             return "No"
 
 
+ADAPTIVE_THRESHOLD_METHODS = ("median", "otsu", "p75")
+
+
 def get_oracle(
     oracle_type: str,
-    threshold: float = 0.5,
+    threshold: Union[float, str] = 0.5,
     sim_function: Optional[Callable] = None,
     sbert_model: str = "all-MiniLM-L6-v2",
     llm_client: Optional[Callable] = None,
@@ -122,15 +194,17 @@ def get_oracle(
     """
     Factory: returns an oracle callable (tuple1, tuple2) -> 0|1.
     oracle_type: 'similarity' | 'sbert' | 'llm'
+    threshold: float (e.g. 0.5) or 'median' | 'otsu' | 'p75' for data-driven threshold (used in pipeline with .score()).
     """
+    th = 0.5 if (isinstance(threshold, str) and threshold in ADAPTIVE_THRESHOLD_METHODS) else float(threshold)
     if oracle_type == "similarity":
         if sim_function is None:
             from cheaper.similarity import sim_function as sf
             sim_function = sf.jaro
-        return SimilarityOracle(sim_function, threshold)
+        return SimilarityOracle(sim_function, th)
     if oracle_type == "sbert":
-        fallback = SimilarityOracle(sim_function or (lambda t1, t2: [0.5]), threshold) if sim_function else None
-        return SBERTOracle(threshold=threshold, model_name=sbert_model, fallback_sim=fallback)
+        fallback = SimilarityOracle(sim_function or (lambda t1, t2: [0.5]), th) if sim_function else None
+        return SBERTOracle(threshold=th, model_name=sbert_model, fallback_sim=fallback)
     if oracle_type == "llm":
         return LLMOracle(client=llm_client)
     raise ValueError("oracle_type must be 'similarity', 'sbert', or 'llm'")

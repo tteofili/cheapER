@@ -20,7 +20,7 @@ from cheaper.params import CheapERParams
 from cheaper.similarity import sim_function
 from cheaper.similarity.similarity_utils import learn_best_aggregate
 from cheaper.active_learning.first_iteration import first_iteration_select
-from cheaper.oracle import get_oracle
+from cheaper.oracle import get_oracle, adaptive_threshold, ADAPTIVE_THRESHOLD_METHODS
 
 simfunctions = [
     lambda t1, t2: sim_function.jaro(t1, t2),
@@ -111,24 +111,51 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                     strategy = getattr(params, 'first_iter_strategy', 'random')
                     seed = getattr(params, 'first_iter_seed', 42)
                     selected_indices = first_iteration_select(
-                        candidates, budget, strategy=strategy, seed=seed
+                        candidates,
+                        budget,
+                        strategy=strategy,
+                        seed=seed,
+                        criterion=getattr(params, 'centrality_criterion', 'pagerank'),
+                        nn_param=getattr(params, 'centrality_nn_param', 15),
                     )
+                    oracle_threshold = getattr(params, 'oracle_threshold', 0.5)
                     oracle_fn = get_oracle(
                         getattr(params, 'oracle_type', 'similarity'),
-                        threshold=getattr(params, 'oracle_threshold', 0.5),
+                        threshold=oracle_threshold,
                         sim_function=simfunctions[0],
                     )
                     train_cut = []
                     matches = 0
                     non_matches = 0
-                    for idx in selected_indices:
-                        t1, t2 = candidates[idx]
-                        label = oracle_fn(t1, t2)
-                        if int(label) == 1:
-                            matches += 1
-                        else:
-                            non_matches += 1
-                        train_cut.append((t1, t2, label))
+                    use_adaptive = (
+                        isinstance(oracle_threshold, str)
+                        and oracle_threshold in ADAPTIVE_THRESHOLD_METHODS
+                        and hasattr(oracle_fn, 'score')
+                    )
+                    if use_adaptive:
+                        scores_list = []
+                        for idx in selected_indices:
+                            t1, t2 = candidates[idx]
+                            scores_list.append(oracle_fn.score(t1, t2))
+                        th = adaptive_threshold(scores_list, method=oracle_threshold)
+                        logging.info('Adaptive oracle threshold (%s): %.4f', oracle_threshold, th)
+                        for idx, score in zip(selected_indices, scores_list):
+                            t1, t2 = candidates[idx]
+                            label = 1 if score >= th else 0
+                            if label == 1:
+                                matches += 1
+                            else:
+                                non_matches += 1
+                            train_cut.append((t1, t2, label))
+                    else:
+                        for idx in selected_indices:
+                            t1, t2 = candidates[idx]
+                            label = oracle_fn(t1, t2)
+                            if int(label) == 1:
+                                matches += 1
+                            else:
+                                non_matches += 1
+                            train_cut.append((t1, t2, label))
                     logging.info(
                         'Battleship initial labeling: %d candidates, selected %d, labeled by oracle -> %d train pairs (matches: %d, non-matches: %d)',
                         len(candidates), len(selected_indices), len(train_cut), matches, non_matches,
@@ -228,25 +255,25 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                         if params.adjust_ds_size:
                             sigma = len(train_cut) * (2 + t_i)
                             kappa = int(sigma / 10)
-                        data_c, train_c, valid, test, vinsim_data_c, vinsim_data_app_c, threshold = create_datasets(gt_file,
-                                                                                                                    t1_file,
-                                                                                                                    t2_file,
-                                                                                                                    indexes, simf,
-                                                                                                                    dataset_name,
-                                                                                                                    sigma,
-                                                                                                                    flag_anhai,
-                                                                                                                    params.epsilon,
-                                                                                                                    kappa,
-                                                                                                                    params.num_runs,
-                                                                                                                    cut,
-                                                                                                                    valid_file,
-                                                                                                                    test_file,
-                                                                                                                    params.balance,
-                                                                                                                    params.deeper_trick,
-                                                                                                                    params.consistency,
-                                                                                                                    params.sim_edges,
-                                                                                                                    params.simple_slicing,
-                                                                                                                    margin_score=params.threshold)
+                        _, _, _, _, vinsim_data_c, vinsim_data_app_c, threshold = create_datasets(gt_file,
+                                                                                                  t1_file,
+                                                                                                  t2_file,
+                                                                                                  indexes, simf,
+                                                                                                  dataset_name,
+                                                                                                  sigma,
+                                                                                                  flag_anhai,
+                                                                                                  params.epsilon,
+                                                                                                  kappa,
+                                                                                                  params.num_runs,
+                                                                                                  cut,
+                                                                                                  valid_file,
+                                                                                                  test_file,
+                                                                                                  params.balance,
+                                                                                                  params.deeper_trick,
+                                                                                                  params.consistency,
+                                                                                                  params.sim_edges,
+                                                                                                  params.simple_slicing,
+                                                                                                  margin_score=params.threshold)
 
                         logging.info('Previous generated dataset size: {}'.format(len(vinsim_data_app)))
 
