@@ -156,10 +156,25 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                             else:
                                 non_matches += 1
                             train_cut.append((t1, t2, label))
-                    logging.info(
-                        'Battleship initial labeling: %d candidates, selected %d, labeled by oracle -> %d train pairs (matches: %d, non-matches: %d)',
-                        len(candidates), len(selected_indices), len(train_cut), matches, non_matches,
-                    )
+                    # Balance so teacher gets equal matches and non-matches
+                    positives = [p for p in train_cut if p[2] == 1]
+                    negatives = [p for p in train_cut if p[2] == 0]
+                    k = min(len(positives), len(negatives))
+                    if k > 0:
+                        random.seed(seed)
+                        balanced = random.sample(positives, k) + random.sample(negatives, k)
+                        random.shuffle(balanced)
+                        train_cut = balanced
+                        logging.info(
+                            'Battleship initial labeling: %d candidates, selected %d, labeled by oracle -> %d raw (matches: %d, non-matches: %d) -> %d balanced train pairs (%d each)',
+                            len(candidates), len(selected_indices), matches + non_matches, matches, non_matches,
+                            len(train_cut), k,
+                        )
+                    else:
+                        logging.warning(
+                            'Battleship initial labeling: cannot balance (matches=%d, non_matches=%d); using all %d train pairs',
+                            len(positives), len(negatives), len(train_cut),
+                        )
                     _, test, valid = parse_original(
                         gt_file, t1_file, t2_file, indexes, simfunctions[0], flag_anhai,
                         valid_file, test_file, params.deeper_trick, cut=1
@@ -373,7 +388,7 @@ def train_model(gt_file, t1_file, t2_file, indexes, dataset_name, flag_anhai, se
                         generate_unlabelled(unlabelled_train, unlabelled_valid, tableA, tableB)
                         model.adaptive_ft(unlabelled_train, unlabelled_valid, dataset_name, model_type,
                                           seq_length=seq_length,
-                                          epochs=params.epochs, lr=params.lr)
+                                          epochs=params.epochs, lr=min(5, params.epochs))
 
                     model.train(train_cut, valid, test, model_type, seq_length=seq_length, warmup=params.warmup,
                                 epochs=params.epochs, lr=params.lr, batch_size=params.batch_size, silent=params.silent)

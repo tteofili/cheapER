@@ -173,7 +173,7 @@ class LLMOracle:
             r = client.chat.completions.create(
                 model="gpt-5-nano-2025-08-07",
                 messages=[{"role": "user", "content": prompt}],
-                max_completion_tokens=100,
+                max_completion_tokens=1000,
             )
             return (r.choices[0].message.content or "").strip()
         except Exception as e:
